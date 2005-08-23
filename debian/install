@@ -1,0 +1,3 @@
+knoppix-autoconfig	etc/init.d/
+knoppix-halt		etc/init.d/
+knoppix-reboot		etc/init.d/
