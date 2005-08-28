@@ -4,10 +4,14 @@ PATH=/sbin:/bin:/usr/bin:/usr/sbin
 export PATH
 
 # override tool behaviour through distro-defaults
-FLL_DISTRO_MODE="installed"
+FLL_DISTRO_MODE=""
+FLL_MOUNTPOINT="/KNOPPIX"
+
 [ -r /etc/default/distro ] && source /etc/default/distro
 
-[ ! "$FLL_DISTRO_MODE" == "live" ] && exit 0
+[ -z "$FLL_DISTRO_MODE" ] && [ -e $FLL_MOUNTPOINT/bin/ash ] && FLL_DISTRO_MODE="live"
+
+[ "$FLL_INSTALL_TYPE" == "debian" ]) && exit 0
 
 case "$1" in
 	start) ;;
@@ -26,10 +30,6 @@ BLUE="[1;34m"
 MAGENTA="[1;35m"
 CYAN="[1;36m"
 WHITE="[1;37m"
-
-# Check if we are running from a Knoppix-CD or HD
-INSTALLED=""
-[ -e /KNOPPIX/bin/ash ] || INSTALLED=yes
 
 case "$0" in
 	*halt)
@@ -50,7 +50,7 @@ case "$0" in
 esac
 
 # No sync and no wtmp entry if running from CD
-[ -n "$INSTALLED" ] || options="$options -n"
+[ "$FLL_DISTRO_MODE" = "live" ] && options="$options -n"
 
 mysleep() {
 	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40; do
@@ -140,14 +140,14 @@ fi
 rmmod -a &>/dev/null
 
 # For a harddisk installation: mount / ro
-[ -n "$INSTALLED" ] && mount -o remount,ro / 2>/dev/null
+[ "$FLL_DISTRO_MODE" = "installed" ] && mount -o remount,ro / 2>/dev/null
 
 echo "$message" >/dev/console
 
 # umount and eject CD-ROM
 # noprompt implies noeject (backward compatibility)
 
-if [ -z "$INSTALLED" -a -z "$NOPROMPT" ]; then
+if [ "$FLL_DISTRO_MODE" = "live" -a -z "$NOPROMPT" ]; then
 	#umount -l /cdrom
 	[ -n "$CDROM" -a -z "$NOEJECT" ] && eject -m -p "$CDROM" 2>/dev/null
 	echo "${CYAN}Please remove CD, close cdrom drive and hit return.${NORMAL}"

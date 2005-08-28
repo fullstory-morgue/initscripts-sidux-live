@@ -10,10 +10,25 @@ export PATH
 umask 022
 
 # override tool behaviour through distro-defaults
-FLL_DISTRO_MODE="installed"
-[ -r /etc/default/distro ] && source /etc/default/distro
+FLL_DISTRO_MODE=""
+FLL_INSTALL_TYPE="live"
+FLL_MOUNTPOINT="/KNOPPIX"
+FLL_DISTRO_NAME="Kanotix"
+FLL_LIVE_USER="knoppix"
+FLL_UNION_SOURCE="/ramdisk/var/tmp"
+FLL_UNION_TARGET="$FLL_MOUNTPOINT"
+FLL_UNION_OPTIONS="rw"
+# Add to default/distro?
+FLL_SYSCONFIG="/etc/sysconfig/$FLL_LIVE_USER"
+FLL_DISTRO_NAME_LC=$(echo $FLL_DISTRO_NAME | tr A-Z a-z)
+FLL_HOSTNAME="$FLL_DISTRO_NAME"
+FLL_BOOT_CODES="DISTRO_MODE INSTALL_TYPE MOUNTPOINT DISTRO_NAME LIVE_USER UNION_SOURCE UNION_TARGET UNION_OPTIONS FLL_SYSCONFIG FLL_DISTRO_NAME FLL_HOSTNAME"
+FLL_BOOT_CHOICES=""
 
-[ ! "$FLL_DISTRO_MODE" == "live" ] && exit 0
+FLL_CONFIG_FILE="/etc/default/distro"
+
+[ -r $FLL_CONFIG_FILE ] && source $FLL_CONFIG_FILE
+
 
 case "$1" in
 	start) ;;
@@ -114,6 +129,26 @@ stringinfile "/dev/pts" /proc/mounts || mount -t devpts /dev/pts /dev/pts 2>/dev
 # This works.
 [ -z "$CMDLINE" ] && CMDLINE="$(cat /proc/cmdline)"
 
+#have to read these now as needed before the root fs is mounted rw
+if checkbootparam DISTRO_MODE &>/dev/null; then
+	FLL_DISTRO_MODE="$(getbootparam 'DISTRO_MODE')"
+fi
+
+if checkbootparam MOUNTPOINT &>/dev/null; then
+	FLL_MOUNTPOINT="$(getbootparam 'MOUNTPOINT')"
+fi
+
+if checkbootparam INSTALL_TYPE &>/dev/null; then
+	FLL_INSTALL_TYPE="$(getbootparam 'INSTALL_TYPE')"
+fi
+
+if checkbootparam DISTRO_NAME &>/dev/null; then
+	FLL_DISTRO_NAME="$(getbootparam 'DISTRO_NAME')"
+fi
+
+# Check if we are running from the Knoppix-CD or HD
+[ -z "$FLL_DISTRO_MODE" ] && [ -e $FLL_MOUNTPOINT/bin/ash ] && FLL_DISTRO_MODE="live"	
+[ "$FLL_INSTALL_TYPE" == "debian" ]) && exit 0
 
 # Check if we are in interactive startup mode
 INTERACTIVE=""
@@ -895,12 +930,8 @@ DESKTOP="$(getbootparam desktop 2>/dev/null)"
 # Allow only supported windowmanagers
 case "$DESKTOP" in gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk) ;; *) DESKTOP="kde"; ;; esac
 
-# Check if we are running from the Knoppix-CD or HD
-INSTALLED=""
-[ -e /KNOPPIX/bin/ash ] || INSTALLED="yes"
-
 # Set hostname
-hostname Kanotix
+hostname $FLL_DISTRO_NAME
 
 # Set clock (Local time is more often used than GMT, so it is default)
 UTC=""
@@ -914,7 +945,7 @@ hwclock $UTC -s
 KERNEL="$(uname -r)"
 echo " ${GREEN}Running Linux Kernel ${YELLOW}$KERNEL${GREEN}.${NORMAL}"
 
-if [ -n "$INSTALLED" ]; then
+if [ "$FLL_INSTALL_MODE" = "beginner" ]; then
 	echo "${BLUE}Running from HD, checking filesystems...${NORMAL}"
 	# We are running from HD, so a file system check is recommended
 	[ -f /etc/init.d/checkroot.sh ] && /etc/init.d/checkroot.sh
@@ -924,7 +955,22 @@ fi
 # / must be read-write in any case, starting from here
 mount -o remount,rw / 2>/dev/null
 
-if [ -n "$INSTALLED" ]; then
+# Read in and save the rest of the FLL CHEATCODES
+for code in $FLL_BOOT_CODES; do
+	if checkbootparam $code &>/dev/null; then
+		FLL_BOOT_CHOICES="$FLL_BOOT_CHOICES $code"
+		$val="$(getbootparam $code 2>/dev/null)"
+		AWK_UPDATE="$AWK_UPDATE if{/$code/}{print FLL_$code=\"$var\";done=1;}"
+	fi
+done
+
+# TODO this is only updating values, but not adding non-present values
+# use an array in awk to track what's updated
+# then loop through FLL_BOOT_CHOICES to add anything not done
+awk "done=0;$AWK_UPDATE;if{$done==0}{print}" $FLL_CONFIG_FILE
+source $FLL_CONFIG_FILE
+
+if [ "$FLL_INSTALL_MODE" = "beginner" ]; then
 	echo -n "${BLUE}Running from HD, regenerate ld.so.cache and modules.dep...${NORMAL}"
 	# Regenerate ld.so.cache and module dependencies on HD
 	ldconfig ; depmod -a 2>/dev/null
@@ -950,7 +996,7 @@ cp "/usr/share/zoneinfo/$TZ" /etc/localtime
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
 	rm -f	/dev/cdrom* /dev/cdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		/etc/sysconfig/i18n /etc/sysconfig/keyboard /etc/sysconfig/knoppix \
+		/etc/sysconfig/i18n /etc/sysconfig/keyboard $FLL_SYSCONFIG \
 		2>/dev/null
 fi
 
@@ -975,20 +1021,20 @@ echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/sysconfig/keyboard
 # Desired desktop
 echo "DESKTOP=\"$DESKTOP\""            > /etc/sysconfig/desktop
 
-# Write all, including non-standard variables, to /etc/sysconfig/knoppix
-echo "LANG=\"$LANG\""                  > /etc/sysconfig/knoppix
-echo "COUNTRY=\"$COUNTRY\""           >> /etc/sysconfig/knoppix
-echo "LANGUAGE=\"$LANGUAGE\""         >> /etc/sysconfig/knoppix
-echo "CHARSET=\"$CHARSET\""           >> /etc/sysconfig/knoppix
-echo "KEYTABLE=\"$KEYTABLE\""         >> /etc/sysconfig/knoppix
-echo "XKEYBOARD=\"$XKEYBOARD\""       >> /etc/sysconfig/knoppix
-echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> /etc/sysconfig/knoppix
-echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/sysconfig/knoppix
-echo "DESKTOP=\"$DESKTOP\""           >> /etc/sysconfig/knoppix
-echo "TZ=\"$TZ\""                     >> /etc/sysconfig/knoppix
+# Write all, including non-standard variables, to $FLL_SYSCONFIG
+echo "LANG=\"$LANG\""                  > $FLL_SYSCONFIG
+echo "COUNTRY=\"$COUNTRY\""           >> $FLL_SYSCONFIG
+echo "LANGUAGE=\"$LANGUAGE\""         >> $FLL_SYSCONFIG
+echo "CHARSET=\"$CHARSET\""           >> $FLL_SYSCONFIG
+echo "KEYTABLE=\"$KEYTABLE\""         >> $FLL_SYSCONFIG
+echo "XKEYBOARD=\"$XKEYBOARD\""       >> $FLL_SYSCONFIG
+echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> $FLL_SYSCONFIG
+echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> $FLL_SYSCONFIG
+echo "DESKTOP=\"$DESKTOP\""           >> $FLL_SYSCONFIG
+echo "TZ=\"$TZ\""                     >> $FLL_SYSCONFIG
 
 # Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> /etc/sysconfig/knoppix
+[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> $FLL_SYSCONFIG
 
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
@@ -1003,9 +1049,9 @@ ifconfig lo 127.0.0.1 up
 # CD Checker
 if checkbootparam "testcd"; then
 	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
-	echo " ${BLUE}Reading files and checking against KNOPPIX/md5sums, this may take a while...${NORMAL}"
+	echo " ${BLUE}Reading files and checking against $FLL_IMAGE_DIR/md5sums, this may take a while...${NORMAL}"
 	echo -n "${RED}"
-	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG="$LANG" md5sum -c KNOPPIX/md5sums 2>&1 | tee /tmp/md5sum.log )
+	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG="$LANG" md5sum -c $FLL_IMAGE_DIR/md5sums 2>&1 | tee /tmp/md5sum.log )
 	if [ "$?" = "0" ]; then
 		echo " ${GREEN}Everything looks OK${NORMAL}"
 	else
@@ -1194,16 +1240,16 @@ if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
 fi
 
 # Read in what hwsetup has found
-[ -f /etc/sysconfig/knoppix ] && source /etc/sysconfig/knoppix
+[ -f $FLL_SYSCONFIG ] && source $FLL_SYSCONFIG
 
 # Workaround for new mouse detection
 if [ -f /etc/sysconfig/mouse ]; then
 	source /etc/sysconfig/mouse
 	if [ "$MOUSETYPE" == "ps2" ]; then
 		ln -sf /dev/psaux /dev/mouse
-		perl -pi -e "s|/dev/input/mice|/dev/psaux|" /etc/sysconfig/mouse /etc/sysconfig/knoppix
+		perl -pi -e "s|/dev/input/mice|/dev/psaux|" /etc/sysconfig/mouse $FLL_SYSCONFIG
 		source /etc/sysconfig/mouse
-		source /etc/sysconfig/knoppix
+		source $FLL_SYSCONFIG
 	fi
 fi
        
@@ -1318,7 +1364,7 @@ if ! checkbootparam "nomkxf86config"; then
 fi
 
 # Read in changes
-[ -f /etc/sysconfig/knoppix ] && source /etc/sysconfig/knoppix
+[ -f $FLL_SYSCONFIG ] && source $FLL_SYSCONFIG
 
 if [ -n "$INTERACTIVE" ]; then
 	echo -n "${CYAN}Do you want to (re)configure your graphics (X11) subsystem?${NORMAL} [Y/n] "
@@ -1333,7 +1379,7 @@ if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
 	case "$ALSA_CARD" in auto*) ALSA_CARD="";; esac
 	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
 	# Something went wrong ?
-	[ ! -r /etc/modules.conf ] && ln -sf /KNOPPIX/etc/modules.conf /etc/modules.conf
+	[ ! -r /etc/modules.conf ] && ln -sf $FLL_MOUNTPOINT/etc/modules.conf /etc/modules.conf
 fi
 
 # Start FC detection on vt10
@@ -1420,7 +1466,7 @@ if checkbootparam "nofstab"; then
 	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
 else
 	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}... "
-	[ -d /KNOPPIX ] && rebuildfstab -r -u knoppix -g knoppix >/dev/null 2>/dev/null || rebuildfstab -r &>/dev/null
+	[ -d $FLL_MOUNT_POINT ] && rebuildfstab -r -u $FLL_LIVE_USER -g $FLL_LIVE_USER >/dev/null 2>/dev/null || rebuildfstab -r &>/dev/null
 	if [ -e /var/run/rebuildfstab.pid ]; then
 		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
 		sleep 8
@@ -1445,14 +1491,14 @@ if [ -n "$partitions" ]; then
 		esac
 		# Create mountdir if not already present
 		d="/mnt/${p##*/}" ; [ -d "$d" ] || mkdir -p "$d"
-		case "$f" in vfat|msdos)
-			if [ -z "$NOSWAP" ] && mount -o uid=knoppix,gid=knoppix,ro -t $f $p $d 2>/dev/null; then
-				if [ -f $d/knoppix.swp ]; then
+		case "$f" in vfat|msdos|ntfs)
+			if [ -z "$NOSWAP" ] && mount -o uid=$FLL_LIVE_USER,gid=$FLL_LIVE_USER,ro -t $f $p $d 2>/dev/null; then
+				if [ -f $d/$FLL_LIVE_USER.swp ]; then
 					mount -o remount,rw $d
-					if swapon $d/knoppix.swp 2>/dev/null; then
-						echo "${BLUE}Using KNOPPIX swapfile ${MAGENTA}$d/knoppix.swp${BLUE}.${NORMAL}"
+					if swapon $d/$FLL_LIVE_USER.swp 2>/dev/null; then
+						echo "${BLUE}Using swapfile ${MAGENTA}$d/$FLL_LIVE_USER.swp${BLUE}.${NORMAL}"
 						mount -o remount,ro $d 2>/dev/null
-						fnew="$d/knoppix.swp swap swap defaults 0 0"
+						fnew="$d/$FLL_LIVE_USER.swp swap swap defaults 0 0"
 						stringinfile "$fnew" "/etc/fstab" || echo "$fnew" >> /etc/fstab
 					else
 						umount $d
@@ -1502,14 +1548,14 @@ else
 fi
 
 # Search for custom background image for KDE/GNOME/X
-for i in /cdrom/KNOPPIX/background /usr/local/lib/kanotix; do
+for i in /cdrom/$FLL_IMAGE_DIR/background /usr/local/lib/$FLL_DISTRO_NAME_LC; do
 	for j in jpg png gif; do
 		BACKGROUND="$i.$j"
 		[ -e "$BACKGROUND" ] && break 2
 	done
 done
 
-echo 'BACKGROUND="'"$BACKGROUND"'"' >> /etc/sysconfig/knoppix
+echo 'BACKGROUND="'"$BACKGROUND"'"' >> $FLL_SYSCONFIG
 
 findfile(){
 	FOUND=""
@@ -1577,44 +1623,45 @@ getfilepath(){
 	[ -z "$filepath" ] && filepath="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\)\\///)"
 }
 
-if [ ! "$INSTALLED" == "yes" ]; then
+if [ "$FLL_DISTRO_MODE" == "live" ]; then
 	for unioncheat in unionro unionrw unionfs ; do
 		if checkbootparam "$unioncheat"; then
-			[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/KNOPPIX none /KNOPPIX && UNIONMADE="yes" >/dev/null
+			[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=$FLL_UNION_TARGET none $FLL_UNION_TARGET && UNIONMADE="yes" >/dev/null
 			echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
-			UNIONMNTOPT=""
-			[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="-o ro"
+			UNIONMNTOPT="$FLL_UNION_OPTIONS"
+			[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="ro"
+			[ "$unioncheat" == "unionrw" ] && UNIONMNTOPT="rw"
 			MYPARAM="$(getbootparam "$unioncheat")"
-			[ "$unioncheat" == "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
+			[ "$unioncheat" == "unionfs" ] && MYPARAM="$FLL_UNION_SOURCE/$unioncheat" && mkdir -p $MYPARAM
 			getfiledev
 			if [ "$filedev" ]; then
 				if grep $filedev /etc/fstab 2>&1>/dev/null && ! grep $filedev /proc/mounts 2>&1>/dev/null; then
-					mount $UNIONMNTOPT $filedev >/dev/null
+					mount -o $UNIONMNTOPT $filedev >/dev/null
 					getfilepath
 					MYPARAM="$(grep $filedev /etc/fstab | awk '{ print $2 }' -)"
 					MYPARAM="$MYPARAM/$filepath"
 				else
 					if ! grep $filedev /proc/mounts; then
 						mkdir -p /tmp/$unioncheat >/dev/null
-						mount $UNIONMNTOPT $filedev /tmp/$unioncheat >/dev/null
+						mount -o $UNIONMNTOPT $filedev $FLL_UNION_SOURCE/$unioncheat >/dev/null
 						getfilepath
-						MYPARAM="/ramdisk/var/tmp/$unioncheat/$filepath"
+						MYPARAM="$FLL_UNION_SOURCE/$unioncheat/$filepath"
 					else
 						getfilepath
 						MYPARAM="$(grep $filedev /proc/mounts | awk '{ print $2 }' -)"
-						grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro &>/dev/null && mount -o remount,rw $filedev $MYPARAM >/dev/null
+						grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro &>/dev/null && mount -o remount,$UNIONMNTOPT $filedev $MYPARAM >/dev/null
 						MYPARAM="$MYPARAM/$filepath"
 					fi
 				fi
 			fi
 			if [ -f "$MYPARAM" ]; then
-				mkdir -p /tmp/$unioncheat-loop >/dev/null
-				mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
-				MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
+				mkdir -p $FLL_UNION_SOURCE/$unioncheat-loop >/dev/null
+				mount -o loop,$UNIONMNTOPT $MYPARAM $FLL_UNION_SOURCE/$unioncheat-loop >/dev/null
+				MYPARAM="$FLL_UNION_SOURCE/$unioncheat-loop"
 			fi
-			[ "$MYPARAM" ] && /usr/local/sbin/unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
-			[ -z "$UNIONTIDY" ] && /usr/local/sbin/unionctl /KNOPPIX --mode /KNOPPIX ro > /dev/null && UNIONTIDY="yes"
-			[ "$UNIONMNTOPT" ] && /usr/local/sbin/unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
+			[ "$MYPARAM" ] && /usr/local/sbin/unionctl $FLL_UNION_TARGET --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
+			[ -z "$UNIONTIDY" ] && /usr/local/sbin/unionctl $FLL_UNION_TARGET --mode $FLL_UNION_TARGET ro > /dev/null && UNIONTIDY="yes"
+			[ "$UNIONMNTOPT" ] && /usr/local/sbin/unionctl $FLL_UNION_TARGET --mode $MYPARAM ro > /dev/null
 		fi
 	done
 fi
@@ -1640,7 +1687,7 @@ if [ -n "$HOMEDIR" ]; then
 			MYHOMEDIR="$HOMEDIR"
 			;;
 		[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-			MYHOMEDIR="$(findfile knoppix.img)"
+			MYHOMEDIR="$(findfile $FLL_LIVE_USER.img)"
 			MYHOMEDEVICE="${MYHOMEDIR##/mnt/}"
 			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
 			MYHOMEMOUNTPOINT="/mnt/${MYHOMEDEVICE##/dev/}"
@@ -1654,38 +1701,38 @@ fi
 
 if [ -n "$MYHOMEDIR" ]; then
 	if trymount "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"; then
-		[ -f "$MYHOMEMOUNTPOINT/knoppix.img" ] && MYHOMEDIR="$MYHOMEMOUNTPOINT/knoppix.img"
+		[ -f "$MYHOMEMOUNTPOINT/$FLL_LIVE_USER.img" ] && MYHOMEDIR="$MYHOMEMOUNTPOINT/$FLL_LIVE_USER.img"
 		while read device mountpoint fs relax; do
 			case "$mountpoint" in
 				*$MYHOMEMOUNTPOINT*)
 					case "$fs" in 
 						*[Nn][Tt][Ff][Ss]*)
 							umount "$MYHOMEMOUNTPOINT"; echo " ${RED}ERROR: WON'T MOUNT NTFS FILESYSTEM ON $MYHOMEDEVICE READ/WRITE!"
-							break
+							echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/$FLL_LIVE_USER.img.${NORMAL}"					break
 							;;
 						*[Ff][Aa][Tt]*)
 							# Note: This currently won't work with encrypted partitions
-							umount "$MYHOMEMOUNTPOINT"; mount -t vfat -o rw,uid=knoppix,gid=knoppix,umask=002 "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
+							umount "$MYHOMEMOUNTPOINT"; mount -t vfat -o rw,uid=$FLL_LIVE_USER,gid=$FLL_LIVE_USER,umask=002 "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
 							if [ ! -f "$MYHOMEDIR" ]; then
-								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/knoppix (missing socket/symlink support).${NORMAL}"
-								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/knoppix.img.${NORMAL}"
+								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/$FLL_LIVE_USER (missing socket/symlink support).${NORMAL}"
+								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/$FLL_LIVE_USER.img.${NORMAL}"
 							fi
 						;;
 					esac
 					if mount -o remount,rw "$MYHOMEMOUNTPOINT"; then
-						echo -n " ${GREEN}Mounting ${YELLOW}$MYHOMEDIR${GREEN} as ${YELLOW}/home/knoppix${GREEN}... "
+						echo -n " ${GREEN}Mounting ${YELLOW}$MYHOMEDIR${GREEN} as ${YELLOW}/home/$FLL_LIVE_USER${GREEN}... "
 						if [ -f "$MYHOMEDIR" ]; then
-							# It's a loopback file, mount it over the /home/knoppix directory
-							trymount "$MYHOMEDIR" /home/knoppix
+							# It's a loopback file, mount it over the /home/$FLL_LIVE_USER directory
+							trymount "$MYHOMEDIR" /home/$FLL_LIVE_USER
 							RC="$?"
-							[ "$RC" = "0" ] && ERROR="$(mount -o remount,rw /home/knoppix 2>&1)"
+							[ "$RC" = "0" ] && ERROR="$(mount -o remount,rw /home/$FLL_LIVE_USER 2>&1)"
 							RC="$?"
 						else
 							# Do a --bind mount
-							ERROR="$(mount --bind "$MYHOMEDIR" /home/knoppix 2>&1)"
+							ERROR="$(mount --bind "$MYHOMEDIR" /home/$FLL_LIVE_USER 2>&1)"
 							RC="$?"
 						fi
-						[ "$RC" = "0" ] && echo "${GREEN}/home/knoppix mounted OK.${NORMAL}" || { echo "${RED}FAILED."; echo "$ERROR${NORMAL}"; }
+						[ "$RC" = "0" ] && echo "${GREEN}/home/$FLL_LIVE_USER mounted OK.${NORMAL}" || { echo "${RED}FAILED."; echo "$ERROR${NORMAL}"; }
 					fi
 					break
 					;;
@@ -1697,7 +1744,7 @@ EOT
 	fi
 
 	# Check for configuration floppy add-on if not running from HD
-	if [ -z "$INSTALLED" -a -n "$MYCONF" ]; then
+	if [ "$FLL_DISTRO_MODE" = "live" -a -n "$MYCONF" ]; then
 		FOUND_CONFIG=""
 		if [ -n "$MYCONFDIR" ]; then
 		case "$MYCONFDIR" in
@@ -1713,7 +1760,7 @@ EOT
 				MYCONFMOUNTPOINT="/mnt/${MYCONFDEVICE##/dev/}"
 				;;
 			[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-				MYCONFDIR="$(findfile knoppix.sh)"
+				MYCONFDIR="$(findfile $FLL_LIVE_USER.sh)"
 				if [ -n "$MYCONFDIR" ]; then
 					MYCONFDEVICE="${MYCONFDIR##/mnt/}"
 					MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
@@ -1736,9 +1783,9 @@ EOT
 	fi
 
 	if [ -z "$FOUND_CONFIG" ]; then
-		echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for KNOPPIX configuration files...${NORMAL}"
+		echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for configuration files...${NORMAL}"
 		if trymount "$MYCONFDEVICE" "$MYCONFMOUNTPOINT"; then
-			MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+			MYCONFIG="$(ls -1d $MYCONFDIR/ | grep -i $FLL_LIVE_USER.sh 2>/dev/null)"
 			if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
 				echo ""
 				FOUND_CONFIG="yes"
@@ -1753,14 +1800,14 @@ EOT
 	[ -n "$FOUND_CONFIG" ] || echo " ${BLUE}Not present.${NORMAL}"
 fi
 
-# Check for extra shellscript on CD-Rom (/cdrom/KNOPPIX/knoppix.sh)
-MYCONFIG="$(ls -1d /cdrom/KNOPPIX/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+# Check for extra shellscript on CD-Rom (/cdrom/$FLL_IMAGE_DIR/$FLL_DISTRO_NAME.sh)
+MYCONFIG="$(ls -1d /cdrom/$FLL_IMAGE_DIR/ | grep -i $FLL_DISTRO_NAME.sh 2>/dev/null)"
 if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
 	echo ""
 	FOUND_CONFIG="yes"
-	echo " ${GREEN}KNOPPIX Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
+	echo " ${GREEN}Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 	echo "6" > /proc/sys/kernel/printk
-	source "$MYCONFIG" /cdrom/KNOPPIX || true
+	source "$MYCONFIG" /cdrom/$FLL_IMAGE_DIR || true
 	echo "0" > /proc/sys/kernel/printk
 fi
 
@@ -1849,7 +1896,7 @@ setkeycodes e00a 89 e008 90 &>/dev/null
 # captive live fix
 if [ -L /var/lib/captive/ext2fsd.sys ]; then
 	rm -f /var/lib/captive/ext2fsd.sys
-	cp /KNOPPIX/var/lib/captive/ext2fsd.sys /var/lib/captive
+	cp $FLL_MOUNT_POINT/var/lib/captive/ext2fsd.sys /var/lib/captive
 fi
 
 update_progress 100

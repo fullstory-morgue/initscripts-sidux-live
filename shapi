@@ -1,0 +1,38 @@
+# shapi
+# A shared shell api
+
+# Simple Prompts
+#shapi.dialog.yesno title text height width help default
+#shapi.dialog.yesno.warning title text height width help default
+#shapi.dialog.textinput title text height width init help default
+#shapi.dialog.password title text height width default
+#shapi.dialog.time title text height width [ hour minute second ]
+#shapi.dialog.calendar title text height width [ day month year ]
+
+# File/Directories
+#shapi.dialog.fselect title height width help default
+#shapi.dialog.dselect title height width help default
+
+# Menus
+#shapi.dialog.menu title text height width menu-height help default [ tag item ] ...
+#shapi.dialog.menu.radio title text height width menu-height help default [ tag item status ] ...
+#shapi.dialog.menu.check title text height width menu-height help default [ tag item status ] ...
+
+# Feedback
+#shapi.dialog.error title text height width help
+#shapi.dialog.message title text height width help
+#shapi.dialog.message.bg title text height width help
+#shapi.dialog.gauge title text height width help default
+#shapi.dialog.watchfile title height width file
+#shapi.dialog.watchfile.bg title height width file
+#shapi.dialog.showfile title height width file
+
+# Other dialogs
+#shapi.dialog.form title text height width formheight [ label y x item y x flen ilen ] ...
+#shapi.dialog.pause title text height width seconds
+
+#shapi.su command
+
+#shapi.var.load file
+#shapi.var.write file [ varname ] ...
+#shapi.var.update file [ varname value ] ...
