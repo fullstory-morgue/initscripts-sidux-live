@@ -1612,9 +1612,9 @@ if [ ! "$INSTALLED" == "yes" ]; then
 				mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
 				MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
 			fi
-			[ "$MYPARAM" ] && /usr/local/sbin/unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
-			[ -z "$UNIONTIDY" ] && /usr/local/sbin/unionctl /KNOPPIX --mode /KNOPPIX ro > /dev/null && UNIONTIDY="yes"
-			[ "$UNIONMNTOPT" ] && /usr/local/sbin/unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
+			[ "$MYPARAM" ] && unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
+			[ -z "$UNIONTIDY" ] && unionctl /KNOPPIX --mode /KNOPPIX ro > /dev/null && UNIONTIDY="yes"
+			[ "$UNIONMNTOPT" ] && unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
 		fi
 	done
 fi

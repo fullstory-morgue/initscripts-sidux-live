@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.2) unstable; urgency=low
+
+  * adapt for debian sysvinit 2.86.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon,  5 Sep 2005 00:35:19 +0200
+
 initscripts-kanotix-live (0.1) unstable; urgency=low
 
   * Initial release.

@@ -40,7 +40,7 @@ case "$0" in
 	*reboot)
 		message="${GREEN}Preparing for reboot...${NORMAL}"
 		command="reboot"
-		options="-r -d -i -f"
+		options="-d -i -f"
 		;;
 	*)
 		echo "$0: call this script as \"halt\" or \"reboot\" please!"
@@ -111,12 +111,10 @@ case "$CMDLINE" in *noprompt*) NOPROMPT="yes"; ;; esac
 
 CDROM="$(awk '/ \/cdrom /{print $1;exit 0;}' /proc/mounts)"
 
-# Note: This needs the KNOPPIX version of static "init" which contains
-# the "halt" command plus rmmod/umount calls
+# This uses standard sysvinit
 FINALCMD="/sbin/$command"
 if [ -z "$INSTALLED" ]; then
-	[ -x /etc/init ] || cp -p /sbin/init /etc/
-	[ -x /etc/init ] && FINALCMD="/etc/init"
+	[ -x /etc/$command ] || cp -p /sbin/$command /etc/ 
 fi
 
 # Turn off swap, then unmount file systems.
