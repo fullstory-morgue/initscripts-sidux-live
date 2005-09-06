@@ -1167,6 +1167,8 @@ checkbootparam nosound &>/dev/null && NOAUDIO="yes"
 NOSCSI=""; HWSETUP_NOSCSI=""
 checkbootparam noscsi  &>/dev/null && NOSCSI="yes"
 [ -n "$NOSCSI" ] && HWSETUP_NOSCSI="-s"
+# load psmouse module
+modprobe psmouse &>/dev/null
 if checkbootparam "nohwsetup"; then
 	echo "${BLUE}Loading hardware profile from ${MAGENTA}/etc/modules${BLUE}.${NORMAL}"
 	/etc/init.d/modutils-knoppix start &>/dev/null

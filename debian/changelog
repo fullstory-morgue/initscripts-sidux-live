@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.3) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.2.1) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * add yaird support (load psmouse explicity).
+  * suggest unionfs-utils.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon,  5 Sep 2005 00:39:07 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue,  6 Sep 2005 16:52:06 +0200
 
 initscripts-kanotix-live (0.2) unstable; urgency=low
 

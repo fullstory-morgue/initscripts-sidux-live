@@ -8,7 +8,7 @@ Standards-Version: 3.6.2
 Package: initscripts-kanotix-live
 Architecture: all
 Depends: distro-defaults, usleep-kanotix, rebuildfstab-kanotix, hotplug-kanotix, fix-cdrom, sysvinit (>= 2.86), sysv-rc (< 9.00)
-Suggests: avm-firmware, drdsl, ltmodem-detect, dvb-detect
+Suggests: avm-firmware, drdsl, ltmodem-detect, dvb-detect, unionfs-utils
 Replaces: sysvinit (<< 2.84-186kanotix0.28)
 Description: KANOTIX initscripts for live CDs
  Live specific initscripts for hardware detection and shutdown functions 
