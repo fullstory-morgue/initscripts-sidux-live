@@ -1,6 +1,21 @@
 # shapi
 # A shared shell api
 
+shapi.dialog.setup (){
+ if [ -z "$SHAPI_DIALOG" ] ; then
+  # Determine which dialog to use in which situation:
+  # Xdialog (in all other cases)
+  SHAPI_DIALOG=Xdialog
+  # kdialog (in case there is no console available and we are running KDE)
+  pidof kdesktop >/dev/null && SHAPI_DIALOG=kdialog 
+  # GNOME
+  pidof gnome-panel >/dev/null && SHAPI_DIALOG=zenity 
+  # dialog (in case there is a console available)
+  SHAPI_GUIMODE=$(tty)
+  ( echo $SHAPI_GUIMODE | grep /dev/tty[:digit:] >/dev/null ) && SHAPI_DIALOG=dialog
+fi
+}
+
 # Simple Prompts
 #shapi.dialog.yesno title text height width help default
 #shapi.dialog.yesno.warning title text height width help default
@@ -21,6 +36,24 @@
 # Feedback
 #shapi.dialog.error title text height width help
 #shapi.dialog.message title text height width help
+shapi.msgbox(){
+ shapi.dialog.setup
+ case $SHAPI_DIALOG in
+ zenity)
+  SHAPI_DIALOG_ARG="--info --title=\"$1\" --text \"$2\""
+  [ -n "$3" ] && SHAPI_DIALOG_ARG="$SHAPI_DIALOG_ARG --height=$3
+  [ -n "$4" ] && SHAPI_DIALOG_ARG="$SHAPI_DIALOG_ARG --width=$4
+  ;;
+ kdialog)
+  $SHAPI_DIALOG_ARG="--msgbox \"$2\" --caption \"Message\" --title \"$1\""
+  ;;
+ *)
+  $SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"$2\"\" $3 $4"
+  ;;
+ esac
+ $SHAPI_DIALOG $SHAPI_DIALOG_ARG
+}
+
 #shapi.dialog.message.bg title text height width help
 #shapi.dialog.gauge title text height width help default
 #shapi.dialog.watchfile title height width file
