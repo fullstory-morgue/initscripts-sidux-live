@@ -1184,10 +1184,16 @@ update_progress 60
 
 # scan cdrom drives
 [ -x /usr/sbin/fix-cdrom ] && /usr/sbin/fix-cdrom
+
 # activate PC Speaker
 modprobe pcspkr &>/dev/null
+
+# load capability LSM (needed for hal)
+modprobe capability &>/dev/null
+
 # activate input driver for char event devices
 modprobe evdev &>/dev/null
+
 # dwl520e1 detection
 rm -f /etc/modprobe.d/dwl520e1
 if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
