@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.2.3) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.2.3) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * add AMD Turion64 pwoernow detection.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 19 Sep 2005 03:39:16 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed,  5 Oct 2005 15:59:00 +0200
 
 initscripts-kanotix-live (0.2.2) unstable; urgency=low
 

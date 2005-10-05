@@ -1823,6 +1823,7 @@ if ! checkbootparam "nopowernow"; then
 	grep -iq "Mobile AMD Athlon(tm) XP" /proc/cpuinfo && POWERNOW="powernow-k7"
 	grep -iq "AMD Athlon(tm) 64 Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
 	grep -iq "AMD Sempron(tm) Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
+	grep -iq "AMD Turion(tm) 64" /proc/cpuinfo && POWERNOW="powernow-k8"
 	grep -iq "Intel(R) Pentium(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
 	#grep -iq "Intel(R) Celeron(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
 	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && POWERNOW="speedstep-ich"
