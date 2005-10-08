@@ -1,25 +1,47 @@
 # shapi
 # A shared shell api
 
-shapi.dialog.setup (){
- if [ -z "$SHAPI_DIALOG" ] ; then
-  # Determine which dialog to use in which situation:
-  # Xdialog (in all other cases)
-  SHAPI_DIALOG=Xdialog
+shapi.setup (){
+ if [ -z "$SHAPI_ENV" ] ; then
+  shapi.detect.env
+ fi
+ case $SHAPI_ENV in
+ gnome)
+  SHAPI_DIALOG="zenity"
+  ;;
+ kde)
+  SHAPI_DIALOG="kdialog"
+  ;;
+ X)
+  SHAPI_DIALOG="Xdialog"
+  ;;
+ tty)
+  SHAPI_DIALOG="dialog"
+  ;;
+ esac
+ [ -z "$(which SHAPI_DIALOG)" ] && echo "error: I am running in $SHAPI_ENV but I cannot find $SHAPI_DIALOG" && exit
+}
+
+shapi.detect.env (){
+ if [ -z "$SHAPI_ENV" ]; then
+  SHAPI_ENV=X
   # kdialog (in case there is no console available and we are running KDE)
-  pidof kdesktop >/dev/null && SHAPI_DIALOG=kdialog 
+  pidof kdesktop >/dev/null && SHAPI_ENV="kde"
   # GNOME
-  pidof gnome-panel >/dev/null && SHAPI_DIALOG=zenity 
+  pidof gnome-panel >/dev/null && SHAPI_ENV="gnome"
   # dialog (in case there is a console available)
-  SHAPI_GUIMODE=$(tty)
-  ( echo $SHAPI_GUIMODE | grep /dev/tty[:digit:] >/dev/null ) && SHAPI_DIALOG=dialog
-fi
+  ( echo $(tty) | grep /dev/tty[:digit:] >/dev/null ) && SHAPI_ENV="tty"
+ fi
 }
 
 # Simple Prompts
 #shapi.dialog.yesno title text height width help default
+# TARGET
+
 #shapi.dialog.yesno.warning title text height width help default
 #shapi.dialog.textinput title text height width init help default
+# TARGET
+
 #shapi.dialog.password title text height width default
 #shapi.dialog.time title text height width [ hour minute second ]
 #shapi.dialog.calendar title text height width [ day month year ]
@@ -35,11 +57,13 @@ fi
 
 # Feedback
 #shapi.dialog.error title text height width help
+# TARGET
+
 #shapi.dialog.message title text height width help
 shapi.msgbox(){
  shapi.dialog.setup
  case $SHAPI_DIALOG in
- zenity)
+ gnome)
   SHAPI_DIALOG_ARG="--info --title=\"$1\" --text \"$2\""
   [ -n "$3" ] && SHAPI_DIALOG_ARG="$SHAPI_DIALOG_ARG --height=$3
   [ -n "$4" ] && SHAPI_DIALOG_ARG="$SHAPI_DIALOG_ARG --width=$4
@@ -65,6 +89,7 @@ shapi.msgbox(){
 #shapi.dialog.pause title text height width seconds
 
 #shapi.su command
+# TARGET
 
 #shapi.var.load file
 #shapi.var.write file [ varname ] ...
