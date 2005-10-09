@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.2.4) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.2.4) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * try to load fuse for klik.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed,  5 Oct 2005 16:01:19 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun,  9 Oct 2005 02:23:38 +0200
 
 initscripts-kanotix-live (0.2.3) unstable; urgency=low
 
