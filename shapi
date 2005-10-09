@@ -1,6 +1,7 @@
 #!/bin/sh
 # shapi
 # A shared shell api
+# (C) GPL v2 Niall Walsh 2005
 
 shapi_dialog_setup(){
  if [ -z "$SHAPI_ENV" ] ; then
@@ -20,7 +21,21 @@ shapi_dialog_setup(){
   SHAPI_DIALOG="dialog"
   ;;
  esac
- [ -z "$(which $SHAPI_DIALOG)" ] && echo "error: I am running in $SHAPI_ENV but I cannot find $SHAPI_DIALOG" && exit
+ if [ -z "$(which $SHAPI_DIALOG)" -a -n "$(which Xdialog)" ]; then
+  if [ "$SHAPI_ENV" = "gnome" -o "$SHAPI_ENV" = "kde" -o "$SHAPI_ENV" = "X" ]; then
+  # if SHAPI_DIALOG isn't found but we have Xdialog and are in X
+   SHAPI_DIALOG="Xdialog"
+  else
+  # no SHAPI_DIALOG or Xdialog
+   SHAPI_DIALGO="dialog"
+  fi
+ fi
+ if [ -z "$(which $SHAPI_DIALOG)" ]; then
+  if [ -z "$(which dialog)" ]; then
+   SHAPI_DIALOG="echo 'no dialog found!'"
+  fi
+ fi
+ [ -n "$SHAPI_DEBUG" ] && echo "IN shapi_dialog_setup $SHAPI_DIALOG" >> $SHAPI_DEBUG
  echo "$SHAPI_DIALOG"
 }
 export -f shapi_dialog_setup
@@ -35,6 +50,7 @@ shapi_detect_env (){
   # dialog (in case there is a console available)
   ( echo $(tty) | grep /dev/tty[:digit:] >/dev/null ) && SHAPI_ENV="tty"
  fi
+ [ -n "$SHAPI_DEBUG" ] && echo "IN shapi_detect_env $SHAPI_ENV" >> $SHAPI_DEBUG
  echo "$SHAPI_ENV"
 }
 export -f shapi_detect_env
@@ -43,15 +59,16 @@ shapi_dialog_geometry(){
 # shapi_dialog_geometry height width
  case $(shapi_dialog_setup) in
  gnome)
-  [ -n "$3" ] && SHAPI_DIALOG_GEOMETRY="--height=$1"
-  [ -n "$4" ] && SHAPI_DIALOG_GEOMETRY="$SHAPI_DIALOG_GEOMETRY --width=$2"
+  [ -n "$1" ] && SHAPI_DIALOG_GEOMETRY="--height=$1"
+  [ -n "$2" ] && SHAPI_DIALOG_GEOMETRY="$SHAPI_DIALOG_GEOMETRY --width=$2"
  ;;
  kdialog)
  ;;
  *)
-  [ -n "$1 $2" ] && SHAPI_DIALOG_GEOMETRY="$1 $2"
+  [ -n "$1" -a -n "$2" ] && SHAPI_DIALOG_GEOMETRY="$1 $2"
  ;;
  esac
+ [ -n "$SHAPI_DEBUG" ] && echo "IN shapi_dialog_geometry $SHAPI_DIALOG_GEOMETRY" >> $SHAPI_DEBUG
  echo "$SHAPI_DIALOG_GEOMETRY"
 }
 export -f shapi_dialog_geometry
@@ -70,10 +87,10 @@ shapi_dialog_yesno(){
   SHAPI_DIALOG_ARG="--yesno \"$2\" --title \"$1\""
   ;;
  *)
-  SHAPI_DIALOG_ARG="--title \"$1\" --yesno \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
+  SHAPI_DIALOG_ARG="--title \"$1\" --yesno \"$2\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  esac
- echo "IN yesno DIALOG $SHAPI_DIALOG ARG $SHAPI_DIALOG_ARG"
+ [ -n "$SHAPI_DEBUG" ] && echo "IN shapi_dialog_yesno D: $SHAPI_DIALOG A: $SHAPI_DIALOG_ARG" >> $SHAPI_DEBUG
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
 export -f shapi_dialog_yesno
@@ -95,6 +112,7 @@ shapi_dialog_textinput(){
   SHAPI_DIALOG_ARG="--title \"$1\" --inputbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY" "$6"
   ;;
  esac
+ [ -n "$SHAPI_DEBUG" ] && echo "IN shapi_dialog_textinput D: $SHAPI_DIALOG A: $SHAPI_DIALOG_ARG" >> $SHAPI_DEBUG
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
 export -f shapi_dialog_textinput
@@ -128,6 +146,7 @@ shapi_dialog_error(){
   SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"ERROR: $2\"\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  esac
+ [ -n "$SHAPI_DEBUG" ] && echo "IN shapi_dialog_error D: $SHAPI_DIALOG A: $SHAPI_DIALOG_ARG" >> $SHAPI_DEBUG
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
 export -f shapi_dialog_error
@@ -147,6 +166,7 @@ shapi_dialog_message(){
   SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  esac
+ [ -n "$SHAPI_DEBUG" ] && echo "IN shapi_dialog_message D: $SHAPI_DIALOG A: $SHAPI_DIALOG_ARG" >> $SHAPI_DEBUG
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
 export -f shapi_dialog_message
