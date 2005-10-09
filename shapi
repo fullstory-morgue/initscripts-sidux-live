@@ -1,9 +1,10 @@
+#!/bin/sh
 # shapi
 # A shared shell api
 
-shapi.dialog.setup (){
+shapi_dialog_setup(){
  if [ -z "$SHAPI_ENV" ] ; then
-  shapi.detect.env
+  SHAPI_ENV=$(shapi_detect_env)
  fi
  case $SHAPI_ENV in
  gnome)
@@ -19,10 +20,12 @@ shapi.dialog.setup (){
   SHAPI_DIALOG="dialog"
   ;;
  esac
- [ -z "$(which SHAPI_DIALOG)" ] && echo "error: I am running in $SHAPI_ENV but I cannot find $SHAPI_DIALOG" && exit
+ [ -z "$(which $SHAPI_DIALOG)" ] && echo "error: I am running in $SHAPI_ENV but I cannot find $SHAPI_DIALOG" && exit
+ echo "$SHAPI_DIALOG"
 }
+export -f shapi_dialog_setup
 
-shapi.detect.env (){
+shapi_detect_env (){
  if [ -z "$SHAPI_ENV" ]; then
   SHAPI_ENV=X
   # kdialog (in case there is no console available and we are running KDE)
@@ -32,11 +35,13 @@ shapi.detect.env (){
   # dialog (in case there is a console available)
   ( echo $(tty) | grep /dev/tty[:digit:] >/dev/null ) && SHAPI_ENV="tty"
  fi
+ echo "$SHAPI_ENV"
 }
+export -f shapi_detect_env
 
-shapi.dialog.geometry(){
-# shapi.dialog.geometry height width
- case $SHAPI_DIALOG in
+shapi_dialog_geometry(){
+# shapi_dialog_geometry height width
+ case $(shapi_dialog_setup) in
  gnome)
   [ -n "$3" ] && SHAPI_DIALOG_GEOMETRY="--height=$1"
   [ -n "$4" ] && SHAPI_DIALOG_GEOMETRY="$SHAPI_DIALOG_GEOMETRY --width=$2"
@@ -44,116 +49,123 @@ shapi.dialog.geometry(){
  kdialog)
  ;;
  *)
-  SHAPI_DIALOG_GEOMETRY "$1 $2"
+  [ -n "$1 $2" ] && SHAPI_DIALOG_GEOMETRY="$1 $2"
  ;;
  esac
+ echo "$SHAPI_DIALOG_GEOMETRY"
 }
+export -f shapi_dialog_geometry
 
 # Simple Prompts
-shapi.dialog.yesno(){
-#shapi.dialog.yesno title text height width help
+shapi_dialog_yesno(){
+#shapi_dialog_yesno title text height width help
 # TARGET
- shapi.dialog.setup
- shapi.dialog.geometry $3 $4
+ SHAPI_DIALOG=$(shapi_dialog_setup)
+ SHAPI_DIALOG_GEOMETRY=$(shapi_dialog_geometry $3 $4)
  case $SHAPI_DIALOG in
  zenity)
   SHAPI_DIALOG_ARG="--question --title=\"$1\" --text \"$2\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  kdialog)
-  $SHAPI_DIALOG_ARG="--yesno \"$2\" --title \"$1\""
+  SHAPI_DIALOG_ARG="--yesno \"$2\" --title \"$1\""
   ;;
  *)
-  $SHAPI_DIALOG_ARG="--title \"$1\" --yesno \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
+  SHAPI_DIALOG_ARG="--title \"$1\" --yesno \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  esac
+ echo "IN yesno DIALOG $SHAPI_DIALOG ARG $SHAPI_DIALOG_ARG"
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
+export -f shapi_dialog_yesno
 
-#shapi.dialog.yesno.warning title text height width help default
+#shapi_dialog_yesno_warning title text height width help default
 
-shapi.dialog.textinput(){
-# shapi.dialog.textinput title text height width help init
- shapi.dialog.setup
- shapi.dialog.geometry $3 $4
+shapi_dialog_textinput(){
+# shapi_dialog_textinput title text height width help init
+ SHAPI_DIALOG=$(shapi_dialog_setup)
+ SHAPI_DIALOG_GEOMETRY=$(shapi_dialog_geometry $3 $4)
  case $SHAPI_DIALOG in
  zenity)
   SHAPI_DIALOG_ARG="--entry --title=\"$1\" --text \"$2\" --entry-text=\"$6\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  kdialog)
-  $SHAPI_DIALOG_ARG="--inputbox \"$2\" \"$6\" --title \"$1\""
+  SHAPI_DIALOG_ARG="--inputbox \"$2\" \"$6\" --title \"$1\""
   ;;
  *)
-  $SHAPI_DIALOG_ARG="--title \"$1\" --inputbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY" "$6"
+  SHAPI_DIALOG_ARG="--title \"$1\" --inputbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY" "$6"
   ;;
  esac
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
+export -f shapi_dialog_textinput
 
-#shapi.dialog.password title text height width default
-#shapi.dialog.time title text height width [ hour minute second ]
-#shapi.dialog.calendar title text height width [ day month year ]
+#shapi_dialog_password title text height width default
+#shapi_dialog_time title text height width [ hour minute second ]
+#shapi_dialog_calendar title text height width [ day month year ]
 
 # File/Directories
-#shapi.dialog.fselect title height width help default
-#shapi.dialog.dselect title height width help default
+#shapi_dialog_fselect title height width help default
+#shapi_dialog_dselect title height width help default
 
 # Menus
-#shapi.dialog.menu title text height width menu-height help default [ tag item ] ...
-#shapi.dialog.menu.radio title text height width menu-height help default [ tag item status ] ...
-#shapi.dialog.menu.check title text height width menu-height help default [ tag item status ] ...
+#shapi_dialog_menu title text height width menu-height help default [ tag item ] ...
+#shapi_dialog_menu_radio title text height width menu-height help default [ tag item status ] ...
+#shapi_dialog_menu_check title text height width menu-height help default [ tag item status ] ...
 
 # Feedback
-shapi.dialog.error(){
-# shapi.dialog.error title text height width help
- shapi.dialog.setup
- shapi.dialog.geometry $3 $4
+shapi_dialog_error(){
+# shapi_dialog_error title text height width help
+ SHAPI_DIALOG=$(shapi_dialog_setup)
+ SHAPI_DIALOG_GEOMETRY=$(shapi_dialog_geometry $3 $4)
  case $SHAPI_DIALOG in
  zenity)
   SHAPI_DIALOG_ARG="--error --title=\"$1\" --text \"$2\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  kdialog)
-  $SHAPI_DIALOG_ARG="--error \"$2\" --title \"$1\""
+  SHAPI_DIALOG_ARG="--error \"$2\" --title \"$1\""
   ;;
  *)
-  $SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"ERROR: $2\"\" $SHAPI_DIALOG_GEOMETRY"
+  SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"ERROR: $2\"\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  esac
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
+export -f shapi_dialog_error
 
-shapi.dialog.message(){
-# shapi.dialog.message title text height width help
- shapi.dialog.setup
- shapi.dialog.geometry $3 $4
+shapi_dialog_message(){
+# shapi_dialog_message title text height width help
+ SHAPI_DIALOG=$(shapi_dialog_setup)
+ SHAPI_DIALOG_GEOMETRY=$(shapi_dialog_geometry $3 $4)
  case $SHAPI_DIALOG in
  zenity)
   SHAPI_DIALOG_ARG="--info --title=\"$1\" --text \"$2\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  kdialog)
-  $SHAPI_DIALOG_ARG="--msgbox \"$2\" --title \"$1\""
+  SHAPI_DIALOG_ARG="--msgbox \"$2\" --title \"$1\""
   ;;
  *)
-  $SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
+  SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  esac
  $SHAPI_DIALOG $SHAPI_DIALOG_ARG
 }
+export -f shapi_dialog_message
 
-#shapi.dialog.message.bg title text height width help
-#shapi.dialog.gauge title text height width help default
-#shapi.dialog.watchfile title height width file
-#shapi.dialog.watchfile.bg title height width file
-#shapi.dialog.showfile title height width file
+#shapi_dialog_message_bg title text height width help
+#shapi_dialog_gauge title text height width help default
+#shapi_dialog_watchfile title height width file
+#shapi_dialog_watchfile_bg title height width file
+#shapi_dialog_showfile title height width file
 
 # Other dialogs
-#shapi.dialog.form title text height width formheight [ label y x item y x flen ilen ] ...
-#shapi.dialog.pause title text height width seconds
+#shapi_dialog_form title text height width formheight [ label y x item y x flen ilen ] ...
+#shapi_dialog_pause title text height width seconds
 
-#shapi.su command
+#shapi_su command
 # TARGET
 
-#shapi.var.load file
-#shapi.var.write file [ varname ] ...
-#shapi.var.update file [ varname value ] ...
+#shapi_var_load file
+#shapi_var_write file [ varname ] ...
+#shapi_var_update file [ varname value ] ...
 
-#shapi.download file ... [ target ]
+#shapi_download file ... [ target ]
