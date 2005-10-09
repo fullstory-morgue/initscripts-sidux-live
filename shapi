@@ -50,8 +50,24 @@ shapi.dialog.geometry(){
 }
 
 # Simple Prompts
-#shapi.dialog.yesno title text height width help default
+shapi.dialog.yesno(){
+#shapi.dialog.yesno title text height width help
 # TARGET
+ shapi.dialog.setup
+ shapi.dialog.geometry $3 $4
+ case $SHAPI_DIALOG in
+ zenity)
+  SHAPI_DIALOG_ARG="--question --title=\"$1\" --text \"$2\" $SHAPI_DIALOG_GEOMETRY"
+  ;;
+ kdialog)
+  $SHAPI_DIALOG_ARG="--yesno \"$2\" --title \"$1\""
+  ;;
+ *)
+  $SHAPI_DIALOG_ARG="--title \"$1\" --yesno \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
+  ;;
+ esac
+ $SHAPI_DIALOG $SHAPI_DIALOG_ARG
+}
 
 #shapi.dialog.yesno.warning title text height width help default
 
@@ -64,7 +80,7 @@ shapi.dialog.textinput(){
   SHAPI_DIALOG_ARG="--entry --title=\"$1\" --text \"$2\" --entry-text=\"$6\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  kdialog)
-  $SHAPI_DIALOG_ARG="--inputbox \"$2\" \"$6\" --caption \"Message\" --title \"$1\""
+  $SHAPI_DIALOG_ARG="--inputbox \"$2\" \"$6\" --title \"$1\""
   ;;
  *)
   $SHAPI_DIALOG_ARG="--title \"$1\" --inputbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY" "$6"
@@ -96,7 +112,7 @@ shapi.dialog.error(){
   SHAPI_DIALOG_ARG="--error --title=\"$1\" --text \"$2\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  kdialog)
-  $SHAPI_DIALOG_ARG="--error \"$2\" --caption \"Message\" --title \"$1\""
+  $SHAPI_DIALOG_ARG="--error \"$2\" --title \"$1\""
   ;;
  *)
   $SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"ERROR: $2\"\" $SHAPI_DIALOG_GEOMETRY"
@@ -114,7 +130,7 @@ shapi.dialog.message(){
   SHAPI_DIALOG_ARG="--info --title=\"$1\" --text \"$2\" $SHAPI_DIALOG_GEOMETRY"
   ;;
  kdialog)
-  $SHAPI_DIALOG_ARG="--msgbox \"$2\" --caption \"Message\" --title \"$1\""
+  $SHAPI_DIALOG_ARG="--msgbox \"$2\" --title \"$1\""
   ;;
  *)
   $SHAPI_DIALOG_ARG="--title \"$1\" --msgbox \"$2\"\" $SHAPI_DIALOG_GEOMETRY"
