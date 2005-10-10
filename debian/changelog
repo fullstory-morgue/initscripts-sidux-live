@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.2.6) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.2.6) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * stop using /bin/ash as live indicator.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 10 Oct 2005 21:32:09 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 10 Oct 2005 22:13:25 +0200
 
 initscripts-kanotix-live (0.2.5) unstable; urgency=low
 

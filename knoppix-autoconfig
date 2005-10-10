@@ -895,10 +895,6 @@ DESKTOP="$(getbootparam desktop 2>/dev/null)"
 # Allow only supported windowmanagers
 case "$DESKTOP" in gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk) ;; *) DESKTOP="kde"; ;; esac
 
-# Check if we are running from the Knoppix-CD or HD
-INSTALLED=""
-[ -e /KNOPPIX/bin/ash ] || INSTALLED="yes"
-
 # Set hostname
 hostname Kanotix
 
@@ -914,22 +910,8 @@ hwclock $UTC -s
 KERNEL="$(uname -r)"
 echo " ${GREEN}Running Linux Kernel ${YELLOW}$KERNEL${GREEN}.${NORMAL}"
 
-if [ -n "$INSTALLED" ]; then
-	echo "${BLUE}Running from HD, checking filesystems...${NORMAL}"
-	# We are running from HD, so a file system check is recommended
-	[ -f /etc/init.d/checkroot.sh ] && /etc/init.d/checkroot.sh
-	[ -f /etc/init.d/checkfs.sh ]   && /etc/init.d/checkfs.sh
-fi
-
 # / must be read-write in any case, starting from here
 mount -o remount,rw / 2>/dev/null
-
-if [ -n "$INSTALLED" ]; then
-	echo -n "${BLUE}Running from HD, regenerate ld.so.cache and modules.dep...${NORMAL}"
-	# Regenerate ld.so.cache and module dependencies on HD
-	ldconfig ; depmod -a 2>/dev/null
-	echo ""
-fi
 
 if checkbootparam "splash"; then
 	RES=$(fbresolution 2>/dev/null)
@@ -1537,20 +1519,6 @@ findfile(){
 	return 2
 }
 
-fstype(){
-	case "$(file -s $1)" in
-		*[Ff][Aa][Tt]*|*[Xx]86*)	echo "vfat";		return 0;;
-		*[Rr][Ee][Ii][Ss][Ee][Rr]4*)	echo "reiser4";		return 0;;
-		*[Rr][Ee][Ii][Ss][Ee][Rr]*)	echo "reiserfs";	return 0;;
-		*[Xx][Ff][Ss]*)			echo "xfs";		return 0;;
-		*[Jj][Ff][Ss]*)			echo "jfs";		return 0;;
-		*[Ee][Xx][Tt]3*)		echo "ext3";		return 0;;
-		*[Ee][Xx][Tt]2*)		echo "ext2";		return 0;;
-		*data*)				echo "invalid";		return 0;;
-		*)				echo "auto";		return 0;;
-	esac
-}
-
 # Load aes and cryptoloop
 modprobe aes 2>/dev/null
 modprobe cryptoloop 2>/dev/null
@@ -1588,47 +1556,45 @@ getfilepath(){
 	[ -z "$filepath" ] && filepath="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\)\\///)"
 }
 
-if [ ! "$INSTALLED" == "yes" ]; then
-	for unioncheat in unionro unionrw unionfs ; do
-		if checkbootparam "$unioncheat"; then
-			[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/KNOPPIX none /KNOPPIX && UNIONMADE="yes" >/dev/null
-			echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
-			UNIONMNTOPT=""
-			[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="-o ro"
-			MYPARAM="$(getbootparam "$unioncheat")"
-			[ "$unioncheat" == "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
-			getfiledev
-			if [ "$filedev" ]; then
-				if grep $filedev /etc/fstab 2>&1>/dev/null && ! grep $filedev /proc/mounts 2>&1>/dev/null; then
-					mount $UNIONMNTOPT $filedev >/dev/null
+for unioncheat in unionro unionrw unionfs ; do
+	if checkbootparam "$unioncheat"; then
+		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/KNOPPIX none /KNOPPIX && UNIONMADE="yes" >/dev/null
+		echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
+		UNIONMNTOPT=""
+		[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="-o ro"
+		MYPARAM="$(getbootparam "$unioncheat")"
+		[ "$unioncheat" == "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
+		getfiledev
+		if [ "$filedev" ]; then
+			if grep $filedev /etc/fstab 2>&1>/dev/null && ! grep $filedev /proc/mounts 2>&1>/dev/null; then
+				mount $UNIONMNTOPT $filedev >/dev/null
+				getfilepath
+				MYPARAM="$(grep $filedev /etc/fstab | awk '{ print $2 }' -)"
+				MYPARAM="$MYPARAM/$filepath"
+			else
+				if ! grep $filedev /proc/mounts; then
+					mkdir -p /tmp/$unioncheat >/dev/null
+					mount $UNIONMNTOPT $filedev /tmp/$unioncheat >/dev/null
 					getfilepath
-					MYPARAM="$(grep $filedev /etc/fstab | awk '{ print $2 }' -)"
-					MYPARAM="$MYPARAM/$filepath"
+					MYPARAM="/ramdisk/var/tmp/$unioncheat/$filepath"
 				else
-					if ! grep $filedev /proc/mounts; then
-						mkdir -p /tmp/$unioncheat >/dev/null
-						mount $UNIONMNTOPT $filedev /tmp/$unioncheat >/dev/null
-						getfilepath
-						MYPARAM="/ramdisk/var/tmp/$unioncheat/$filepath"
-					else
-						getfilepath
-						MYPARAM="$(grep $filedev /proc/mounts | awk '{ print $2 }' -)"
-						grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro &>/dev/null && mount -o remount,rw $filedev $MYPARAM >/dev/null
-						MYPARAM="$MYPARAM/$filepath"
-					fi
+					getfilepath
+					MYPARAM="$(grep $filedev /proc/mounts | awk '{ print $2 }' -)"
+					grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro &>/dev/null && mount -o remount,rw $filedev $MYPARAM >/dev/null
+					MYPARAM="$MYPARAM/$filepath"
 				fi
 			fi
-			if [ -f "$MYPARAM" ]; then
-				mkdir -p /tmp/$unioncheat-loop >/dev/null
-				mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
-				MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
-			fi
-			[ "$MYPARAM" ] && unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
-			[ -z "$UNIONTIDY" ] && unionctl /KNOPPIX --mode /KNOPPIX ro > /dev/null && UNIONTIDY="yes"
-			[ "$UNIONMNTOPT" ] && unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
 		fi
-	done
-fi
+		if [ -f "$MYPARAM" ]; then
+			mkdir -p /tmp/$unioncheat-loop >/dev/null
+			mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
+			MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
+		fi
+		[ "$MYPARAM" ] && unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
+		[ -z "$UNIONTIDY" ] && unionctl /KNOPPIX --mode /KNOPPIX ro > /dev/null && UNIONTIDY="yes"
+		[ "$UNIONMNTOPT" ] && unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
+	fi
+done
 
 # Check for persistent homedir option and eventually mount /home from there,
 # or use a loopback file.
@@ -1708,7 +1674,7 @@ EOT
 	fi
 
 	# Check for configuration floppy add-on if not running from HD
-	if [ -z "$INSTALLED" -a -n "$MYCONF" ]; then
+	if [ -n "$MYCONF" ]; then
 		FOUND_CONFIG=""
 		if [ -n "$MYCONFDIR" ]; then
 		case "$MYCONFDIR" in
