@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.2.5) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.2.5) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * move wallpaper to /usr/share/wallpapers/.
+  * prefer png over JPEG.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun,  9 Oct 2005 02:25:35 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 10 Oct 2005 21:30:11 +0200
 
 initscripts-kanotix-live (0.2.4) unstable; urgency=low
 

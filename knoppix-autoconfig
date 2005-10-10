@@ -1513,8 +1513,8 @@ else
 fi
 
 # Search for custom background image for KDE/GNOME/X
-for i in /cdrom/KNOPPIX/background /usr/local/lib/kanotix; do
-	for j in jpg png gif; do
+for i in /cdrom/KNOPPIX/background /usr/share/wallpapers/kanotix; do
+	for j in png jpg gif; do
 		BACKGROUND="$i.$j"
 		[ -e "$BACKGROUND" ] && break 2
 	done
