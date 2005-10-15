@@ -972,6 +972,9 @@ echo "TZ=\"$TZ\""                     >> /etc/sysconfig/knoppix
 # Write DPI setting if specified
 [ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> /etc/sysconfig/knoppix
 
+# disable 855resolution hack
+checkbootparam "no855res" && echo "NO855RES=\"yes\"" >> /etc/sysconfig/knoppix
+
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
 
@@ -1837,6 +1840,9 @@ if checkbootparam "splash"; then
 	/etc/init.d/splash.sh stop
 	sleep 1
 fi
+
+# delete named pipe
+rm -f /etc/sysconfig/progress
 
 echo "6" > /proc/sys/kernel/printk
 
