@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.2.7) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.2.7) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * add ifrename to dependencies
+  * add kanotix-udev-config to dependencies.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 10 Oct 2005 22:17:50 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 15 Oct 2005 13:19:59 +0200
 
 initscripts-kanotix-live (0.2.6) unstable; urgency=low
 
