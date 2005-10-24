@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.2.9) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.0) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Major cleanup for udev support.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 15 Oct 2005 23:07:10 +0200
+ -- Joerg Schirottke <master@kanotix.com>  Mon, 24 Oct 2005 02:57:35 +0200
 
 initscripts-kanotix-live (0.2.8) unstable; urgency=low
 

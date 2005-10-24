@@ -72,34 +72,6 @@ checkbootparam(){
 	return "$?"
 }
 
-# Reinit USB devices that could not be started from linuxrc
-# Adopted from /etc/hotplug/usb.rc with some changes.
-# Calling /etc/hotplug/usb.rc directly can result in crashes due
-# to quite cautiousless module probing there. -KK
-usbreinit(){
-	LISTER=/usr/sbin/usbmodules
-	test -x $LISTER || LISTER="$(type -p usbmodules 2>/dev/null)"
-	[ -z "$LISTER" -o ! -f /proc/bus/usb/devices ] && return 1
-	# make sure the usb agent will run
-	ACTION="add" ; PRODUCT="0/0/0" ; DEVFS="/proc/bus/usb" ; DEVICE= ; DEVPATH=
-	export ACTION PRODUCT DEVFS DEVICE DEVPATH
-	echo -n "sync:["
-	
-	if [ -d /sys/bus/usb/devices ]; then
-		# Kernel 2.6
-		for device in /sys/bus/usb/devices/*; do
-			DEVPATH="${device#/sys/}"
-			echo -n "${DEVPATH##*/}" " "; /etc/hotplug/usb.agent &>/dev/null
-		done
-	else
-		# Kernel 2.4
-		for DEVICE in /proc/bus/usb/*/*; do
-			echo -n ${DEVICE##*/} " "; /etc/hotplug/usb.agent &>/dev/null
-		done
-	fi
-	echo -n "] "
-	return 0
-}
 ### EOF utility functions
 
 # We need /proc here, so mount it in case we skipped the bootfloppy
@@ -113,7 +85,6 @@ stringinfile "/dev/pts" /proc/mounts || mount -t devpts /dev/pts /dev/pts 2>/dev
 # CMDLINE="$(</proc/cmdline)" This should work, but doesn't with Kernel 2.4.19-rc1
 # This works.
 [ -z "$CMDLINE" ] && CMDLINE="$(cat /proc/cmdline)"
-
 
 # Check if we are in interactive startup mode
 INTERACTIVE=""
@@ -130,14 +101,6 @@ if [ -n "$MYCONF" ]; then
 	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconf')"
 	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'custom')"
 	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
-fi
-
-# Check if we want alsa
-USE_ALSA=""
-if checkbootparam alsa &>/dev/null; then
-	USE_ALSA="yes"
-	ALSA_CARD="$(getbootparam 'alsa' 2>/dev/null)"
-	[ -n "$ALSA_CARD" ] || ALSA_CARD="autodetect"
 fi
 
 ### localization
@@ -931,7 +894,7 @@ cp "/usr/share/zoneinfo/$TZ" /etc/localtime
 
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
-	rm -f	/dev/cdrom* /dev/cdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
+	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
 		/etc/sysconfig/i18n /etc/sysconfig/keyboard /etc/sysconfig/knoppix \
 		2>/dev/null
 fi
@@ -1008,13 +971,24 @@ echo -n "${GREEN}"
 awk -F: '/^processor/{printf " Processor"$2" is "};/^model name/{printf $2};/^vendor_id/{printf vendor};/^cpu MHz/{printf " %dMHz",int($2)};/^cache size/{printf ","$2" Cache"};/^$/{print ""}' /proc/cpuinfo 2>/dev/null
 echo -n "${NORMAL}"
 
-# KNOPPIX autoconfig
+# KANOTIX autoconfig
 
 update_progress 20
 
-# HOTPLUG stuff
-# We should always set this, anyways
-echo "/sbin/hotplug-knoppix" > /proc/sys/kernel/hotplug
+# udev support
+
+if checkbootparam "noudev"; then
+	echo " ${BLUE}Skipping udev as requested on boot commandline.${NORMAL}"
+else
+	echo " ${GREEN}Enable ${YELLOW}udev ${GREEN}now.${NORMAL}"
+	mkdir -p /media
+	if ! pidof udevd >&-; then
+		RUNLEVEL=S /etc/init.d/udev start
+		# load capability LSM (needed for hal)
+		modprobe capability &>/dev/null
+		/etc/init.d/dbus-1 start
+	fi
+fi
 
 if [ -d /proc/acpi ]; then
 	# ACPI
@@ -1044,114 +1018,13 @@ else
 	fi
 fi
 
-# First: PCMCIA Check/Setup
-# This needs to be done before other modules are being loaded by hwsetup
-
-if checkbootparam "nopcmcia"; then
-	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
-else
-	modprobe pcmcia_core &>/dev/null
-	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe yenta_socket &>/dev/null || modprobe i82365 &>/dev/null || modprobe tcic &>/dev/null
-	if [ "$?" = "0" ]; then
-		echo " ${GREEN}PCMCIA found, starting cardmgr.${NORMAL}"
-		modprobe ds &>/dev/null
-		cardmgr &>/dev/null && sleep 4
-	fi
-fi
-
-# USB enable
-if checkbootparam "nousb"; then
-	echo " ${BLUE}Skipping USB detection as requested on boot commandline.${NORMAL}"
-else
-	# USB/Mouse Check/Setup
-	# This needs to be done before other modules are being loaded by hwsetup
-	modprobe usbcore &>/dev/null
-	# We now try to load both USB modules, in case someone has 2 different
-	# controllers
-	FOUNDUSB=""
-	USBREINIT="yes"
-	if checkbootparam "noehci"; then
-		USBMODULES="usb-uhci usb-ohci"
-		case "$KERNEL" in 2.6.*) USBMODULES="uhci_hcd ohci_hcd";; esac
-	else
-		USBMODULES="usb-uhci usb-ohci ehci-hcd"
-		case "$KERNEL" in 2.6.*) USBMODULES="uhci_hcd ohci_hcd ehci_hcd";; esac
-	fi
-	for u in $USBMODULES; do 
-		if stringinfile "$u" /proc/modules; then
-			FOUNDUSB="yes"
-		elif modprobe "$u" &>/dev/null; then
-			FOUNDUSB="yes"
-			USBREINIT=""
-		fi
-	done
-	if [ -n "$FOUNDUSB" ]; then
-		echo -n " ${GREEN}USB found, managed by ${MAGENTA}hotplug${GREEN}"
-		# We have to do this here, because /proc/bus/usb does not seem to exist before
-		# the lowlevel controller module(s) are loaded.
-		mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb &>/dev/null
-		if [ -n "$USBREINIT" ]; then
-			echo -n ": ${YELLOW}(Re-)scanning USB devices... "; usbreinit
-			echo -n "Done."
-		else
-			echo -n "."
-		fi
-		echo "${NORMAL}"
-	else
-		# For an unknown reason, unloading the usbcore module seems to hang sometimes.
-		# umount /proc/bus/usb &>/dev/null
-		# rmmod usbcore 2>/dev/null
-		true
-	fi
-fi
-
-# Firewire enable
-if ! checkbootparam "firewire"; then
-	echo " ${BLUE}Skipping Firewire detection - add "firewire" if needed.${NORMAL}"
-else
-	if ! checkbootparam "bootfirewire"; then
-		echo " ${BLUE}Firewire detection as requested on boot commandline.${NORMAL}"
-		# We now try to load the firewire module
-		modprobe ieee1394 &>/dev/null
-	fi
-	FOUNDFIREWIRE=""
-	FIREWIREREINIT="yes"
-	if stringinfile ohci1394 /proc/modules; then
-		FOUNDFIREWIRE="yes"
-		FIREWIREREINIT="yes"
-	elif modprobe ohci1394 &>/dev/null; then
-		FOUNDFIREWIRE="yes"
-		FIREWIREREINIT=""
-	fi
-	if [ -n "$FOUNDFIREWIRE" ]; then
-		HOTPLUG="yes"
-		echo -n " ${GREEN}Firewire found, managed by ${MAGENTA}hotplug${GREEN}"
-		if [ -n "$FIREWIREREINIT" -a -x /etc/hotplug.d/ieee1394/rescan-scsi-bus.sh ]; then
-			echo -n ": ${YELLOW}(Re-)scanning firewire devices... "
-			/etc/hotplug.d/ieee1394/rescan-scsi-bus.sh &>/dev/null
-			echo -n "Done."
-		else
-			echo -n "."
-		fi
-		echo "${NORMAL}"
-	else
-		# For an unknown reason, unloading the ieee1394 module seems to hang sometimes.
-		# rmmod ieee1394 2>/dev/null
-		true
-	fi
-fi
-
 update_progress 40
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
-NOAUDIO=""; HWSETUP_NOAUDIO=""
-checkbootparam noaudio &>/dev/null && NOAUDIO="yes"
-checkbootparam nosound &>/dev/null && NOAUDIO="yes"
-[ -n "$NOAUDIO" -o -n "$USE_ALSA" ] && HWSETUP_NOAUDIO="-a"
-NOSCSI=""; HWSETUP_NOSCSI=""
-checkbootparam noscsi  &>/dev/null && NOSCSI="yes"
-[ -n "$NOSCSI" ] && HWSETUP_NOSCSI="-s"
+NOSERIAL=""
+checkbootparam noserial &>/dev/null && NOSERIAL="yes"
+[ -n "$NOSERIAL" ] && HWSETUP_NOSERIAL="-m"
+
 # load psmouse module
 modprobe psmouse &>/dev/null
 if checkbootparam "nohwsetup"; then
@@ -1159,7 +1032,7 @@ if checkbootparam "nohwsetup"; then
 	/etc/init.d/modutils-knoppix start &>/dev/null
 else
 	echo -n "${WHITE}"
-	if hwsetup -p $HWSETUP_NOAUDIO $HWSETUP_NOSCSI >/dev/null; then
+	if hwsetup -p $HWSETUP_NOSERIAL >/dev/null; then
 		echo -n "${NORMAL}"
 	else
 		echo " ${RED}Please check.${NORMAL}"
@@ -1175,9 +1048,6 @@ modprobe pcspkr &>/dev/null
 
 # Load fuse module
 modprobe fuse &>/dev/null
-
-# load capability LSM (needed for hal)
-modprobe capability &>/dev/null
 
 # activate input driver for char event devices
 modprobe evdev &>/dev/null
@@ -1209,12 +1079,8 @@ if [ -n "$MOUSE_DEVICE" ]; then
 fi
 
 # Soundcard
-if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" -o -n "$USE_ALSA" ]; then
-	# Setting micro input to zero to avoid subsonic disaster
-	# if using alsa, this leads to error-messages
-	[ -z "$USE_ALSA" ] && ( exec aumix -m 0 &>/dev/null & )
+if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" ]; then
 	SOUNDCARD="$SOUND_DRIVER"
-	[ -n "$USE_ALSA" ] && SOUNDCARD="ALSA(${ALSA_CARD})"
 	echo -n " ${GREEN}Soundcard:"
 	[ -n "$SOUND_FULLNAME" ] && echo -n " ${YELLOW}$SOUND_FULLNAME${GREEN}"
 	[ -n "$SOUNDCARD" ] && echo -n " driver=${MAGENTA}$SOUNDCARD"
@@ -1222,13 +1088,12 @@ if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" -o -n "$USE_ALSA" ]; then
 fi
 
 # Fast ALSA detection
-if [ -z "$USE_ALSA" ]; then
-	if [[ "$SOUND_DRIVER" == snd-* ]]; then
-		echo alias snd-card-0 $SOUND_DRIVER > /etc/modprobe.d/sound
-		echo options $SOUND_DRIVER index=0 >> /etc/modprobe.d/sound
-		#set_mixers
-		aumix -m 0 -v 65 -w 65 -c 65 &>/dev/null # set pcm & master & cd to 65, micro to 0
-	fi
+
+if [[ "$SOUND_DRIVER" == snd-* ]]; then
+	echo alias snd-card-0 $SOUND_DRIVER > /etc/modprobe.d/sound
+	echo options $SOUND_DRIVER index=0 >> /etc/modprobe.d/sound
+	#set_mixers
+	aumix -m 0 -v 65 -w 65 -c 65 &>/dev/null # set pcm & master & cd to 65, micro to 0
 fi
 
 # Read default keyboard from config file.
@@ -1300,13 +1165,6 @@ if [ -n "$INTERACTIVE" ]; then
 	[ "$a" != "n" ] && mouseconfig
 fi
 
-if checkbootparam noagp; then
-	echo " ${BLUE}Skipping AGP detection as requested on boot commandline.${NORMAL}"
-else
-	# Probe for AGP. Hope this can fail safely
-	stringinfile "AGP" "/proc/pci" 2>/dev/null && { modprobe agpgart || modprobe agpgart agp_try_unsupported=1; } &>/dev/null && echo " ${YELLOW}AGP bridge${GREEN} detected."
-fi
-
 update_progress 80
 # KNOPPIX automatic XFree86 Setup
 if ! checkbootparam "nomkxf86config"; then
@@ -1346,35 +1204,21 @@ if [ -z "$NOFC" ]; then
 fi
 
 RUNLEVEL="$(runlevel)"
-AUTOMOUNTER=""
-[ -x /etc/init.d/autofs ] && [ "$RUNLEVEL" != "N 1" ] && [ "$RUNLEVEL" != "N S" ] && AUTOMOUNTER="yes"
-checkbootparam "noautomount" && AUTOMOUNTER=""
 
-addautomount(){
+add_device(){
 	# /dev/device  options
 	d="${1##*/}"
-	if [ -n "$AUTOMOUNTER" ]; then
-		[ -d "/mnt/$d" -a ! -L "/mnt/$d" ] && rmdir /mnt/$d
-		[ -d "/mnt/auto/$d" ] || mkdir -p "/mnt/auto/$d"
-		[ -L "/mnt/$d" ] || ln -s "/mnt/auto/$d" "/mnt/$d"
-		anew="$d	-fstype=auto,$2	:$i"
-		stringinfile "$anew" "/etc/auto.mnt" || echo "$anew" >> /etc/auto.mnt
-		AUTOMOUNTS="$AUTOMOUNTS $d"
-		new="$1 /mnt/auto/$d  auto   users,noauto,exec,$2 0 0"
-	else
-		[ -d /mnt/$d ] && mkdir -p /mnt/$d
-		new="$1 /mnt/$d  auto   users,noauto,exec,$2 0 0"
-	fi
+	[ -d /mnt/$d ] && mkdir -p /mnt/$d
+	new="$1 /mnt/$d  auto   users,noauto,exec,$2 0 0"
 	stringinfile "$new" "/etc/fstab" || echo "$new" >> /etc/fstab
 }
 
-AUTOMOUNTS="floppy cdrom"
-# Add new devices to /etc/fstab and /etc/auto.mnt
-for i in /dev/cdrom?*; do
-	if [ -L $i ]; then
-		addautomount "$i" "ro"
-	fi
-done
+# Add cdrom devices to /etc/fstab
+#for i in /dev/cdrom?*; do
+#	if [ -L $i ]; then
+#		add_device "$i" "ro"
+#        fi
+#done
 
 NOSWAP=""
 checkbootparam "noswap" && NOSWAP="yes"
@@ -1744,48 +1588,11 @@ if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
 	echo "0" > /proc/sys/kernel/printk
 fi
 
-if [ -n "$AUTOMOUNTER" ]; then
-	# Check for floppy dir, reinstall with automounter
-	[ -d /mnt/floppy -a ! -L /mnt/floppy ] && rmdir /mnt/floppy
-	[ -d /mnt/auto/floppy ] || mkdir -p /mnt/auto/floppy
-	[ -L /mnt/floppy ] || ln -s /mnt/auto/floppy /mnt/floppy
-	[ -d /mnt/cdrom -a ! -L /mnt/cdrom ] && rmdir /mnt/cdrom
-	[ -d /mnt/auto/cdrom ] || mkdir -p /mnt/auto/cdrom
-	[ -L /mnt/cdrom ] || ln -s /mnt/auto/cdrom /mnt/cdrom
-	rm -f /etc/fstab.new
-	# Replace paths from bootfloppy
-	sed 's|/mnt/cdrom|/mnt/auto/cdrom|g;s|/mnt/floppy|/mnt/auto/floppy|g' /etc/fstab > /etc/fstab.new
-	mv -f /etc/fstab.new /etc/fstab
-	# Start automounter now
-	/etc/init.d/autofs start >/dev/null && echo " ${GREEN}Automounter started for: ${MAGENTA}${AUTOMOUNTS}${GREEN}.${NORMAL}"
-fi
-
-# DVB detection
-if ! checkbootparam "nodvb"; then
-	if [ -x /usr/sbin/dvb-nexus ]; then	
-		lspci -n|grep -q "1131:7146" && /usr/sbin/dvb-nexus load &> /dev/null
-	elif [ -x /usr/local/bin/dvb-pctvsat ]; then
-		lspci -n|grep -q "1131:7146" && /usr/local/bin/dvb-nexus load &> /dev/null
-	fi
-
-	if [ -x /usr/sbin/dvb-pctvsat ]; then
-		lspci -n|grep -q "109e:0878" && /usr/sbin/dvb-pctvsat load > /dev/null
-	elif [ -x /usr/local/bin/dvb-pctvsat ]; then
-		lspci -n|grep -q "109e:0878" && /usr/local/bin/dvb-pctvsat load > /dev/null
-	fi
-fi
-
 # modem detection
 if ! checkbootparam "nomodem"; then
 	if lspci|grep Intel|grep -q "AC'97 Modem Controller"; then
 		/etc/init.d/sl-modem-daemon start &>/dev/null
 		grep -q ^sl-modem-daemon /etc/sysconfig/services &>/dev/null || echo sl-modem-daemon >> /etc/sysconfig/services
-	fi
-	#lspci|grep Intel|grep -q "AC'97 Modem Controller" && /etc/init.d/sl-modem-daemon start &>/dev/null
-	if [ -x /usr/sbin/detect-ltmodem ]; then
-		lspci -n|grep -q "11c1:0450" && /usr/sbin/detect-ltmodem &>/dev/null
-	elif [ -x /usr/local/bin/detect-ltmodem.sh ]; then
-		lspci -n|grep -q "11c1:0450" && /usr/local/bin/detect-ltmodem.sh &>/dev/null
 	fi
 fi
 
@@ -1800,10 +1607,13 @@ if ! checkbootparam "nopowernow"; then
 	#grep -iq "Intel(R) Celeron(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
 	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && POWERNOW="speedstep-ich"
 	if [ "$POWERNOW" ]; then
+		echo " ${GREEN}Enable ${YELLOW}Powernow ${GREEN}support.${NORMAL}"
 		modprobe $POWERNOW &>/dev/null
 		/etc/init.d/powernowd start &>/dev/null
 		grep -q ^powernowd /etc/sysconfig/services &>/dev/null || echo powernowd >>/etc/sysconfig/services
 	fi
+else
+	echo " ${BLUE}Skipping Powernow detection as requested on boot commandline.${NORMAL}"
 fi
 
 # MS MM keyboard add-on
@@ -1850,4 +1660,3 @@ echo "6" > /proc/sys/kernel/printk
 trap 2 3 11
 
 exit 0
-
