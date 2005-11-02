@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed,  2 Nov 2005 01:16:13 +0100
+
 initscripts-kanotix-live (0.3.1) unstable; urgency=low
 
   * Added usbfs mount 
