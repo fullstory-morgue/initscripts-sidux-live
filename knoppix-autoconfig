@@ -76,7 +76,7 @@ checkbootparam(){
 
 # We need /proc here, so mount it in case we skipped the bootfloppy
 [ -f /proc/version ] || mount -t proc /proc /proc 2>/dev/null
-stringinfile "/dev/pts" /proc/mounts || mount -t devpts /dev/pts /dev/pts 2>/dev/null
+#stringinfile "/dev/pts" /proc/mounts || mount -t devpts /dev/pts /dev/pts 2>/dev/null
 # Kernel 2.6
 [ -d /sys/devices ] || mount -t sysfs /sys /sys 2>/dev/null
 
@@ -876,17 +876,6 @@ echo " ${GREEN}Running Linux Kernel ${YELLOW}$KERNEL${GREEN}.${NORMAL}"
 # / must be read-write in any case, starting from here
 mount -o remount,rw / 2>/dev/null
 
-if checkbootparam "splash"; then
-	RES=$(fbresolution 2>/dev/null)
-	[ "$RES" = "1024x768" ] && /etc/init.d/splash.sh start
-fi
-
-update_progress()
-{
-	# be sure we are non-blocking
-	(echo "$1" > /etc/sysconfig/progress) &
-}
-
 KTZ="$(getbootparam tz 2>/dev/null)"
 [ -f "/usr/share/zoneinfo/$KTZ" ] && TZ="$KTZ"
 rm -f /etc/localtime
@@ -973,14 +962,12 @@ echo -n "${NORMAL}"
 
 # KANOTIX autoconfig
 
-update_progress 20
-
 # udev support
 
 if checkbootparam "noudev"; then
 	echo " ${BLUE}Skipping udev as requested on boot commandline.${NORMAL}"
 else
-	echo " ${GREEN}Enable ${YELLOW}udev ${GREEN}now.${NORMAL}"
+	echo " ${GREEN}Enable ${YELLOW}udev${GREEN}.${NORMAL}"
 	mkdir -p /media
 	if ! pidof udevd >&-; then
 		RUNLEVEL=S /etc/init.d/udev start
@@ -989,6 +976,23 @@ else
 		/etc/init.d/dbus-1 start
 	fi
 fi
+
+# Activate usbfs
+mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb &>/dev/null
+
+if checkbootparam "splash"; then
+	RES=$(fbresolution 2>/dev/null)
+	[ "$RES" = "1024x768" ] && /etc/init.d/splash.sh start
+fi
+
+update_progress()
+{
+	# be sure we are non-blocking
+	(echo "$1" > /etc/sysconfig/progress) &
+}
+
+update_progress 20
+
 
 if [ -d /proc/acpi ]; then
 	# ACPI
@@ -1607,7 +1611,7 @@ if ! checkbootparam "nopowernow"; then
 	#grep -iq "Intel(R) Celeron(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
 	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && POWERNOW="speedstep-ich"
 	if [ "$POWERNOW" ]; then
-		echo " ${GREEN}Enable ${YELLOW}Powernow ${GREEN}support.${NORMAL}"
+		echo " ${GREEN}Enable ${YELLOW}Powernow${GREEN}.${NORMAL}"
 		modprobe $POWERNOW &>/dev/null
 		/etc/init.d/powernowd start &>/dev/null
 		grep -q ^powernowd /etc/sysconfig/services &>/dev/null || echo powernowd >>/etc/sysconfig/services
