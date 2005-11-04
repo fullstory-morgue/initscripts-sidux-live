@@ -1,12 +1,13 @@
-initscripts-kanotix-live (0.3.2) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.2) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Replaced mnt with media (/mnt/floppy to /media/floppy0).
+  * Added cdrom/floppy fstab entries.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed,  2 Nov 2005 01:16:13 +0100
+ -- Joerg Schirottke <master@kanotix.com>  Thu,  3 Nov 2005 15:32:01 +0100
 
 initscripts-kanotix-live (0.3.1) unstable; urgency=low
 
-  * Added usbfs mount 
+  * Added usbfs mount.
 
  -- Joerg Schirottke <master@kanotix.com>  Tue,  1 Nov 2005 17:07:31 +0100
 

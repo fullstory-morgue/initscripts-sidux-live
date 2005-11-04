@@ -75,10 +75,10 @@ checkbootparam(){
 ### EOF utility functions
 
 # We need /proc here, so mount it in case we skipped the bootfloppy
-[ -f /proc/version ] || mount -t proc /proc /proc 2>/dev/null
-#stringinfile "/dev/pts" /proc/mounts || mount -t devpts /dev/pts /dev/pts 2>/dev/null
+[ -f /proc/version ] || mount -t proc proc /proc 2>/dev/null
+
 # Kernel 2.6
-[ -d /sys/devices ] || mount -t sysfs /sys /sys 2>/dev/null
+[ -d /sys/devices ] || mount -t sysfs sysfs /sys 2>/dev/null
 
 # Read in boot parameters
 # This should work, but doesn't with Kernel 2.4.19-rc1
@@ -419,7 +419,7 @@ case "$LANGUAGE" in
 		# Finnish version, though we may not have the kde-i18n files
 		COUNTRY="fi"
 		LANG="fi_FI@euro"
-		KEYTABLE="fi"
+		KEYTABLE="fi-latin1"
 		XKEYBOARD="fi"
 		KDEKEYBOARD="fi"
 		CHARSET="iso8859-15"
@@ -432,7 +432,7 @@ case "$LANGUAGE" in
 		LANGUAGE="fi_FI:fi"
 		COUNTRY="fi"
 		LANG="fi_FI.UTF-8"
-		KEYTABLE="fi"
+		KEYTABLE="fi-latin1"
 		XKEYBOARD="fi"
 		KDEKEYBOARD="fi"
 		CHARSET="utf8"
@@ -977,8 +977,11 @@ else
 	fi
 fi
 
+# Mount /dev/pts
+stringinfile "/dev/pts" /proc/mounts || mount -t devpts -o mode=0622 /dev/pts /dev/pts 2>/dev/null
+
 # Activate usbfs
-mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb &>/dev/null
+stringinfile "/proc/bus/usb" /proc/mounts || mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null
 
 if checkbootparam "splash"; then
 	RES=$(fbresolution 2>/dev/null)
@@ -1043,9 +1046,6 @@ else
 	fi
 fi
 update_progress 60
-
-# scan cdrom drives
-[ -x /usr/sbin/fix-cdrom ] && /usr/sbin/fix-cdrom
 
 # activate PC Speaker
 modprobe pcspkr &>/dev/null
@@ -1209,20 +1209,19 @@ fi
 
 RUNLEVEL="$(runlevel)"
 
-add_device(){
-	# /dev/device  options
-	d="${1##*/}"
-	[ -d /mnt/$d ] && mkdir -p /mnt/$d
-	new="$1 /mnt/$d  auto   users,noauto,exec,$2 0 0"
-	stringinfile "$new" "/etc/fstab" || echo "$new" >> /etc/fstab
-}
-
 # Add cdrom devices to /etc/fstab
-#for i in /dev/cdrom?*; do
-#	if [ -L $i ]; then
-#		add_device "$i" "ro"
-#        fi
-#done
+for c in $(ls -d /dev/cdrom* 2>/dev/null); do
+	m=${c#/dev}
+	[ "$m" == "/cdrom" ] && m="/cdrom0"
+	[ -d /media$m ] || mkdir -p /media$m 
+	stringinfile "$c" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "$c" "/media$m" "udf,iso9660" "user,noauto" "0" "0" >> /etc/fstab
+done
+
+# Add floppy devices to /etc/fstab
+for f in $(ls -d /sys/block/fd* 2>/dev/null); do
+	[ -d /media/floppy${f#/sys/block/fd} ] || mkdir -p /media/floppy${f#/sys/block/fd} 
+	stringinfile "$f" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "/dev${f#/sys/block}" "/media/floppy${f#/sys/block/fd}" "auto" "rw,user,noauto" "0" "0"
+done
 
 NOSWAP=""
 checkbootparam "noswap" && NOSWAP="yes"
@@ -1274,7 +1273,7 @@ fi
 
 if [ -n "$partitions" ]; then
 	while read p m f relax; do
-		case "$p" in *fd0*|*proc*|*\#*) continue;; esac
+		case "$p" in *fd0*|*proc*|*pts*|*sys*|*cdrom*|\#*) continue;; esac
 		options="users,exec"
 		fnew=""
 		case "$f" in swap)
@@ -1288,7 +1287,7 @@ if [ -n "$partitions" ]; then
 			;;
 		esac
 		# Create mountdir if not already present
-		d="/mnt/${p##*/}" ; [ -d "$d" ] || mkdir -p "$d"
+		d="/media/${p##*/}" ; [ -d "$d" ] || mkdir -p "$d"
 		case "$f" in vfat|msdos)
 			if [ -z "$NOSWAP" ] && mount -o uid=knoppix,gid=knoppix,ro -t $f $p $d 2>/dev/null; then
 				if [ -f $d/knoppix.swp ]; then
@@ -1296,7 +1295,7 @@ if [ -n "$partitions" ]; then
 					if swapon $d/knoppix.swp 2>/dev/null; then
 						echo "${BLUE}Using KNOPPIX swapfile ${MAGENTA}$d/knoppix.swp${BLUE}.${NORMAL}"
 						mount -o remount,ro $d 2>/dev/null
-						fnew="$d/knoppix.swp swap swap defaults 0 0"
+						fnew="$d/knoppix.swp none            swap    sw              0       0"
 						stringinfile "$fnew" "/etc/fstab" || echo "$fnew" >> /etc/fstab
 					else
 						umount $d
@@ -1358,7 +1357,7 @@ echo 'BACKGROUND="'"$BACKGROUND"'"' >> /etc/sysconfig/knoppix
 findfile(){
 	FOUND=""
 	# search all partitions for a file in the root directory
-	for i in /mnt/[sh]d[a-z] /mnt/[sh]d[a-z][1-9] /mnt/[sh]d[a-z][1-9]?*; do
+	for i in /media/[sh]d[a-z] /media/[sh]d[a-z][1-9] /media/[sh]d[a-z][1-9]?*; do
 		# See if it's already mounted
 		[ -f "$i/$1" ] &&  { echo "$i/$1"; return 0; }
 		if [ -d "$i" ] && mount -r "$i" 2>/dev/null; then
@@ -1398,12 +1397,12 @@ trymount(){
 
 # Unionfs
 getfiledev(){
-	filedev="$(echo $MYPARAM | grep ^/mnt/ | sed s/\\/mnt\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
+	filedev="$(echo $MYPARAM | grep ^/media/ | sed s/\\/media\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
 	[ -z "$filedev" ] && filedev="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
 }
 
 getfilepath(){
-	filepath="$(echo $MYPARAM | grep ^/mnt/ | sed s/\\/mnt\\/\\\([^\\/]\\+\\\)\\///)"
+	filepath="$(echo $MYPARAM | grep ^/media/ | sed s/\\/media\\/\\\([^\\/]\\+\\\)\\///)"
 	[ -z "$filepath" ] && filepath="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\)\\///)"
 }
 
@@ -1458,23 +1457,23 @@ if [ -n "$HOMEDIR" ]; then
 		/dev/*)
 			MYHOMEDEVICE="${HOMEDIR##/dev/}"
 			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT="/mnt/${MYHOMEDEVICE##/dev/}"
-			MYHOMEDIR="/mnt/${HOMEDIR##/dev/}"
+			MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
+			MYHOMEDIR="/media/${HOMEDIR##/dev/}"
 			;;
-		/mnt/*)
-			MYHOMEDEVICE="${HOMEDIR##/mnt/}"
+		/media/*)
+			MYHOMEDEVICE="${HOMEDIR##/media/}"
 			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT="/mnt/${MYHOMEDEVICE##/dev/}"
+			MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
 			MYHOMEDIR="$HOMEDIR"
 			;;
 		[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
 			MYHOMEDIR="$(findfile knoppix.img)"
-			MYHOMEDEVICE="${MYHOMEDIR##/mnt/}"
+			MYHOMEDEVICE="${MYHOMEDIR##/media/}"
 			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT="/mnt/${MYHOMEDEVICE##/dev/}"
+			MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
 			;;
 		*)
-			echo "${CRE}${RED}Invalid ${CYAN}home=${RED} option '$HOMEDIR' specified (must start with /dev/ or /mnt/ or 'scan').${NORMAL}"
+			echo "${CRE}${RED}Invalid ${CYAN}home=${RED} option '$HOMEDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
 			echo "${CRE}${RED}Option ignored.${NORMAL}"
 			;;
 	esac
@@ -1532,35 +1531,35 @@ EOT
 			/dev/*)
 				MYCONFDEVICE="${MYCONFDIR##/dev/}"
 				MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-				MYCONFMOUNTPOINT="/mnt/${MYCONFDEVICE##/dev/}"
-				MYCONFDIR="/mnt/${MYCONFDIR##/dev/}"
+				MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
+				MYCONFDIR="/media/${MYCONFDIR##/dev/}"
 				;;
-			/mnt/*)
-				MYCONFDEVICE="${MYCONFDIR##/mnt/}"
+			/media/*)
+				MYCONFDEVICE="${MYCONFDIR##/media/}"
 				MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-				MYCONFMOUNTPOINT="/mnt/${MYCONFDEVICE##/dev/}"
+				MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
 				;;
 			[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
 				MYCONFDIR="$(findfile knoppix.sh)"
 				if [ -n "$MYCONFDIR" ]; then
-					MYCONFDEVICE="${MYCONFDIR##/mnt/}"
+					MYCONFDEVICE="${MYCONFDIR##/media/}"
 					MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-					MYCONFMOUNTPOINT="/mnt/${MYCONFDEVICE##/dev/}"
+					MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
 					MYCONFDIR="${MYCONFMOUNTPOINT}"
 				else
 					FOUND_CONFIG="none"
 				fi
 				;;
 			*)
-				echo "${CRE}${RED}Invalid configdir '$MYCONFDIR' specified (must start with /dev/ or /mnt/ or 'scan').${NORMAL}"
+				echo "${CRE}${RED}Invalid configdir '$MYCONFDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
 				echo "${CRE}${RED}Option ignored.${NORMAL}"
 				FOUND_CONFIG="invalid"
 				;;
 		esac
 	else
 		MYCONFDEVICE="/dev/fd0"
-		MYCONFMOUNTPOINT="/mnt/floppy"
-		MYCONFDIR="/mnt/floppy"
+		MYCONFMOUNTPOINT="/media/floppy0"
+		MYCONFDIR="/media/floppy0"
 	fi
 
 	if [ -z "$FOUND_CONFIG" ]; then
