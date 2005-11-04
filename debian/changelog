@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.3) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  4 Nov 2005 18:07:57 +0100
+
 initscripts-kanotix-live (0.3.2) unstable; urgency=low
 
   * Replaced mnt with media (/mnt/floppy to /media/floppy0).
