@@ -1000,7 +1000,7 @@ USBCORE_TIMEOUT=$((USBCORE_TIMEOUT))
 [ $USBCORE_TIMEOUT -gt 60 ] && USBCORE_TIMEOUT=5
 USBCORE_TIMEOUT=5
 
-echo -n " ${GREEN}Wait for usbcore ${NORMAL}"
+echo -n " ${GREEN}Waiting for usbcore${BLUE}...${NORMAL}"
 for x in $(seq ${USBCORE_TIMEOUT}); do
 	for y in $(seq 10); do
 		stringinfile "usbcore" /proc/modules && break
