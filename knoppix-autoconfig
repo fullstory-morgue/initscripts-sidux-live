@@ -1220,7 +1220,7 @@ done
 # Add floppy devices to /etc/fstab
 for f in $(ls -d /sys/block/fd* 2>/dev/null); do
 	[ -d /media/floppy${f#/sys/block/fd} ] || mkdir -p /media/floppy${f#/sys/block/fd} 
-	stringinfile "$f" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "/dev${f#/sys/block}" "/media/floppy${f#/sys/block/fd}" "auto" "rw,user,noauto" "0" "0"
+	stringinfile "$f" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "/dev${f#/sys/block}" "/media/floppy${f#/sys/block/fd}" "auto" "rw,user,noauto" "0" "0" >> /etc/fstab
 done
 
 NOSWAP=""

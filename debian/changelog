@@ -1,8 +1,9 @@
 initscripts-kanotix-live (0.3.3) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
+  * fix floppy detection for /etc/fstab.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  4 Nov 2005 18:07:57 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  5 Nov 2005 01:03:19 +0100
 
 initscripts-kanotix-live (0.3.2) unstable; urgency=low
 
