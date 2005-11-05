@@ -2,8 +2,9 @@ initscripts-kanotix-live (0.3.3) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
   * fix floppy detection for /etc/fstab.
+  * wait up to 5 seconds for usbcore to be loaded.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  5 Nov 2005 01:03:19 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  5 Nov 2005 01:15:42 +0100
 
 initscripts-kanotix-live (0.3.2) unstable; urgency=low
 

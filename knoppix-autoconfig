@@ -980,6 +980,18 @@ fi
 # Mount /dev/pts
 stringinfile "/dev/pts" /proc/mounts || mount -t devpts -o mode=0622 /dev/pts /dev/pts 2>/dev/null
 
+# check if usbcore is already loaded.
+USBCORE_TIMEOUT=5
+echo -n " ${GREEN}Loading usbcore ${NORMAL}"
+for x in $(seq ${USBCORE_TIMEOUT}); do
+	for y in $(seq 10); do
+		stringinfile "usbcore" /proc/modules && break
+		sleep 0.1
+	done
+	echo -n "${BLUE}. ${NORMAL}"
+done
+stringinfile "usbcore" /proc/modules && echo "${GREEN}done.${NORMAL}" || echo "${GREEN}timeout reached.${NORMAL}"
+
 # Activate usbfs
 stringinfile "/proc/bus/usb" /proc/mounts || mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null
 
