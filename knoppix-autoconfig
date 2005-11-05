@@ -977,6 +977,19 @@ else
 	fi
 fi
 
+if checkbootparam "splash"; then
+	RES=$(fbresolution 2>/dev/null)
+	[ "$RES" = "1024x768" ] && /etc/init.d/splash.sh start
+fi
+
+update_progress()
+{
+	# be sure we are non-blocking
+	(echo "$1" > /etc/sysconfig/progress) &
+}
+
+update_progress 20
+
 # Mount /dev/pts
 stringinfile "/dev/pts" /proc/mounts || mount -t devpts -o mode=0622 /dev/pts /dev/pts 2>/dev/null
 
@@ -999,20 +1012,6 @@ stringinfile "usbcore" /proc/modules && echo "${GREEN} loaded.${NORMAL}" || echo
 
 # Activate usbfs
 stringinfile "/proc/bus/usb" /proc/mounts || mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null
-
-if checkbootparam "splash"; then
-	RES=$(fbresolution 2>/dev/null)
-	[ "$RES" = "1024x768" ] && /etc/init.d/splash.sh start
-fi
-
-update_progress()
-{
-	# be sure we are non-blocking
-	(echo "$1" > /etc/sysconfig/progress) &
-}
-
-update_progress 20
-
 
 if [ -d /proc/acpi ]; then
 	# ACPI

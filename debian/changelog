@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.4) unstable; urgency=low
+
+  * start splash directly after udev.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  5 Nov 2005 02:06:16 +0100
+
 initscripts-kanotix-live (0.3.3) unstable; urgency=low
 
   * fix floppy detection for /etc/fstab.
