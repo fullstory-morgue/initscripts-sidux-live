@@ -965,7 +965,7 @@ echo -n "${NORMAL}"
 # udev support
 
 if checkbootparam "noudev"; then
-	echo " ${BLUE}Skipping udev as requested on boot commandline.${NORMAL}"
+	echo "${BLUE}Skipping udev as requested on boot commandline.${NORMAL}"
 else
 	echo " ${GREEN}Enable ${YELLOW}udev${GREEN}.${NORMAL}"
 	mkdir -p /media
@@ -997,18 +997,19 @@ stringinfile "/dev/pts" /proc/mounts || mount -t devpts -o mode=0622 /dev/pts /d
 USBCORE_TIMEOUT="$(getbootparam usbwait 2>/dev/null)"
 [ -z "$USBCORE_TIMEOUT" ] && USBCORE_TIMEOUT=5
 USBCORE_TIMEOUT=$((USBCORE_TIMEOUT))
-[ $USBCORE_TIMEOUT -gt 60 ] && USBCORE_TIMEOUT=5
-USBCORE_TIMEOUT=5
+[ $USBCORE_TIMEOUT -lt 0 -o $USBCORE_TIMEOUT -gt 60 ] && USBCORE_TIMEOUT=5
 
-echo -n " ${GREEN}Waiting for usbcore${BLUE}...${NORMAL}"
+echo -n "${BLUE}Waiting for ${YELLOW}usbcore${BLUE}. ${NORMAL}"
 for x in $(seq ${USBCORE_TIMEOUT}); do
+	stringinfile "usbcore" /proc/modules && break
+	echo -n "${BLUE}$((${USBCORE_TIMEOUT}-${x})) s${NORMAL}"
 	for y in $(seq 10); do
 		stringinfile "usbcore" /proc/modules && break
 		sleep 0.1
 	done
-	echo -n "${BLUE}.${NORMAL}"
+	for z in $(seq $((${#x}+2))); do echo -ne "\b \b"; done
 done
-stringinfile "usbcore" /proc/modules && echo "${GREEN} loaded.${NORMAL}" || echo "${GREEN} timeout reached.${NORMAL}"
+stringinfile "usbcore" /proc/modules && echo "${GREEN}Done.${NORMAL}" || echo "${RED}Timeout reached.${NORMAL}"
 
 # Activate usbfs
 stringinfile "/proc/bus/usb" /proc/mounts || mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null
@@ -1632,7 +1633,7 @@ if ! checkbootparam "nopowernow"; then
 		grep -q ^powernowd /etc/sysconfig/services &>/dev/null || echo powernowd >>/etc/sysconfig/services
 	fi
 else
-	echo " ${BLUE}Skipping Powernow detection as requested on boot commandline.${NORMAL}"
+	echo "${BLUE}Skipping Powernow detection as requested on boot commandline.${NORMAL}"
 fi
 
 # MS MM keyboard add-on
