@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.7) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  5 Nov 2005 12:20:29 +0100
+
 initscripts-kanotix-live (0.3.6) unstable; urgency=low
 
   * countdown for usbcore wait. 
