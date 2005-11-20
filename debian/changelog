@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.8) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 20 Nov 2005 02:29:47 +0100
+
 initscripts-kanotix-live (0.3.7) unstable; urgency=low
 
   * add pcmcia part again.
