@@ -7,10 +7,10 @@ Standards-Version: 3.6.2
 
 Package: initscripts-kanotix-live
 Architecture: all
-Depends: distro-defaults, usleep-kanotix, rebuildfstab-kanotix, udev (>= 0.071), sysvinit (>= 2.86), sysv-rc (<< 9.00)
+Depends: distro-defaults, usleep-kanotix, rebuildfstab-kanotix, udev (>= 0.071), sysvinit (>= 2.86), sysv-rc (<< 9.00), pcmcia-cs
 Suggests: avm-firmware, drdsl, ltmodem-detect, unionfs-utils
 Replaces: sysvinit (<< 2.84-186kanotix0.28)
-Conflicts: pcmcia-cs, hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix
+Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix
 Description: KANOTIX initscripts for live CDs
  Live specific initscripts for hardware detection and shutdown functions 
  on KANOTIX.

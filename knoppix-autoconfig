@@ -970,10 +970,10 @@ else
 	echo " ${GREEN}Enable ${YELLOW}udev${GREEN}.${NORMAL}"
 	mkdir -p /media
 	if ! pidof udevd >&-; then
-		RUNLEVEL=S /etc/init.d/udev start
+		RUNLEVEL=S /etc/init.d/udev start &>/dev/null
 		# load capability LSM (needed for hal)
 		modprobe capability &>/dev/null
-		/etc/init.d/dbus-1 start
+		/etc/init.d/dbus-1 start &>/dev/null
 	fi
 fi
 
@@ -1050,7 +1050,8 @@ if checkbootparam "nopcmcia"; then
 else
 	modprobe pcmcia_core &>/dev/null
 	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe yenta_socket &>/dev/null || modprobe i82365 &>/dev/null || modprobe tcic &>/dev/null
+	modprobe yenta_socket &>/dev/null # always true, bad check
+	modprobe i82365 &>/dev/null || modprobe tcic &>/dev/null 
 	if [ "$?" = "0" ]; then
 	echo " ${GREEN}PCMCIA found, starting cardmgr.${NORMAL}"
 		modprobe ds &>/dev/null

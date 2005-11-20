@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.3.8) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.8) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * changed pcmcia detection (ignore yenta_socket).
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 20 Nov 2005 02:29:47 +0100
+ -- Joerg Schirottke <master@kantoix.com>  Sun, 20 Nov 2005 13:29:19 +0100
 
 initscripts-kanotix-live (0.3.7) unstable; urgency=low
 
