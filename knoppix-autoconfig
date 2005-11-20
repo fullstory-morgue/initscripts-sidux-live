@@ -1042,6 +1042,22 @@ else
 	fi
 fi
 
+# First: PCMCIA Check/Setup
+# This needs to be done before other modules are being loaded by hwsetup
+
+if checkbootparam "nopcmcia"; then
+	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
+else
+	modprobe pcmcia_core &>/dev/null
+	# Try Cardbus or normal PCMCIA socket drivers
+	modprobe yenta_socket &>/dev/null || modprobe i82365 &>/dev/null || modprobe tcic &>/dev/null
+	if [ "$?" = "0" ]; then
+	echo " ${GREEN}PCMCIA found, starting cardmgr.${NORMAL}"
+		modprobe ds &>/dev/null
+		cardmgr &>/dev/null && sleep 4
+	fi
+fi
+
 update_progress 40
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
