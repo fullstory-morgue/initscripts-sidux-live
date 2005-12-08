@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.3.9) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.9) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * changed pcmcia detection
+  * added vol=X cheatcode
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 20 Nov 2005 21:41:35 +0100
+ -- Joerg Schirottke <master@kantoix.com>  Thu,  8 Dec 2005 00:31:29 +0100
 
 initscripts-kanotix-live (0.3.8) unstable; urgency=low
 

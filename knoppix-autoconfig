@@ -1050,12 +1050,13 @@ if checkbootparam "nopcmcia"; then
 else
 	modprobe pcmcia_core &>/dev/null
 	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe yenta_socket &>/dev/null # always true, bad check
-	modprobe i82365 &>/dev/null || modprobe tcic &>/dev/null 
+	modprobe yenta_socket &>/dev/null || modprobe i82365 &>/dev/null || modprobe tcic &>/dev/null 
 	if [ "$?" = "0" ]; then
-	echo " ${GREEN}PCMCIA found, starting cardmgr.${NORMAL}"
 		modprobe ds &>/dev/null
-		cardmgr &>/dev/null && sleep 4
+		if cardmgr &>/dev/null; then
+			echo " ${GREEN}PCMCIA found, cardmgr started.${NORMAL}"
+			sleep 4
+		fi
 	fi
 fi
 
@@ -1125,13 +1126,19 @@ if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" ]; then
 	echo "${NORMAL}"
 fi
 
+# Get max. sound volume
+VOL="$(getbootparam vol 2>/dev/null)"
+[ -z "$VOL" ] && VOL=65
+VOL=$((VOL))
+[ $VOL -lt 0 -o $VOL -gt 100 ] && VOL=65
+
 # Fast ALSA detection
 
 if [[ "$SOUND_DRIVER" == snd-* ]]; then
 	echo alias snd-card-0 $SOUND_DRIVER > /etc/modprobe.d/sound
 	echo options $SOUND_DRIVER index=0 >> /etc/modprobe.d/sound
 	#set_mixers
-	aumix -m 0 -v 65 -w 65 -c 65 &>/dev/null # set pcm & master & cd to 65, micro to 0
+	aumix -m 0 -v $VOL -w $VOL -c $VOL &>/dev/null # set pcm & master & cd to $VOL, micro to 0
 fi
 
 # Read default keyboard from config file.
