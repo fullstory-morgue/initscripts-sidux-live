@@ -1,13 +1,18 @@
-initscripts-kanotix-live (0.3.10) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.10) unstable; urgency=low
 
-  * NOT RELEASED YET
+  [ Joerg Schirottke ]
+  * copy /lib/ld-linux.so.2 for reboot/halt.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  8 Dec 2005 02:09:38 +0100
+  [ Stefan Lippers-Hollmann ]
+  * remove cdbs auto-update feature.
+  * bump compat level to 5.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 17 Dec 2005 23:15:57 +0100
 
 initscripts-kanotix-live (0.3.9) unstable; urgency=low
 
-  * changed pcmcia detection
-  * added vol=X cheatcode
+  * changed pcmcia detection again.
+  * added vol=X cheatcode.
 
  -- Joerg Schirottke <master@kantoix.com>  Thu,  8 Dec 2005 00:31:29 +0100
 
