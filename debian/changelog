@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.3.11) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.11) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * added VIA Nehemiah detection
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 17 Dec 2005 23:17:36 +0100
+ -- Joerg Schirottke <master@kantoix.com>  Tue, 20 Dec 2005 01:24:30 +0100
 
 initscripts-kanotix-live (0.3.10) unstable; urgency=low
 
