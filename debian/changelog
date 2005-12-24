@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.13) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 25 Dec 2005 00:36:39 +0100
+
 initscripts-kanotix-live (0.3.12) unstable; urgency=low
 
   * added autoconfig patch (bfree).
