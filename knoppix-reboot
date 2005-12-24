@@ -108,8 +108,9 @@ case "$CMDLINE" in *noprompt*) NOPROMPT="yes"; ;; esac
 CDROM="$(awk '/ \/cdrom /{print $1;exit 0;}' /proc/mounts)"
 
 # This uses standard sysvinit
-FINALCMD="/sbin/$command"
+FINALCMD="/etc/$command"
 [ -x /etc/$command ] || cp -p /sbin/$command /etc/
+[ -x /etc/eject ] || cp -p /usr/bin/eject /etc/
 [ -x /etc/ld-linux.so.2 ] || cp -p /lib/ld-linux.so.2 /etc/
 
 # Turn off swap, then unmount file systems.
@@ -138,11 +139,10 @@ echo "$message" >/dev/console
 
 if [ -z "$NOPROMPT" ]; then
 	#umount -l /cdrom
-	[ -n "$CDROM" -a -z "$NOEJECT" ] && eject -m -p "$CDROM" 2>/dev/null
+	[ -n "$CDROM" -a -z "$NOEJECT" ] && /etc/ld-linux.so.2 /etc/eject -m -p "$CDROM" 2>/dev/null
 	echo "${CYAN}Please remove CD, close cdrom drive and hit return.${NORMAL}"
 	read
 fi
 
 # Now halt or reboot.
 exec /etc/ld-linux.so.2 $FINALCMD $options >/dev/console 2>&1 </dev/console
-

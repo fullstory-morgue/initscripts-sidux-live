@@ -1,8 +1,11 @@
-initscripts-kanotix-live (0.3.12) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.12) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * added autoconfig patch (bfree).
+  * added irish patch (bfree).
+  * added AMD Athlon 64 X2 Dual Core detection.
+  * copy eject in reboot script.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 20 Dec 2005 20:19:28 +0100
+ -- Joerg Schirottke <master@kantoix.com>  Fri, 23 Dec 2005 22:11:40 +0100
 
 initscripts-kanotix-live (0.3.11) unstable; urgency=low
 

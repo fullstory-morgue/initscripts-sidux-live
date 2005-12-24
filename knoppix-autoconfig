@@ -465,6 +465,30 @@ case "$LANGUAGE" in
 		KDEKEYBOARDS="de,us"
 		TZ="Europe/Paris"
 		;;
+	ga)
+		# Irish Gaeilge version
+		COUNTRY="ie"
+		LANG="ga_IE@euro"
+		KEYTABLE="uk"
+		XKEYBOARD="uk"
+		KDEKEYBOARD="ie"
+		CHARSET="iso8859-15"
+		# Additional KDE Keyboards
+		KDEKYBOARDS="gb,us,de,es,fr,it"
+		TZ="Europe/Dublin"
+		;;
+	ga-utf8)
+		# Irish Gaeilge version
+		COUNTRY="ie"
+		LANG="ga_IE@UTF-8"
+		KEYTABLE="uk"
+		XKEYBOARD="uk"
+		KDEKEYBOARD="ie"
+		CHARSET="utf8"
+		# Additional KDE Keyboards
+		KDEKYBOARDS="gb,us,de,es,fr,it"
+		TZ="Europe/Dublin"
+		;;
 	he|il)
 		# Hebrew version
 		LANGUAGE="he"
@@ -867,6 +891,8 @@ checkbootparam utc &>/dev/null && UTC="-u"
 checkbootparam gmt &>/dev/null && UTC="-u"
 
 # hwclock uses the TZ variable
+KTZ="$(getbootparam tz 2>/dev/null)"
+[ -f "/usr/share/zoneinfo/$KTZ" ] && TZ="$KTZ"
 export TZ
 hwclock $UTC -s
 
@@ -876,8 +902,6 @@ echo " ${GREEN}Running Linux Kernel ${YELLOW}$KERNEL${GREEN}.${NORMAL}"
 # / must be read-write in any case, starting from here
 mount -o remount,rw / 2>/dev/null
 
-KTZ="$(getbootparam tz 2>/dev/null)"
-[ -f "/usr/share/zoneinfo/$KTZ" ] && TZ="$KTZ"
 rm -f /etc/localtime
 cp "/usr/share/zoneinfo/$TZ" /etc/localtime
 
@@ -1447,13 +1471,112 @@ getfilepath(){
 	[ -z "$filepath" ] && filepath="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\)\\///)"
 }
 
+# Move up with other cheats code later
+checkbootparam noconfig && NOCONFIGCD="Y" && NOCONFIGHOME="Y" && NOCONFIGCHEAT="Y"
+checkbootparam noconfigcd && NOCONFIGCD="Y"
+checkbootparam noconfighome && NOCONFIGHOME="Y"
+checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
+
+if [ -z "$NOCONFIGCD" ]; then
+	# Check for extra shellscript on CD-Rom (/cdrom/KNOPPIX/knoppix.sh)
+	MYCONFIG="$(ls -1d /cdrom/KNOPPIX/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+	if [ -n "$MYCONFIG" -a -f "$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
+		echo ""
+		echo " ${GREEN}KNOPPIX Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
+		echo "6" > /proc/sys/kernel/printk
+		source "$MYCONFIG" /cdrom/KNOPPIX || true
+		echo "0" > /proc/sys/kernel/printk
+	fi
+fi
+
+# Check for persistent homedir option and eventually mount /home from there,
+# or use a loopback file.
+HOMEDIR="$(getbootparam home)"
+MYHOMEDEVICE=""
+MYHOMEMOUNTPOINT=""
+MYHOMEDIR=""
+if [ -n "$HOMEDIR" ]; then
+	case "$HOMEDIR" in
+		/dev/*)
+			MYHOMEDEVICE="${HOMEDIR##/dev/}"
+			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
+			MYHOMEMOUNTPOINT=$(grep $MYHOMEDEVICE /proc/mounts | cut -d' ' -f2)
+			[ -z "$MYHOMEMOUNTPOINT" ] && MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
+			MYHOMEDIR="/media/${HOMEDIR##/dev/}"
+			;;
+		/media/*)
+			MYHOMEDEVICE="${HOMEDIR##/media/}"
+			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
+			MYHOMEMOUNTPOINT=$(grep $MYHOMEDEVICE /proc/mounts | cut -d' ' -f2)
+			[ -z "$MYHOMEMOUNTPOINT" ] && MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
+			MYHOMEDIR="$HOMEDIR"
+			;;
+		[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
+			MYHOMEDIR="$(findfile knoppix.img)"
+			MYHOMEDEVICE="${MYHOMEDIR##/media/}"
+			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
+			MYHOMEMOUNTPOINT=$(grep $MYHOMEDEVICE /proc/mounts | cut -d' ' -f2)
+			[ -z "$MYHOMEMOUNTPOINT" ] && MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
+			;;
+		*)
+			echo "${CRE}${RED}Invalid ${CYAN}home=${RED} option '$HOMEDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
+			echo "${CRE}${RED}Option ignored.${NORMAL}"
+			;;
+	esac
+fi
+
+if [ -n "$MYHOMEDIR" ]; then
+	if trymount "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"; then
+		[ -f "$MYHOMEMOUNTPOINT/knoppix.img" ] && MYHOMEDIR="$MYHOMEMOUNTPOINT/knoppix.img"
+		while read device mountpoint fs relax; do
+			case "$mountpoint" in
+				*$MYHOMEMOUNTPOINT*)
+					case "$fs" in 
+						*[Nn][Tt][Ff][Ss]*)
+							umount "$MYHOMEMOUNTPOINT"; echo " ${RED}ERROR: WON'T MOUNT NTFS FILESYSTEM ON $MYHOMEDEVICE READ/WRITE!"
+							break
+							;;
+						*[Ff][Aa][Tt]*)
+							# Note: This currently won't work with encrypted partitions
+							mount -o remount,rw,uid=knoppix,gid=knoppix,umask=002,shortname=mixed,quiet "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
+							if [ ! -f "$MYHOMEDIR" ]; then
+								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/knoppix (missing socket/symlink support).${NORMAL}"
+								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/knoppix.img.${NORMAL}"
+							fi
+						;;
+					esac
+					if mount -o remount,rw "$MYHOMEMOUNTPOINT"; then
+						echo -n " ${GREEN}Mounting ${YELLOW}$MYHOMEDIR${GREEN} as ${YELLOW}/home/knoppix${GREEN}... "
+						if [ -f "$MYHOMEDIR" ]; then
+							# It's a loopback file, mount it over the /home/knoppix directory
+							trymount "$MYHOMEDIR" /home/knoppix
+							RC="$?"
+							[ "$RC" = "0" ] && ERROR="$(mount -o remount,rw /home/knoppix 2>&1)"
+							RC="$?"
+						else
+							# Do a --bind mount
+							ERROR="$(mount --bind "$MYHOMEDIR" /home/knoppix 2>&1)"
+							RC="$?"
+						fi
+						[ "$RC" = "0" ] && echo "${GREEN}/home/knoppix mounted OK.${NORMAL}" || { echo "${RED}FAILED."; echo "$ERROR${NORMAL}"; }
+					fi
+					break
+					;;
+			esac
+		done <<EOT
+$(cat /proc/mounts)
+EOT
+	fi
+fi
+
 for unioncheat in unionro unionrw unionfs ; do
-	if checkbootparam "$unioncheat"; then
+	checkbootparam "$unioncheat" && DOUNION="Yes" && MYPARAM="$(getbootparam "$unioncheat")"
+	grep $unioncheat /home/knoppix/.union >/dev/null 2>&1 && DOUNION="Yes" && MYPARAM="(grep $unioncheat /home/knoppix/.union 2>/dev/null | cut -d'=' -f2)"
+	if [ -n "$DOUNION" ] ;then
 		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/KNOPPIX none /KNOPPIX && UNIONMADE="yes" >/dev/null
 		echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
 		UNIONMNTOPT=""
 		[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="-o ro"
-		MYPARAM="$(getbootparam "$unioncheat")"
 		[ "$unioncheat" == "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
 		getfiledev
 		if [ "$filedev" ]; then
@@ -1487,150 +1610,73 @@ for unioncheat in unionro unionrw unionfs ; do
 	fi
 done
 
-# Check for persistent homedir option and eventually mount /home from there,
-# or use a loopback file.
-HOMEDIR="$(getbootparam home)"
-MYHOMEDEVICE=""
-MYHOMEMOUNTPOINT=""
-MYHOMEDIR=""
-if [ -n "$HOMEDIR" ]; then
-	case "$HOMEDIR" in
-		/dev/*)
-			MYHOMEDEVICE="${HOMEDIR##/dev/}"
-			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
-			MYHOMEDIR="/media/${HOMEDIR##/dev/}"
-			;;
-		/media/*)
-			MYHOMEDEVICE="${HOMEDIR##/media/}"
-			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
-			MYHOMEDIR="$HOMEDIR"
-			;;
-		[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-			MYHOMEDIR="$(findfile knoppix.img)"
-			MYHOMEDEVICE="${MYHOMEDIR##/media/}"
-			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
-			;;
-		*)
-			echo "${CRE}${RED}Invalid ${CYAN}home=${RED} option '$HOMEDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
-			echo "${CRE}${RED}Option ignored.${NORMAL}"
-			;;
-	esac
-fi
-
-if [ -n "$MYHOMEDIR" ]; then
-	if trymount "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"; then
-		[ -f "$MYHOMEMOUNTPOINT/knoppix.img" ] && MYHOMEDIR="$MYHOMEMOUNTPOINT/knoppix.img"
-		while read device mountpoint fs relax; do
-			case "$mountpoint" in
-				*$MYHOMEMOUNTPOINT*)
-					case "$fs" in 
-						*[Nn][Tt][Ff][Ss]*)
-							umount "$MYHOMEMOUNTPOINT"; echo " ${RED}ERROR: WON'T MOUNT NTFS FILESYSTEM ON $MYHOMEDEVICE READ/WRITE!"
-							break
-							;;
-						*[Ff][Aa][Tt]*)
-							# Note: This currently won't work with encrypted partitions
-							umount "$MYHOMEMOUNTPOINT"; mount -t vfat -o rw,uid=knoppix,gid=knoppix,umask=002 "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
-							if [ ! -f "$MYHOMEDIR" ]; then
-								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/knoppix (missing socket/symlink support).${NORMAL}"
-								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/knoppix.img.${NORMAL}"
-							fi
-						;;
-					esac
-					if mount -o remount,rw "$MYHOMEMOUNTPOINT"; then
-						echo -n " ${GREEN}Mounting ${YELLOW}$MYHOMEDIR${GREEN} as ${YELLOW}/home/knoppix${GREEN}... "
-						if [ -f "$MYHOMEDIR" ]; then
-							# It's a loopback file, mount it over the /home/knoppix directory
-							trymount "$MYHOMEDIR" /home/knoppix
-							RC="$?"
-							[ "$RC" = "0" ] && ERROR="$(mount -o remount,rw /home/knoppix 2>&1)"
-							RC="$?"
-						else
-							# Do a --bind mount
-							ERROR="$(mount --bind "$MYHOMEDIR" /home/knoppix 2>&1)"
-							RC="$?"
-						fi
-						[ "$RC" = "0" ] && echo "${GREEN}/home/knoppix mounted OK.${NORMAL}" || { echo "${RED}FAILED."; echo "$ERROR${NORMAL}"; }
-					fi
-					break
-					;;
-			esac
-		done <<EOT
-$(cat /proc/mounts)
-EOT
-		fi
-	fi
-
+if [ -z "$NOCONFIGCHEAT" ]; then
 	# Check for configuration floppy add-on if not running from HD
 	if [ -n "$MYCONF" ]; then
 		FOUND_CONFIG=""
 		if [ -n "$MYCONFDIR" ]; then
-		case "$MYCONFDIR" in
-			/dev/*)
-				MYCONFDEVICE="${MYCONFDIR##/dev/}"
-				MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-				MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
-				MYCONFDIR="/media/${MYCONFDIR##/dev/}"
-				;;
-			/media/*)
-				MYCONFDEVICE="${MYCONFDIR##/media/}"
-				MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-				MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
-				;;
-			[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-				MYCONFDIR="$(findfile knoppix.sh)"
-				if [ -n "$MYCONFDIR" ]; then
+			case "$MYCONFDIR" in
+				/dev/*)
+					MYCONFDEVICE="${MYCONFDIR##/dev/}"
+					MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
+					MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
+					MYCONFDIR="/media/${MYCONFDIR##/dev/}"
+					;;
+				/media/*)
 					MYCONFDEVICE="${MYCONFDIR##/media/}"
 					MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
 					MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
-					MYCONFDIR="${MYCONFMOUNTPOINT}"
-				else
-					FOUND_CONFIG="none"
-				fi
-				;;
-			*)
-				echo "${CRE}${RED}Invalid configdir '$MYCONFDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
-				echo "${CRE}${RED}Option ignored.${NORMAL}"
-				FOUND_CONFIG="invalid"
-				;;
-		esac
-	else
-		MYCONFDEVICE="/dev/fd0"
-		MYCONFMOUNTPOINT="/media/floppy0"
-		MYCONFDIR="/media/floppy0"
-	fi
-
-	if [ -z "$FOUND_CONFIG" ]; then
-		echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for KNOPPIX configuration files...${NORMAL}"
-		if trymount "$MYCONFDEVICE" "$MYCONFMOUNTPOINT"; then
-			MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
-			if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
-				echo ""
-				FOUND_CONFIG="yes"
-				echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
-				echo "6" > /proc/sys/kernel/printk
-				source "$MYCONFIG" "$MYCONFDIR" || true
-				echo "0" > /proc/sys/kernel/printk
-			fi
-			umount "$MYCONFMOUNTPOINT" 2>/dev/null
+					;;
+				[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
+					MYCONFDIR="$(findfile knoppix.sh)"
+					if [ -n "$MYCONFDIR" ]; then
+						MYCONFDEVICE="${MYCONFDIR##/media/}"
+						MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
+						MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
+						MYCONFDIR="${MYCONFMOUNTPOINT}"
+					else
+						FOUND_CONFIG="none"
+					fi
+					;;
+				*)
+					echo "${CRE}${RED}Invalid configdir '$MYCONFDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
+					echo "${CRE}${RED}Option ignored.${NORMAL}"
+					FOUND_CONFIG="invalid"
+					;;
+			esac
+		else
+			MYCONFDEVICE="/dev/fd0"
+			MYCONFMOUNTPOINT="/media/floppy0"
+			MYCONFDIR="/media/floppy0"
 		fi
+
+		if [ -z "$FOUND_CONFIG" ]; then
+			echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for KNOPPIX configuration files...${NORMAL}"
+			if trymount "$MYCONFDEVICE" "$MYCONFMOUNTPOINT"; then
+				MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+				if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
+					echo ""
+					FOUND_CONFIG="yes"
+					echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
+					echo "6" > /proc/sys/kernel/printk
+					source "$MYCONFIG" "$MYCONFDIR" || true
+					echo "0" > /proc/sys/kernel/printk
+				fi
+				umount "$MYCONFMOUNTPOINT" 2>/dev/null
+			fi
+		fi
+		[ -n "$FOUND_CONFIG" ] || echo " ${BLUE}Not present.${NORMAL}"
 	fi
-	[ -n "$FOUND_CONFIG" ] || echo " ${BLUE}Not present.${NORMAL}"
 fi
 
-# Check for extra shellscript on CD-Rom (/cdrom/KNOPPIX/knoppix.sh)
-MYCONFIG="$(ls -1d /cdrom/KNOPPIX/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
-if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
-	echo ""
-	FOUND_CONFIG="yes"
-	echo " ${GREEN}KNOPPIX Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
+if [ -z "$NOCONFIGHOME" -a -f /home/knoppix/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] ]; then
+	MYCONFIG="$(ls -1d /home/knoppix/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 	echo "6" > /proc/sys/kernel/printk
-	source "$MYCONFIG" /cdrom/KNOPPIX || true
-	echo "0" > /proc/sys/kernel/printk
+	source "$MYCONFIG" "/home/knoppix" || true
+	echo "0" > /proc/sys/kernel/printk	
 fi
+
 
 # modem detection
 if ! checkbootparam "nomodem"; then
@@ -1645,6 +1691,7 @@ if ! checkbootparam "nopowernow"; then
 	POWERNOW=""
 	grep -iq "Mobile AMD Athlon(tm) XP" /proc/cpuinfo && POWERNOW="powernow-k7"
 	grep -iq "AMD Athlon(tm) 64 Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
+	grep -iq "AMD Athlon(tm) 64 X2 Dual Core Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
 	grep -iq "AMD Sempron(tm) Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
 	grep -iq "AMD Turion(tm) 64" /proc/cpuinfo && POWERNOW="powernow-k8"
 	grep -iq "Intel(R) Pentium(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
