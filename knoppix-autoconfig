@@ -1570,8 +1570,9 @@ EOT
 fi
 
 for unioncheat in unionro unionrw unionfs ; do
+	DOUNION=""
+	grep $unioncheat /home/knoppix/.union >/dev/null 2>&1 && DOUNION="Yes" && MYPARAM="$(grep $unioncheat /home/knoppix/.union 2>/dev/null | cut -d'=' -f2)"
 	checkbootparam "$unioncheat" && DOUNION="Yes" && MYPARAM="$(getbootparam "$unioncheat")"
-	grep $unioncheat /home/knoppix/.union >/dev/null 2>&1 && DOUNION="Yes" && MYPARAM="(grep $unioncheat /home/knoppix/.union 2>/dev/null | cut -d'=' -f2)"
 	if [ -n "$DOUNION" ] ;then
 		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/KNOPPIX none /KNOPPIX && UNIONMADE="yes" >/dev/null
 		echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
@@ -1579,7 +1580,7 @@ for unioncheat in unionro unionrw unionfs ; do
 		[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="-o ro"
 		[ "$unioncheat" == "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
 		getfiledev
-		if [ "$filedev" ]; then
+		if [ -n "$filedev" ]; then
 			if grep $filedev /etc/fstab 2>&1>/dev/null && ! grep $filedev /proc/mounts 2>&1>/dev/null; then
 				mount $UNIONMNTOPT $filedev >/dev/null
 				getfilepath
@@ -1604,9 +1605,9 @@ for unioncheat in unionro unionrw unionfs ; do
 			mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
 			MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
 		fi
-		[ "$MYPARAM" ] && unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
+		[ -n "$MYPARAM" ] && unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
 		[ -z "$UNIONTIDY" ] && unionctl /KNOPPIX --mode /KNOPPIX ro > /dev/null && UNIONTIDY="yes"
-		[ "$UNIONMNTOPT" ] && unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
+		[ -n "$UNIONMNTOPT" ] && unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
 	fi
 done
 

@@ -1,5 +1,6 @@
 initscripts-kanotix-live (0.3.14) UNRELEASED; urgency=low
 
+  * fixup autoconfig patch for unions (bfree).
   * NOT RELEASED YET
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 26 Dec 2005 22:18:16 +0100
