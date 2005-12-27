@@ -1,9 +1,12 @@
-initscripts-kanotix-live (0.3.14) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.14) unstable; urgency=low
 
-  * fixup autoconfig patch for unions (bfree).
-  * NOT RELEASED YET
+  [ Niall Walsh ]
+  * fixup autoconfig patch for unions.
+  
+  [ Stefan Lippers-Hollmann ]
+  * tag version.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 26 Dec 2005 22:18:16 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 28 Dec 2005 00:54:19 +0100
 
 initscripts-kanotix-live (0.3.13) unstable; urgency=low
 
