@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.3.16) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.16) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * add support for /etc/init.d/dbus as fallback.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 30 Dec 2005 01:37:56 +0100
+ -- Joerg Schirottke <master@kantoix.com>  Fri, 30 Dec 2005 10:44:43 +0100
 
 initscripts-kanotix-live (0.3.15) unstable; urgency=low
 
