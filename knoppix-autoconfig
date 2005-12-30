@@ -1472,7 +1472,7 @@ getfilepath(){
 }
 
 # Move up with other cheats code later
-checkbootparam noconfig && NOCONFIGCD="Y" && NOCONFIGHOME="Y" && NOCONFIGCHEAT="Y"
+checkbootparam noconfigall && NOCONFIGCD="Y" && NOCONFIGHOME="Y" && NOCONFIGCHEAT="Y"
 checkbootparam noconfigcd && NOCONFIGCD="Y"
 checkbootparam noconfighome && NOCONFIGHOME="Y"
 checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"

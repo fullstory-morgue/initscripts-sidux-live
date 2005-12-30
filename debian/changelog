@@ -1,8 +1,12 @@
 initscripts-kanotix-live (0.3.15) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 28 Dec 2005 00:57:00 +0100
+  [ Niall Walsh ]
+  * change noconfig to noconfigall to fix noconfig* cheatcodes
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Thu, 29 Dec 2005 23:11:52 +0000
 
 initscripts-kanotix-live (0.3.14) unstable; urgency=low
 
