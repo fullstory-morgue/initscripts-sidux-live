@@ -948,8 +948,8 @@ echo "TZ=\"$TZ\""                     >> /etc/sysconfig/knoppix
 # Write DPI setting if specified
 [ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> /etc/sysconfig/knoppix
 
-# disable 855resolution hack
-checkbootparam "no855res" && echo "NO855RES=\"yes\"" >> /etc/sysconfig/knoppix
+# disable 915resolution hack
+checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> /etc/sysconfig/knoppix
 
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk

@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.3.17) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.17) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * change no855res to no915res cheatcode.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 30 Dec 2005 13:38:49 +0100
+ -- Joerg Schirottke <master@kanotix.com>  Fri, 20 Jan 2006 15:59:01 +0100
 
 initscripts-kanotix-live (0.3.16) unstable; urgency=low
 
