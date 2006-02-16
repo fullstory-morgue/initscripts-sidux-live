@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.18) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 16 Feb 2006 10:58:44 +0100
+
 initscripts-kanotix-live (0.3.17) unstable; urgency=low
 
   * change no855res to no915res cheatcode.
