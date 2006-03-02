@@ -84,7 +84,7 @@ checkbootparam(){
 # This should work, but doesn't with Kernel 2.4.19-rc1
 # CMDLINE="$(</proc/cmdline)" This should work, but doesn't with Kernel 2.4.19-rc1
 # This works.
-[ -z "$CMDLINE" ] && CMDLINE="$(cat /proc/cmdline)"
+[ -z "$CMDLINE" ] && CMDLINE=" $(cat /proc/cmdline)"
 
 # Check if we are in interactive startup mode
 INTERACTIVE=""
