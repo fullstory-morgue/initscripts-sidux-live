@@ -1,8 +1,11 @@
 initscripts-kanotix-live (0.3.18) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
+  * fix unions on a directory in home
+  * only match non-comment lines from fstab when checking mountpoints for unions
+  * use first non-commented fstab line if mounting required for a union
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 16 Feb 2006 10:58:44 +0100
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Fri,  3 Mar 2006 01:37:47 +0000
 
 initscripts-kanotix-live (0.3.17) unstable; urgency=low
 

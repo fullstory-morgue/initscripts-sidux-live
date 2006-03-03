@@ -1466,8 +1466,8 @@ trymount(){
 
 # Unionfs
 getfiledev(){
-	filedev="$(echo $MYPARAM | grep ^/media/ | sed s/\\/media\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
-	[ -z "$filedev" ] && filedev="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
+	filedev="$(echo $MYPARAM | grep ^/media/ | tail -n 1 | sed s/\\/media\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
+	[ -z "$filedev" ] && filedev="$(echo $MYPARAM | grep ^/dev/ | tail -n 1 | sed s/\\/dev\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
 }
 
 getfilepath(){
@@ -1588,7 +1588,7 @@ for unioncheat in unionro unionrw unionfs ; do
 			if grep $filedev /etc/fstab 2>&1>/dev/null && ! grep $filedev /proc/mounts 2>&1>/dev/null; then
 				mount $UNIONMNTOPT $filedev >/dev/null
 				getfilepath
-				MYPARAM="$(grep $filedev /etc/fstab | awk '{ print $2 }' -)"
+				MYPARAM="$(awk '/'$filedev'/{if (done==1 || /^[[:space:]]*\#/); else {done=1; print $2} }' /etc/fstab)"
 				MYPARAM="$MYPARAM/$filepath"
 			else
 				if ! grep $filedev /proc/mounts; then
@@ -1598,7 +1598,7 @@ for unioncheat in unionro unionrw unionfs ; do
 					MYPARAM="/ramdisk/var/tmp/$unioncheat/$filepath"
 				else
 					getfilepath
-					MYPARAM="$(grep $filedev /proc/mounts | awk '{ print $2 }' -)"
+					MYPARAM="$(grep $filedev /proc/mounts | tail -n 1 | awk '{ print $2 }' -)"
 					grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro &>/dev/null && mount -o remount,rw $filedev $MYPARAM >/dev/null
 					MYPARAM="$MYPARAM/$filepath"
 				fi
