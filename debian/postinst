@@ -37,16 +37,16 @@ set -e
 
 #DEBHELPER#
 
-if [ -x "/etc/init.d/knoppix-autoconfig" ]; then
-	update-rc.d knoppix-autoconfig start 00 S . >/dev/null
+if [ -x "/etc/init.d/live-autoconfig" ]; then
+	update-rc.d live-autoconfig start 00 S . >/dev/null
 fi
 
-if [ -x "/etc/init.d/knoppix-halt" ]; then
-	update-rc.d knoppix-halt start 90 0 . >/dev/null
+if [ -x "/etc/init.d/live-halt" ]; then
+	update-rc.d live-halt start 90 0 . >/dev/null
 fi
 
-if [ -x "/etc/init.d/knoppix-reboot" ]; then
-	update-rc.d knoppix-reboot start 90 6 . >/dev/null
+if [ -x "/etc/init.d/live-reboot" ]; then
+	update-rc.d live-reboot start 90 6 . >/dev/null
 fi
 
 
