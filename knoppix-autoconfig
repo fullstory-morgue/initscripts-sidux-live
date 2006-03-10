@@ -1098,6 +1098,8 @@ update_progress 40
 NOSERIAL=""
 checkbootparam noserial &>/dev/null && NOSERIAL="yes"
 [ -n "$NOSERIAL" ] && HWSETUP_NOSERIAL="-m"
+# load serial module
+modprobe 8250 &>/dev/null
 
 # load psmouse module
 modprobe psmouse &>/dev/null
@@ -1160,9 +1162,9 @@ fi
 
 # Get max. sound volume
 VOL="$(getbootparam vol 2>/dev/null)"
-[ -z "$VOL" ] && VOL=65
+[ -z "$VOL" ] && VOL=50
 VOL=$((VOL))
-[ $VOL -lt 0 -o $VOL -gt 100 ] && VOL=65
+[ $VOL -lt 0 -o $VOL -gt 100 ] && VOL=50
 
 # Fast ALSA detection
 

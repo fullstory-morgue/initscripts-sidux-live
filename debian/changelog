@@ -2,8 +2,10 @@ initscripts-kanotix-live (0.3.19) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
   * knoppix --> kanotix transition, thanks to x-un-i.
+  * probe 8250, if 8250_pnp isn't loaded.
+  * reduce default sound level to 50.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 10 Mar 2006 01:29:33 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 10 Mar 2006 13:17:43 +0100
 
 initscripts-kanotix-live (0.3.18) unstable; urgency=low
 
