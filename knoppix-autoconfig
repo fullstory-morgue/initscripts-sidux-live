@@ -11,6 +11,10 @@ umask 022
 
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
+FLL_IMAGE_DIR="KNOPPIX"
+FLL_DISTRO_NAME="Kanotix"
+FLL_LIVE_USER="knoppix"
+
 [ -r /etc/default/distro ] && source /etc/default/distro
 
 [ ! "$FLL_DISTRO_MODE" == "live" ] && exit 0
@@ -29,7 +33,7 @@ CRE="
 [K"
 NORMAL="[0;39m"
 # RED: Failure or error message
-RED="[1;31m"
+
 # GREEN: Success message
 GREEN="[1;32m"
 # YELLOW: Descriptions
@@ -964,9 +968,9 @@ ifconfig lo 127.0.0.1 up
 # CD Checker
 if checkbootparam "testcd"; then
 	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
-	echo " ${BLUE}Reading files and checking against KNOPPIX/md5sums, this may take a while...${NORMAL}"
+	echo " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}"
 	echo -n "${RED}"
-	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG="$LANG" md5sum -c KNOPPIX/md5sums 2>&1 | tee /tmp/md5sum.log )
+	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG="$LANG" md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
 	if [ "$?" = "0" ]; then
 		echo " ${GREEN}Everything looks OK${NORMAL}"
 	else
@@ -1260,7 +1264,7 @@ if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
 	case "$ALSA_CARD" in auto*) ALSA_CARD="";; esac
 	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
 	# Something went wrong ?
-	[ ! -r /etc/modules.conf ] && ln -sf /KNOPPIX/etc/modules.conf /etc/modules.conf
+	[ ! -r /etc/modules.conf ] && ln -sf /${FLL_IMAGE_DIR}/etc/modules.conf /etc/modules.conf
 fi
 
 # Start FC detection on vt10
@@ -1332,7 +1336,7 @@ if checkbootparam "nofstab"; then
 	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
 else
 	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}... "
-	[ -d /KNOPPIX ] && rebuildfstab -r -u knoppix -g knoppix >/dev/null 2>/dev/null || rebuildfstab -r &>/dev/null
+	[ -d /${FLL_IMAGE_DIR} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r &>/dev/null
 	if [ -e /var/run/rebuildfstab.pid ]; then
 		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
 		sleep 8
@@ -1358,13 +1362,13 @@ if [ -n "$partitions" ]; then
 		# Create mountdir if not already present
 		d="/media/${p##*/}" ; [ -d "$d" ] || mkdir -p "$d"
 		case "$f" in vfat|msdos)
-			if [ -z "$NOSWAP" ] && mount -o uid=knoppix,gid=knoppix,ro -t $f $p $d 2>/dev/null; then
-				if [ -f $d/knoppix.swp ]; then
+			if [ -z "$NOSWAP" ] && mount -o uid=${FLL_LIVE_USER},gid=$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4),ro -t $f $p $d 2>/dev/null; then
+				if [ -f $d/${FLL_DISTRO_NAME}.swp ]; then
 					mount -o remount,rw $d
-					if swapon $d/knoppix.swp 2>/dev/null; then
-						echo "${BLUE}Using KNOPPIX swapfile ${MAGENTA}$d/knoppix.swp${BLUE}.${NORMAL}"
+					if swapon $d/${FLL_DISTRO_NAME}.swp 2>/dev/null; then
+						echo "${BLUE}Using ${FLL_DISTRO_NAME} swapfile ${MAGENTA}$d/${FLL_DISTRO_NAME}.swp${BLUE}.${NORMAL}"
 						mount -o remount,ro $d 2>/dev/null
-						fnew="$d/knoppix.swp none            swap    sw              0       0"
+						fnew="$d/${FLL_DISTRO_NAME}.swp none            swap    sw              0       0"
 						stringinfile "$fnew" "/etc/fstab" || echo "$fnew" >> /etc/fstab
 					else
 						umount $d
@@ -1414,7 +1418,7 @@ else
 fi
 
 # Search for custom background image for KDE/GNOME/X
-for i in /cdrom/KNOPPIX/background /usr/share/wallpapers/kanotix; do
+for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/kanotix; do
 	for j in png jpg gif; do
 		BACKGROUND="$i.$j"
 		[ -e "$BACKGROUND" ] && break 2
@@ -1482,13 +1486,13 @@ checkbootparam noconfighome && NOCONFIGHOME="Y"
 checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
 
 if [ -z "$NOCONFIGCD" ]; then
-	# Check for extra shellscript on CD-Rom (/cdrom/KNOPPIX/knoppix.sh)
-	MYCONFIG="$(ls -1d /cdrom/KNOPPIX/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/knoppix.sh)
+	MYCONFIG="$(ls -1d /cdrom/${FLL_IMAGE_DIR}/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	if [ -n "$MYCONFIG" -a -f "$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
 		echo ""
-		echo " ${GREEN}KNOPPIX Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
+		echo " ${GREEN}${FLL_DISTRO_NAME} Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 		echo "6" > /proc/sys/kernel/printk
-		source "$MYCONFIG" /cdrom/KNOPPIX || true
+		source "$MYCONFIG" /cdrom/${FLL_IMAGE_DIR} || true
 		echo "0" > /proc/sys/kernel/printk
 	fi
 fi
@@ -1542,27 +1546,27 @@ if [ -n "$MYHOMEDIR" ]; then
 							;;
 						*[Ff][Aa][Tt]*)
 							# Note: This currently won't work with encrypted partitions
-							mount -o remount,rw,uid=knoppix,gid=knoppix,umask=002,shortname=mixed,quiet "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
+							mount -o remount,rw,uid=${FLL_LIVE_USER},gid=$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4),umask=002,shortname=mixed,quiet "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
 							if [ ! -f "$MYHOMEDIR" ]; then
-								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/knoppix (missing socket/symlink support).${NORMAL}"
+								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/${FLL_LIVE_USER} (missing socket/symlink support).${NORMAL}"
 								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/knoppix.img.${NORMAL}"
 							fi
 						;;
 					esac
 					if mount -o remount,rw "$MYHOMEMOUNTPOINT"; then
-						echo -n " ${GREEN}Mounting ${YELLOW}$MYHOMEDIR${GREEN} as ${YELLOW}/home/knoppix${GREEN}... "
+						echo -n " ${GREEN}Mounting ${YELLOW}$MYHOMEDIR${GREEN} as ${YELLOW}/home/${FLL_LIVE_USER}${GREEN}... "
 						if [ -f "$MYHOMEDIR" ]; then
-							# It's a loopback file, mount it over the /home/knoppix directory
-							trymount "$MYHOMEDIR" /home/knoppix
+							# It's a loopback file, mount it over the /home/${FLL_LIVE_USER} directory
+							trymount "$MYHOMEDIR" /home/${FLL_LIVE_USER}
 							RC="$?"
-							[ "$RC" = "0" ] && ERROR="$(mount -o remount,rw /home/knoppix 2>&1)"
+							[ "$RC" = "0" ] && ERROR="$(mount -o remount,rw /home/${FLL_LIVE_USER} 2>&1)"
 							RC="$?"
 						else
 							# Do a --bind mount
-							ERROR="$(mount --bind "$MYHOMEDIR" /home/knoppix 2>&1)"
+							ERROR="$(mount --bind "$MYHOMEDIR" /home/${FLL_LIVE_USER} 2>&1)"
 							RC="$?"
 						fi
-						[ "$RC" = "0" ] && echo "${GREEN}/home/knoppix mounted OK.${NORMAL}" || { echo "${RED}FAILED."; echo "$ERROR${NORMAL}"; }
+						[ "$RC" = "0" ] && echo "${GREEN}/home/${FLL_LIVE_USER} mounted OK.${NORMAL}" || { echo "${RED}FAILED."; echo "$ERROR${NORMAL}"; }
 					fi
 					break
 					;;
@@ -1575,10 +1579,10 @@ fi
 
 for unioncheat in unionro unionrw unionfs ; do
 	DOUNION=""
-	grep $unioncheat /home/knoppix/.union >/dev/null 2>&1 && DOUNION="Yes" && MYPARAM="$(grep $unioncheat /home/knoppix/.union 2>/dev/null | cut -d'=' -f2)"
+	grep $unioncheat /home/${FLL_LIVE_USER}/.union >/dev/null 2>&1 && DOUNION="Yes" && MYPARAM="$(grep $unioncheat /home/${FLL_LIVE_USER}/.union 2>/dev/null | cut -d'=' -f2)"
 	checkbootparam "$unioncheat" && DOUNION="Yes" && MYPARAM="$(getbootparam "$unioncheat")"
 	if [ -n "$DOUNION" ] ;then
-		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/KNOPPIX none /KNOPPIX && UNIONMADE="yes" >/dev/null
+		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/${FLL_IMAGE_DIR} none /${FLL_IMAGE_DIR} && UNIONMADE="yes" >/dev/null
 		echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
 		UNIONMNTOPT=""
 		[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="-o ro"
@@ -1609,9 +1613,9 @@ for unioncheat in unionro unionrw unionfs ; do
 			mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
 			MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
 		fi
-		[ -n "$MYPARAM" ] && unionctl /KNOPPIX --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
-		[ -z "$UNIONTIDY" ] && unionctl /KNOPPIX --mode /KNOPPIX ro > /dev/null && UNIONTIDY="yes"
-		[ -n "$UNIONMNTOPT" ] && unionctl /KNOPPIX --mode $MYPARAM ro > /dev/null
+		[ -n "$MYPARAM" ] && unionctl /${FLL_IMAGE_DIR} --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
+		[ -z "$UNIONTIDY" ] && unionctl /${FLL_IMAGE_DIR} --mode /${FLL_IMAGE_DIR} ro > /dev/null && UNIONTIDY="yes"
+		[ -n "$UNIONMNTOPT" ] && unionctl /${FLL_IMAGE_DIR} --mode $MYPARAM ro > /dev/null
 	fi
 done
 
@@ -1656,7 +1660,7 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 		fi
 
 		if [ -z "$FOUND_CONFIG" ]; then
-			echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for KNOPPIX configuration files...${NORMAL}"
+			echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for ${FLL_DISTRO_NAME} configuration files...${NORMAL}"
 			if trymount "$MYCONFDEVICE" "$MYCONFMOUNTPOINT"; then
 				MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 				if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
@@ -1674,11 +1678,11 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 	fi
 fi
 
-if [ -z "$NOCONFIGHOME" -a -f /home/knoppix/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] ]; then
-	MYCONFIG="$(ls -1d /home/knoppix/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] ]; then
+	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 	echo "6" > /proc/sys/kernel/printk
-	source "$MYCONFIG" "/home/knoppix" || true
+	source "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
 	echo "0" > /proc/sys/kernel/printk	
 fi
 
@@ -1737,7 +1741,7 @@ setkeycodes e00a 89 e008 90 &>/dev/null
 # captive live fix
 if [ -L /var/lib/captive/ext2fsd.sys ]; then
 	rm -f /var/lib/captive/ext2fsd.sys
-	cp /KNOPPIX/var/lib/captive/ext2fsd.sys /var/lib/captive
+	cp /${FLL_IMAGE_DIR}/var/lib/captive/ext2fsd.sys /var/lib/captive
 fi
 
 update_progress 100

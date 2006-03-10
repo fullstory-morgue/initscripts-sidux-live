@@ -5,6 +5,7 @@ export PATH
 
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
+FLL_DISTRO_NAME="Kanotix!
 [ -r /etc/default/distro ] && source /etc/default/distro
 
 [ ! "$FLL_DISTRO_MODE" == "live" ] && exit 0
@@ -30,7 +31,7 @@ WHITE="[1;37m"
 case "$0" in
 	*halt)
 		message="
-		${YELLOW}KANOTIX halted.${NORMAL}"
+		${YELLOW}${FLL_DISTRO_NAME} halted.${NORMAL}"
 		command="halt"
 		options="-p -d -i -f"
 		;;
