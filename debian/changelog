@@ -5,8 +5,10 @@ initscripts-kanotix-live (0.3.19) UNRELEASED; urgency=low
   * probe 8250, if 8250_pnp isn't loaded.
   * reduce default sound level to 50.
   * rename knoppix-{autoconfig,halt,reboot} to live-{autoconfig,halt,reboot}.
+  * depend on hwsetup-ng.
+  * add pcmciautils as alternative to pcmcia-cs.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 10 Mar 2006 13:21:41 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 13 Mar 2006 11:15:28 +0100
 
 initscripts-kanotix-live (0.3.18) unstable; urgency=low
 
