@@ -114,7 +114,7 @@ LANGUAGE="$(getbootparam lang 2>/dev/null)"
 [ -n "$LANGUAGE" ] || LANGUAGE="de"
 
 # Set default console font (needed for first console + kernel 2.6)
-CONSOLEFONT="lat0-16"
+CONSOLEFONT="lat9-16"
 
 # The default language/keyboard to use. This CANNOT be autoprobed.
 # Most of these variables will be used to generate the KDE defaults
