@@ -7,8 +7,9 @@ initscripts-kanotix-live (0.3.19) experimental; urgency=low
   * depend on hwsetup-ng.
   * add pcmciautils as alternative to pcmcia-cs.
   * use lat9-16.
+  * fix quoting.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 22 Mar 2006 00:57:16 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 22 Mar 2006 01:03:03 +0100
 
 initscripts-kanotix-live (0.3.18) unstable; urgency=low
 
