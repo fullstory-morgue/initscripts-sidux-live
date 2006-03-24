@@ -1,4 +1,11 @@
-initscripts-kanotix-live (0.3.19) experimental; urgency=low
+initscripts-kanotix-live (0.3.20) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * use lat9w-16.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 24 Mar 2006 01:07:57 +0100
+
+initscripts-kanotix-live (0.3.19) unstable; urgency=low
 
   * knoppix --> kanotix transition, thanks to x-un-i.
   * probe 8250, if 8250_pnp isn't loaded.
@@ -9,7 +16,7 @@ initscripts-kanotix-live (0.3.19) experimental; urgency=low
   * use lat9-16.
   * fix quoting.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 22 Mar 2006 01:03:03 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 24 Mar 2006 01:07:50 +0100
 
 initscripts-kanotix-live (0.3.18) unstable; urgency=low
 
