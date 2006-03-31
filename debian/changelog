@@ -1,9 +1,8 @@
-initscripts-kanotix-live (0.3.20) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.20) unstable; urgency=low
 
-  * NOT RELEASED YET
   * use lat9w-16.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 24 Mar 2006 01:07:57 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  1 Apr 2006 00:13:48 +0200
 
 initscripts-kanotix-live (0.3.19) unstable; urgency=low
 
