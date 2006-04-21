@@ -1,8 +1,12 @@
 initscripts-kanotix-live (0.3.21) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  1 Apr 2006 00:23:40 +0200
+  [ Niall Walsh ]
+  * Fix awk bug when using fstab to mount a device for a union
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Fri, 21 Apr 2006 19:26:27 +0100
 
 initscripts-kanotix-live (0.3.20) unstable; urgency=low
 

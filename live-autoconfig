@@ -1594,7 +1594,7 @@ for unioncheat in unionro unionrw unionfs ; do
 			if grep $filedev /etc/fstab 2>&1>/dev/null && ! grep $filedev /proc/mounts 2>&1>/dev/null; then
 				mount $UNIONMNTOPT $filedev >/dev/null
 				getfilepath
-				MYPARAM="$(awk '/'$filedev'/{if (done==1 || /^[[:space:]]*\#/); else {done=1; print $2} }' /etc/fstab)"
+				MYPARAM="$(grep -v ^[:space:]*\# /etc/fstab | grep $filedev | head -n 1 | awk '{print $2}')"
 				MYPARAM="$MYPARAM/$filepath"
 			else
 				if ! grep $filedev /proc/mounts; then
