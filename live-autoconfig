@@ -1063,6 +1063,7 @@ if [ -d /proc/acpi ]; then
 		done
 		test -z "$found" && echo -n "${BLUE}(none)"
 		echo "${NORMAL}"
+		fuser -k /proc/acpi/event &>/dev/null
 		/etc/init.d/acpid start >/dev/null
 	fi
 else
@@ -1707,6 +1708,7 @@ if ! checkbootparam "nopowernow"; then
 	grep -iq "AMD Turion(tm) 64" /proc/cpuinfo && POWERNOW="powernow-k8"
 	grep -iq "Intel(R) Pentium(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
 	#grep -iq "Intel(R) Celeron(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
+	grep -qi [ETLU][1-9][0-9]00 /proc/cpuinfo && POWERNOW="speedstep-centrino"
 	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && POWERNOW="speedstep-ich"
 	grep -iq "VIA Nehemiah" /proc/cpuinfo && POWERNOW="longhaul"
 	if [ "$POWERNOW" ]; then

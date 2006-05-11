@@ -1,8 +1,14 @@
-initscripts-kanotix-live (0.3.22) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.22) unstable; urgency=low
 
-  * NOT RELEASED YET
+  [ Joerg Schirottke ]
+  * Copied live-reboot to live-halt.
+  * Fixed acpid issue.
+  * Added Core CPU detection.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 25 Apr 2006 02:42:12 +0200
+  [ Stefan Lippers-Hollmann ]
+  * fix distro-defaults usage.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 12 May 2006 00:23:02 +0200
 
 initscripts-kanotix-live (0.3.21) unstable; urgency=low
 
