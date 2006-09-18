@@ -1,8 +1,10 @@
-initscripts-kanotix-live (0.3.24) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.24) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Add ipw3945 support.
+  * Use $FLL_PERSISTENT_HOME instead of knoppix.img.
+  * Add ASUS M2NPV-VM workaround.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Sep 2006 00:06:29 +0200
+ -- Joerg Schirottke <master@kanotix.com>  Mon, 18 Sep 2006 14:36:40 +0200
 
 initscripts-kanotix-live (0.3.23) unstable; urgency=low
 

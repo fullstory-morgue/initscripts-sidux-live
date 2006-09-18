@@ -14,6 +14,7 @@ FLL_DISTRO_MODE="installed"
 FLL_IMAGE_DIR="KNOPPIX"
 FLL_DISTRO_NAME="Kanotix"
 FLL_LIVE_USER="knoppix"
+FLL_PERSISTENT_HOME="kanotix.img"
 
 [ -r /etc/default/distro ] && source /etc/default/distro
 
@@ -1162,6 +1163,19 @@ if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
 	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load &>/dev/null' > /etc/modprobe.d/dwl520e1
 fi
 
+# ipw3945 detection
+[ -e /sys/bus/pci/drivers/ipw3945/*/cmd ] && (pidof ipw3945d &>/dev/null || /sbin/ipw3945d --quiet &>/dev/null)
+
+# ASUS M2NPV-VM workaround
+rm -f /etc/modprobe.d/alsa-asus
+if cut -f2 -d: /sys/devices/pci*/{,*/}*/modalias 2>/dev/null|grep -q v000010DEd0000026Csv00001043sd000081CBbc; then
+	echo options snd-hda-intel position_fix=1 model=3stack > /etc/modprobe.d/alsa-asus
+	if [ -d /sys/module/snd_hda_intel ]; then
+		rmmod snd_hda_intel &>/dev/null
+		modprobe snd-hda-intel position_fix=1 model=3stack &>/dev/null
+	fi
+fi
+
 # Read in what hwsetup has found
 [ -f /etc/sysconfig/knoppix ] && source /etc/sysconfig/knoppix
 
@@ -1521,6 +1535,7 @@ checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
 if [ -z "$NOCONFIGCD" ]; then
 	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/knoppix.sh)
 	MYCONFIG="$(ls -1d /cdrom/${FLL_IMAGE_DIR}/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+	[ -z "$MYCONFIG" ] && MYCONFIG="$(ls -1d /cdrom/${FLL_IMAGE_DIR}/[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	if [ -n "$MYCONFIG" -a -f "$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
 		echo ""
 		echo " ${GREEN}${FLL_DISTRO_NAME} Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
@@ -1553,7 +1568,7 @@ if [ -n "$HOMEDIR" ]; then
 			MYHOMEDIR="$HOMEDIR"
 			;;
 		[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-			MYHOMEDIR="$(findfile knoppix.img)"
+			MYHOMEDIR="$(findfile $FLL_PERSISTENT_HOME)"
 			MYHOMEDEVICE="${MYHOMEDIR##/media/}"
 			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
 			MYHOMEMOUNTPOINT=$(grep $MYHOMEDEVICE /proc/mounts | cut -d' ' -f2)
@@ -1568,7 +1583,7 @@ fi
 
 if [ -n "$MYHOMEDIR" ]; then
 	if trymount "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"; then
-		[ -f "$MYHOMEMOUNTPOINT/knoppix.img" ] && MYHOMEDIR="$MYHOMEMOUNTPOINT/knoppix.img"
+		[ -f "$MYHOMEMOUNTPOINT/$FLL_PERSISTENT_HOME" ] && MYHOMEDIR="$MYHOMEMOUNTPOINT/$FLL_PERSISTENT_HOME"
 		while read device mountpoint fs relax; do
 			case "$mountpoint" in
 				*$MYHOMEMOUNTPOINT*)
@@ -1582,7 +1597,7 @@ if [ -n "$MYHOMEDIR" ]; then
 							mount -o remount,rw,uid=${FLL_LIVE_USER},gid=$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4),umask=002,shortname=mixed,quiet "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
 							if [ ! -f "$MYHOMEDIR" ]; then
 								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/${FLL_LIVE_USER} (missing socket/symlink support).${NORMAL}"
-								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/knoppix.img.${NORMAL}"
+								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/$FLL_PERSISTENT_HOME.${NORMAL}"
 							fi
 						;;
 					esac
@@ -1696,6 +1711,7 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 			echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for ${FLL_DISTRO_NAME} configuration files...${NORMAL}"
 			if trymount "$MYCONFDEVICE" "$MYCONFMOUNTPOINT"; then
 				MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+				[ -z "$MYCONFIG" ] && MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 				if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
 					echo ""
 					FOUND_CONFIG="yes"
@@ -1711,6 +1727,8 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 	fi
 fi
 
+# old .knoppix.sh
+
 if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] ]; then
 	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
@@ -1719,6 +1737,15 @@ if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][X
 	echo "0" > /proc/sys/kernel/printk	
 fi
 
+# new .kanotix.sh
+
+if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] ]; then
+	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
+	echo "6" > /proc/sys/kernel/printk
+	source "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
+	echo "0" > /proc/sys/kernel/printk	
+fi
 
 # modem detection
 if ! checkbootparam "nomodem"; then
