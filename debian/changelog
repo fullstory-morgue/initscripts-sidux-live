@@ -1,8 +1,11 @@
-initscripts-kanotix-live (0.3.23) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.23) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * powersaved support.
+  * better speedstep-centrino detection.
+  * write /etc/timezone.
+  * write real cd devices to fstab.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 12 May 2006 00:24:56 +0200
+ -- Joerg Schirottke <master@kanotix.com>  Thu,  7 Sep 2006 19:00:20 +0200
 
 initscripts-kanotix-live (0.3.22) unstable; urgency=low
 

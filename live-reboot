@@ -5,7 +5,9 @@ export PATH
 
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
+FLL_DISTRO_NAME="Kanotix"
 [ -r /etc/default/distro ] && source /etc/default/distro
+FLL_DISTRO_NAME="$(echo $FLL_DISTRO_NAME | tr [a-z] [A-Z])"
 
 [ ! "$FLL_DISTRO_MODE" == "live" ] && exit 0
 
@@ -29,7 +31,7 @@ WHITE="[1;37m"
 
 case "$0" in
 	*halt)
-		message="${YELLOW}KANOTIX halted.${NORMAL}"
+		message="${YELLOW}${FLL_DISTRO_NAME} halted.${NORMAL}"
 		command="halt"
 		options="-p -d -i -f"
 		;;
@@ -48,9 +50,9 @@ esac
 options="$options -n"
 
 mysleep() {
-for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40; do
-	usleep 75000
-	echo -n "$1.${NORMAL}"
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40; do
+		usleep 75000
+		echo -n "$1.${NORMAL}"
 	done
 	echo ""
 }
