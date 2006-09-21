@@ -1166,13 +1166,22 @@ fi
 # ipw3945 detection
 [ -e /sys/bus/pci/drivers/ipw3945/*/cmd ] && (pidof ipw3945d &>/dev/null || /sbin/ipw3945d --quiet &>/dev/null)
 
-# ASUS M2NPV-VM workaround
-rm -f /etc/modprobe.d/alsa-asus
-if cut -f2 -d: /sys/devices/pci*/{,*/}*/modalias 2>/dev/null|grep -q v000010DEd0000026Csv00001043sd000081CBbc; then
-	echo options snd-hda-intel position_fix=1 model=3stack > /etc/modprobe.d/alsa-asus
-	if [ -d /sys/module/snd_hda_intel ]; then
-		rmmod snd_hda_intel &>/dev/null
-		modprobe snd-hda-intel position_fix=1 model=3stack &>/dev/null
+# Handle special options for ALSA sound drivers
+rm -f /etc/modprobe.d/alsa-special
+SYS=$(cut -f2 -d: /sys/devices/pci*/{,*/}*/modalias 2>/dev/null)
+ALSA_SPECIAL=""
+for sysid in $SYS; do
+	# ALSA_SPECIAL is [kernel module with _ not -] [needed options]
+	case $sysid in
+		v000010DEd0000026Csv00001043sd000081CBbc*) ALSA_SPECIAL="snd_hda_intel position_fix=1 model=3stack"; break;; # ASUS M2NPV-VM
+		v00008086d000027D8sv00001854sd0000005Fbc*) ALSA_SPECIAL="snd_hda_intel model=lg"; break;; # LG Electronics P1-J302E1
+	esac
+done
+if [ -n "$ALSA_SPECIAL" ]; then
+	echo options $ALSA_SPECIAL > /etc/modprobe.d/alsa-special
+	if [ -d /sys/module/${ALSA_SPECIAL%% *} ]; then
+		rmmod ${ALSA_SPECIAL%% *}
+		modprobe $ALSA_SPECIAL
 	fi
 fi
 

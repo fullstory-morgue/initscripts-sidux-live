@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.3.25) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.25) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Add LG Electronics P1-J302E1 workaround.
+  * Use eject-live if available in live-halt/reboot.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Sep 2006 00:28:21 +0200
+ -- Joerg Schirottke <master@kanotix.com>  Wed, 20 Sep 2006 00:50:58 +0200
 
 initscripts-kanotix-live (0.3.24) unstable; urgency=low
 
