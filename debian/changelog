@@ -1,8 +1,12 @@
 initscripts-kanotix-live (0.3.26) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 22 Sep 2006 00:48:21 +0200
+  [ Kel Modderman ]
+  * Forget about eject-live. It was not called correctly.
+
+ -- Kel Modderman <kelrin@tpg.com.au>  Tue, 26 Sep 2006 21:35:28 +1000
 
 initscripts-kanotix-live (0.3.25) unstable; urgency=low
 

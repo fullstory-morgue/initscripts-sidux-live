@@ -112,7 +112,7 @@ CDROM="$(awk '/ \/cdrom /{print $1;exit 0;}' /proc/mounts)"
 # This uses standard sysvinit
 FINALCMD="/etc/$command"
 [ -x /etc/$command ] || cp -p /sbin/$command /etc/
-[ -x /etc/eject ] || ( [ -x /usr/bin/eject-live ] && cp -p /usr/bin/eject-live /etc/eject || cp -p /usr/bin/eject /etc/ )
+[ -x /etc/eject ] || ( [ -x /usr/bin/eject ] && cp -p /usr/bin/eject /etc/eject )
 LD_LINUX=ld-linux.so.2
 [ -x /lib/ld-linux-x86-64.so.2 ] && LD_LINUX=ld-linux-x86-64.so.2
 [ -x /etc/$LD_LINUX ] || cp -p /lib/$LD_LINUX /etc/
