@@ -142,7 +142,7 @@ echo "$message" > /dev/console
 
 # eject CD-ROM, noprompt implies noeject (backward compatibility)
 if [ -z "$NOPROMPT" ]; then
-	[ -n "$CDROM" -a -z "$NOEJECT" ] && "/etc/$LD_LINUX" /etc/live-hack/eject -m -p "$CDROM" #2>&1 >/dev/null
+	[ -n "$CDROM" -a -z "$NOEJECT" ] && "/etc/live-hack/$LD_LINUX" /etc/live-hack/eject -m -p "$CDROM" #2>&1 >/dev/null
 	echo "${CYAN}Please remove CD, close cdrom drive and hit return.${NORMAL}"
 	read
 fi
