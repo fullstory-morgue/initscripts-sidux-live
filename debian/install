@@ -1,3 +1,0 @@
-live-autoconfig	etc/init.d/
-live-halt		etc/init.d/
-live-reboot		etc/init.d/

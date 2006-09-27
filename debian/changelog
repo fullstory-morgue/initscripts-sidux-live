@@ -1,12 +1,20 @@
-initscripts-kanotix-live (0.3.26) UNRELEASED; urgency=low
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+initscripts-kanotix-live (0.3.26) unstable; urgency=low
 
   [ Kel Modderman ]
   * Forget about eject-live. It was not called correctly.
 
- -- Kel Modderman <kelrin@tpg.com.au>  Tue, 26 Sep 2006 21:35:28 +1000
+  [ Stefan Lippers-Hollmann ]
+  * bump standards version to 3.7.2.
+  * conflict with eject-live, it's useless and actually hurts.
+  * clean up debian/control.
+  * update for dash compatibility of live-reboot.
+  * get rid of the usleep-kanotix dependency, conflict with usleep-kanotix as
+    we've just removed the last dependency.
+  * fix up remaining traces of eject-live.
+  * copy shutdown helpers to /etc/live-hack/ and dispose it on init 0.
+  * use dh_installinit instead of custom hacks.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 28 Sep 2006 01:24:53 +0200
 
 initscripts-kanotix-live (0.3.25) unstable; urgency=low
 

@@ -9,16 +9,16 @@ FLL_DISTRO_NAME="Kanotix"
 [ -r /etc/default/distro ] && source /etc/default/distro
 FLL_DISTRO_NAME="$(echo $FLL_DISTRO_NAME | tr [a-z] [A-Z])"
 
-[ ! "$FLL_DISTRO_MODE" == "live" ] && exit 0
+[ ! "$FLL_DISTRO_MODE" = "live" ] && exit 0
 
 case "$1" in
 	start) ;;
-	stop) ;;
+	stop)  ;;
 	restart|force-reload) ;;
 esac
 
 # Clean input/output
-exec >/dev/console 2>&1 </dev/console
+exec > /dev/console 2>&1 < /dev/console
 
 NORMAL="[0;39m"
 RED="[1;31m"
@@ -50,8 +50,8 @@ esac
 options="$options -n"
 
 mysleep() {
-	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40; do
-		usleep 75000
+	for i in $(seq 1 40); do
+		sleep "0.075s"
 		echo -n "$1.${NORMAL}"
 	done
 	echo ""
@@ -61,9 +61,9 @@ mysleep() {
 echo "0" > /proc/sys/kernel/printk
 
 # poweroff pcmcia devices
-if pidof cardmgr &>/dev/null; then
+if pidof cardmgr 2>&1 > /dev/null; then
 	echo -n "${BLUE}Shutting down PCMCIA devices...${NORMAL}"
-	cardctl eject &>/dev/null
+	cardctl eject 2>&1 > /dev/null
 	sleep 2
 	echo ""
 fi
@@ -80,20 +80,20 @@ echo -n "${RED}Sent all processes the KILL signal...${NORMAL}"
 mysleep "$RED"
 
 # Unmount network filesystems first before shutting down network
-NETMOUNTS="$(awk '{if($1~/:/){print $2}}' /proc/mounts 2>/dev/null)"
+NETMOUNTS="$(awk '{if($1~/:/){print $2}}' /proc/mounts 2> /dev/null)"
 if [ -n "$NETMOUNTS" ]; then
 	echo "${BLUE}Unmounting network filesystems.${NORMAL}"
-	umount -t nfs -arvf 2>/dev/null
+	umount -t nfs -arvf 2> /dev/null
 fi
 
 # Shutdown network
-NETDEVICES="$(awk -F: '/eth.:/{print $1}' /proc/net/dev 2>/dev/null)"
+NETDEVICES="$(awk -F: '/eth.:/{print $1}' /proc/net/dev 2> /dev/null)"
 if [ -n "$NETDEVICES" ]; then
-	pidof pump &>/dev/null && { pump -k ; sleep 2; }
+	pidof pump 2>&1 > /dev/null && { pump -k ; sleep 2; }
 	echo -n "${BLUE}Shutting down network device${NORMAL}"
 	for n in $NETDEVICES; do
 		echo -n " ${MAGENTA}$n${NORMAL}"
-		ifconfig $n down
+		ifconfig "$n" down
 	done
 	echo ""
 fi
@@ -102,51 +102,51 @@ fi
 NOEJECT=""
 NOPROMPT=""
 read CMDLINE <<EOT
-$(cat /proc/cmdline 2>/dev/null)
+$(cat /proc/cmdline 2> /dev/null)
 EOT
-case "$CMDLINE" in *noeject*) NOEJECT="yes"; ;; esac
+case "$CMDLINE" in *noeject*)  NOEJECT="yes";  ;; esac
 case "$CMDLINE" in *noprompt*) NOPROMPT="yes"; ;; esac
 
 CDROM="$(awk '/ \/cdrom /{print $1;exit 0;}' /proc/mounts)"
 
 # This uses standard sysvinit
-FINALCMD="/etc/$command"
-[ -x /etc/$command ] || cp -p /sbin/$command /etc/
-[ -x /etc/eject ] || ( [ -x /usr/bin/eject ] && cp -p /usr/bin/eject /etc/eject )
+FINALCMD="/etc/live-hack/$command"
+rm -rf /etc/live-hack 2>&1 > /dev/null
+mkdir -p /etc/live-hack
+[ -x "/etc/live-hack/$command" ]  || cp -p "/sbin/$command" /etc/live-hack/
+[ -x /usr/bin/eject ]             && cp -p /usr/bin/eject /etc/live-hack/eject
 LD_LINUX=ld-linux.so.2
-[ -x /lib/ld-linux-x86-64.so.2 ] && LD_LINUX=ld-linux-x86-64.so.2
-[ -x /etc/$LD_LINUX ] || cp -p /lib/$LD_LINUX /etc/
+[ -x /lib/ld-linux-x86-64.so.2 ]  && LD_LINUX=ld-linux-x86-64.so.2
+[ -x "/etc/live-hack/$LD_LINUX" ] || cp -p "/lib/$LD_LINUX" /etc/live-hack/
 
 # Turn off swap, then unmount file systems.
-swapoff -a &>/dev/null
+swapoff -a 2>&1 > /dev/null
 
 echo "${BLUE}Unmounting file systems.${NORMAL}"
 
 cd /
 
 # Umount everything but root
-umount -arvf 2>/dev/null
+umount -arvf 2> /dev/null
 if [ "$?" != "0" ] ; then
 	# Free loopback devices if necessary, so we can unmount the host media
-	for i in /dev/loop*; do losetup -d $i 2>/dev/null; done
+	for i in /dev/loop*; do losetup -d "$i" 2> /dev/null; done
 	# And retry
-	umount -arf 2>/dev/null
+	umount -arf 2> /dev/null
 fi
 
 # Remove remaining unused modules
-rmmod -a &>/dev/null
+rmmod -a 2>&1 > /dev/null
 
-echo "$message" >/dev/console
+echo "$message" > /dev/console
 
-# umount and eject CD-ROM
-# noprompt implies noeject (backward compatibility)
-
+# eject CD-ROM, noprompt implies noeject (backward compatibility)
 if [ -z "$NOPROMPT" ]; then
-	#umount -l /cdrom
-	[ -n "$CDROM" -a -z "$NOEJECT" ] && /etc/$LD_LINUX /etc/eject -m -p "$CDROM" 2>/dev/null
+	[ -n "$CDROM" -a -z "$NOEJECT" ] && "/etc/$LD_LINUX" /etc/live-hack/eject -m -p "$CDROM" #2>&1 >/dev/null
 	echo "${CYAN}Please remove CD, close cdrom drive and hit return.${NORMAL}"
 	read
 fi
 
 # Now halt or reboot.
-exec /etc/$LD_LINUX $FINALCMD $options >/dev/console 2>&1 </dev/console
+exec "/etc/live-hack/$LD_LINUX" "$FINALCMD" $options > /dev/console 2>&1 < /dev/console
+
