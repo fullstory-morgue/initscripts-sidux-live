@@ -61,9 +61,9 @@ mysleep() {
 echo "0" > /proc/sys/kernel/printk
 
 # poweroff pcmcia devices
-if pidof cardmgr 2>&1 > /dev/null; then
+if lsmod | grep -q pcmcia_core 2>&1 > /dev/null; then
 	echo -n "${BLUE}Shutting down PCMCIA devices...${NORMAL}"
-	cardctl eject 2>&1 > /dev/null
+	pccardctl eject 2>&1 > /dev/null
 	sleep 2
 	echo ""
 fi
