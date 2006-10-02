@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.29) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon,  2 Oct 2006 13:16:48 +0200
+
 initscripts-kanotix-live (0.3.28) unstable; urgency=low
 
   * Unicode console fix.
