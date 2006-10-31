@@ -1455,7 +1455,7 @@ FREEMEM="$(awk 'BEGIN{m=0};/MemFree|Cached|SwapFree/{m+=$2};END{print m}' /proc/
 if [ "$FREEMEM" -lt 80000 -a -x /usr/bin/kdeinit -a -x /usr/sbin/mkdosswapfile ]; then
 	case "$LANGUAGE" in
 		de)
-			LOWMEM="Ihr Rechner verfügt nur über ${FREEMEM}kB freien RAM-Speicher. Dies ist für das Arbeiten mit Linux zwar generell ausreichend, aber leider nicht genug, um größere Anwendungen wie KDE oder Office-Pakete zu starten. Sie können im nächsten Schritt versuchen, eine sog. Auslagerungsdatei auf einer DOS-Partition (sofern vorhanden) einzurichten."
+			LOWMEM="Ihr Rechner verfÃ¼gt nur Ã¼ber ${FREEMEM}kB freien RAM-Speicher. Dies ist fÃ¼r das Arbeiten mit Linux zwar generell ausreichend, aber leider nicht genug, um grÃ¶ÃŸere Anwendungen wie KDE oder Office-Pakete zu starten. Sie kÃ¶nnen im nÃ¤chsten Schritt versuchen, eine sog. Auslagerungsdatei auf einer DOS-Partition (sofern vorhanden) einzurichten."
 			;;
 		*)
 			LOWMEM="There are only ${FREEMEM}kB of RAM available in your computer. While this is usually sufficient for working under Linux, it is unfortunately not enough for starting bigger applications like KDE, or office suites. You can try to create a so-called swapfile on an existing DOS-Partition (if available) in the next step."

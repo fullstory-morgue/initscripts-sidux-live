@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.3.29) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.29) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * switch to utf-8.
+  * fix lintian errors.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon,  2 Oct 2006 13:16:48 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed,  1 Nov 2006 00:01:14 +0100
 
 initscripts-kanotix-live (0.3.28) unstable; urgency=low
 
