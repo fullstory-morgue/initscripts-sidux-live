@@ -1,8 +1,10 @@
-initscripts-kanotix-live (0.3.30) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.30) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * switch to utf-8 as default, keep ISO charsets as -legacy countrycodes.
+  * don't add /usr/X11R6/bin/ to search path.
+  * re- indent.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed,  1 Nov 2006 00:02:48 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  2 Nov 2006 21:25:46 +0100
 
 initscripts-kanotix-live (0.3.29) unstable; urgency=low
 
