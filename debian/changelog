@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.31) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  2 Nov 2006 21:27:50 +0100
+
 initscripts-kanotix-live (0.3.30) unstable; urgency=low
 
   * switch to utf-8 as default, keep ISO charsets as -legacy countrycodes.
