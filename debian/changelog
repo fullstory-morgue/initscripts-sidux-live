@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.32) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  3 Nov 2006 20:18:35 +0100
+
 initscripts-kanotix-live (0.3.31) unstable; urgency=low
 
   * switch to xorg.conf.
