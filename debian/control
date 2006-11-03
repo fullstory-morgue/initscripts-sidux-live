@@ -7,7 +7,8 @@ Standards-Version: 3.7.2
 
 Package: initscripts-kanotix-live
 Architecture: all
-Depends: distro-defaults, rebuildfstab-kanotix, udev (>= 0.071), sysvinit (>= 2.86), eject (>= 2.1.4-2.1), sysv-rc (<< 9.00), pcmciautils, hwsetup-ng
+Depends: distro-defaults, rebuildfstab-kanotix, udev (>= 0.071), sysvinit (>= 2.86), eject (>= 2.1.4-2.1), pcmciautils, hwsetup-ng
+Recommends: xf86config-kanotix (>= 0.9.11)
 Suggests: avm-firmware, drdsl, ltmodem-common, unionfs-utils, hotkey-setup
 Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix, eject-live, pcmcia-cs, usleep-kanotix
 Description: KANOTIX initscripts for live CDs

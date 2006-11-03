@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.3.31) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.31) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * switch to xorg.conf.
+  * recommend xf86config-kanotix (>= 0.9.11).
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  2 Nov 2006 21:27:50 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  3 Nov 2006 20:16:43 +0100
 
 initscripts-kanotix-live (0.3.30) unstable; urgency=low
 
