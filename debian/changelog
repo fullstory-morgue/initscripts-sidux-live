@@ -1,8 +1,8 @@
-initscripts-kanotix-live (0.3.33) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.33) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * captive is obsolete, remove compatibility hacks.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  9 Nov 2006 20:32:38 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  9 Nov 2006 23:53:10 +0100
 
 initscripts-kanotix-live (0.3.32) unstable; urgency=low
 

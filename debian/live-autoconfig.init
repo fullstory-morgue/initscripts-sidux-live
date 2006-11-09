@@ -1837,12 +1837,6 @@ setkeycodes e058 88 &>/dev/null
 # enable hotkeys
 [ -x /etc/init.d/hotkey-setup ] && /etc/init.d/hotkey-setup start
 
-# captive live fix
-if [ -L /var/lib/captive/ext2fsd.sys ]; then
-	rm -f /var/lib/captive/ext2fsd.sys
-	cp /${FLL_IMAGE_DIR}/var/lib/captive/ext2fsd.sys /var/lib/captive
-fi
-
 update_progress 100
 
 if checkbootparam "splash"; then
