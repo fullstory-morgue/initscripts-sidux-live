@@ -1,10 +1,9 @@
-initscripts-kanotix-live (0.3.32) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.32) unstable; urgency=low
 
-  * NOT RELEASED YET
   * use distro-defaults to specify the wallpaper, thanks to Bernard Gray.
   * fix bashisms.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  9 Nov 2006 02:59:10 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  9 Nov 2006 20:31:17 +0100
 
 initscripts-kanotix-live (0.3.31) unstable; urgency=low
 

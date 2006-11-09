@@ -101,7 +101,11 @@ stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
 
 # Check if we want the config floppy
 MYCONF=""
-case "$CMDLINE" in *\ myconf*|*\ floppyconf*|*\ custom*|*\ config*) MYCONF="yes"; ;; esac
+case "$CMDLINE" in
+	*\ myconf*|*\ floppyconf*|*\ custom*|*\ config*)
+		MYCONF="yes"
+		;;
+esac
 if [ -n "$MYCONF" ]; then
 	# Check for given config directory
 	MYCONFDIR="$(getbootparam 'myconfig')"
@@ -1207,7 +1211,7 @@ fi
 # Workaround for new mouse detection
 if [ -f /etc/sysconfig/mouse ]; then
 	source /etc/sysconfig/mouse
-	if [ "$MOUSETYPE" == "ps2" ]; then
+	if [ "$MOUSETYPE" = "ps2" ]; then
 		ln -sf /dev/psaux /dev/mouse
 		perl -pi -e "s|/dev/input/mice|/dev/psaux|" /etc/sysconfig/mouse /etc/sysconfig/knoppix
 		source /etc/sysconfig/mouse
@@ -1237,7 +1241,7 @@ VOL=$((VOL))
 
 # Fast ALSA detection
 
-if [[ "$SOUND_DRIVER" == snd-* ]]; then
+if [[ "$SOUND_DRIVER" = snd-* ]]; then
 	echo alias snd-card-0 $SOUND_DRIVER > /etc/modprobe.d/sound
 	echo options $SOUND_DRIVER index=0 >> /etc/modprobe.d/sound
 	#set_mixers
@@ -1356,7 +1360,7 @@ RUNLEVEL="$(runlevel)"
 # Add cdrom devices to /etc/fstab
 for c in $(ls -d /dev/cdrom* 2>/dev/null); do
 	m=${c#/dev}
-	[ "$m" == "/cdrom" ] && m="/cdrom0"
+	[ "$m" = "/cdrom" ] && m="/cdrom0"
 	[ -d /media$m ] || mkdir -p /media$m 
 	#stringinfile "$c" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "$c" "/media$m" "udf,iso9660" "user,noauto" "0" "0" >> /etc/fstab
 	stringinfile "/dev/$(readlink $c)" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "/dev/$(readlink $c)" "/media$m" "udf,iso9660" "user,noauto" "0" "0" >> /etc/fstab
@@ -1462,8 +1466,8 @@ update_progress 90
 FREEMEM="$(awk 'BEGIN{m=0};/MemFree|Cached|SwapFree/{m+=$2};END{print m}' /proc/meminfo)"
 
 if [ "$FREEMEM" -lt 80000 -a -x /usr/bin/kdeinit -a -x /usr/sbin/mkdosswapfile ]; then
-	case "$LANGUAGE" in
-		de)
+	case "$LANG" in
+		de*)
 			LOWMEM="Ihr Rechner verfügt nur über ${FREEMEM}kB freien RAM-Speicher. Dies ist für das Arbeiten mit Linux zwar generell ausreichend, aber leider nicht genug, um größere Anwendungen wie KDE oder Office-Pakete zu starten. Sie können im nächsten Schritt versuchen, eine sog. Auslagerungsdatei auf einer DOS-Partition (sofern vorhanden) einzurichten."
 			;;
 		*)
@@ -1662,8 +1666,8 @@ for unioncheat in unionro unionrw unionfs ; do
 		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/${FLL_IMAGE_DIR} none /${FLL_IMAGE_DIR} && UNIONMADE="yes" >/dev/null
 		echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
 		UNIONMNTOPT=""
-		[ "$unioncheat" == "unionro" ] && UNIONMNTOPT="-o ro"
-		[ "$unioncheat" == "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
+		[ "$unioncheat" = "unionro" ] && UNIONMNTOPT="-o ro"
+		[ "$unioncheat" = "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
 		getfiledev
 		if [ -n "$filedev" ]; then
 			if grep $filedev /etc/fstab 2>&1 >/dev/null && ! grep $filedev /proc/mounts 2>&1 >/dev/null; then
@@ -1757,7 +1761,6 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 fi
 
 # old .knoppix.sh
-
 if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] ]; then
 	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
@@ -1767,7 +1770,6 @@ if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][X
 fi
 
 # new .kanotix.sh
-
 if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] ]; then
 	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
