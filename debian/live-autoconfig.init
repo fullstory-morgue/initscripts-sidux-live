@@ -3,6 +3,7 @@
 # Basic system configuration and hardware setup
 # (C) Klaus Knopper <knopper@knopper.net> 2004
 # modified for KANOTIX by Joerg Schirottke <master@kanotix.com> 2003-2006
+# (C) 2005, 2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 export PATH
@@ -15,12 +16,13 @@ FLL_IMAGE_DIR="KNOPPIX"
 FLL_DISTRO_NAME="Kanotix"
 FLL_LIVE_USER="knoppix"
 FLL_PERSISTENT_HOME="kanotix.img"
+FLL_WALLPAPER="/usr/share/wallpapers/kanotix.png"
 
 X_CONF="/etc/X11/xorg.conf"
 
 [ -r /etc/default/distro ] && source /etc/default/distro
 
-[ ! "$FLL_DISTRO_MODE" == "live" ] && exit 0
+[ ! "$FLL_DISTRO_MODE" = "live" ] && exit 0
 
 case "$1" in
 	start) ;;
@@ -1487,14 +1489,18 @@ else
 	done
 fi
 
-# Search for custom background image for KDE/GNOME/X
-for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/kanotix; do
-	for j in png jpg gif; do
-		BACKGROUND="$i.$j"
-		[ -e "$BACKGROUND" ] && break 2
+if [ -r "${FLL_WALLPAPER}" ]; then
+	# Set $BACKGROUND according to distro defaults
+	BACKGROUND="${FLL_WALLPAPER}"
+else
+	# Search for custom background image for KDE/GNOME/X
+	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/kanotix; do
+		for j in png jpg gif; do
+			BACKGROUND="$i.$j"
+			[ -e "$BACKGROUND" ] && break 2
+		done
 	done
-done
-
+fi
 echo 'BACKGROUND="'"$BACKGROUND"'"' >> /etc/sysconfig/knoppix
 
 findfile(){
@@ -1660,7 +1666,7 @@ for unioncheat in unionro unionrw unionfs ; do
 		[ "$unioncheat" == "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
 		getfiledev
 		if [ -n "$filedev" ]; then
-			if grep $filedev /etc/fstab 2>&1>/dev/null && ! grep $filedev /proc/mounts 2>&1>/dev/null; then
+			if grep $filedev /etc/fstab 2>&1 >/dev/null && ! grep $filedev /proc/mounts 2>&1 >/dev/null; then
 				mount $UNIONMNTOPT $filedev >/dev/null
 				getfilepath
 				MYPARAM="$(grep -v ^[:space:]*\# /etc/fstab | grep $filedev | head -n 1 | awk '{print $2}')"
