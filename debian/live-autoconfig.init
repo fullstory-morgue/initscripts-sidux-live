@@ -57,8 +57,8 @@ WHITE="[1;37m"
 
 # get rid of these as soon as possible
 SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
-HWSETUP_I18N="/etc/sysconfig/i18n"
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
+HWSETUP_I18N="/etc/sysconfig/i18n"
 HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
 HWSETUP_SERVICES="/etc/sysconfig/services"
@@ -929,7 +929,7 @@ case "$DESKTOP" in
 esac
 
 # Set hostname
-hostname $FLL_DISTRO_NAME
+hostname "$FLL_DISTRO_NAME"
 
 # Set clock (Local time is more often used than GMT, so it is default)
 UTC=""
@@ -1133,8 +1133,10 @@ if [ -d /proc/acpi ]; then
 		for a in /lib/modules/$KERNEL/kernel/drivers/acpi/*; do
 			basename="${a##*/}"
 			basename="${basename%%.*}"
-			case "$basename" in *_acpi)
-				egrep -qi "${basename%%_acpi}" /proc/acpi/dsdt 2>/dev/null || continue ;;
+			case "$basename" in
+				*_acpi)
+					egrep -qi "${basename%%_acpi}" /proc/acpi/dsdt 2>/dev/null || continue
+					;;
 			esac
 			modprobe $basename &>/dev/null && echo -n " ${YELLOW}$basename${GREEN}" && found="yes"
 		done
@@ -1220,8 +1222,16 @@ ALSA_SPECIAL=""
 for sysid in $SYS; do
 	# ALSA_SPECIAL is [kernel module with _ not -] [needed options]
 	case $sysid in
-		v000010DEd0000026Csv00001043sd000081CBbc*) ALSA_SPECIAL="snd_hda_intel position_fix=1 model=3stack"; break;; # ASUS M2NPV-VM
-		v00008086d000027D8sv00001854sd0000005Fbc*) ALSA_SPECIAL="snd_hda_intel model=lg"; break;; # LG Electronics P1-J302E1
+		v000010DEd0000026Csv00001043sd000081CBbc*)
+			# ASUS M2NPV-VM
+			ALSA_SPECIAL="snd_hda_intel position_fix=1 model=3stack"
+			break
+			;;
+		v00008086d000027D8sv00001854sd0000005Fbc*)
+			# LG Electronics P1-J302E1
+			ALSA_SPECIAL="snd_hda_intel model=lg"
+			break
+			;;
 	esac
 done
 if [ -n "$ALSA_SPECIAL" ]; then
@@ -1363,7 +1373,11 @@ fi
 if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
 	[ -n "$SOUND_DRIVER" ] && rmmod -r "$SOUND_DRIVER" &>/dev/null
 	# Export ALSA_CARD cariable to init script
-	case "$ALSA_CARD" in auto*) ALSA_CARD="";; esac
+	case "$ALSA_CARD" in
+		auto*)
+		ALSA_CARD=""
+		;;
+	esac
 	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
 	# Something went wrong ?
 	[ ! -r /etc/modules.conf ] && ln -sf /${FLL_IMAGE_DIR}/etc/modules.conf /etc/modules.conf
@@ -1408,9 +1422,16 @@ while read major minor blocks partition relax; do
 	partition="${partition##*/}"
 	[ -z "$partition" -o ! -e "/dev/$partition" ] && continue
 	case "$partition" in
-		hd?) ;;                                               # IDE Harddisk, entire disk
-		sd?) ;;                                               # SCSI Harddisk, entire disk
-		[hs]d*) partitions="$partitions /dev/$partition";;    # IDE or SCSI disk partition
+		hd?)
+			# IDE Harddisk, entire disk
+			;;
+		sd?)
+			# SCSI Harddisk, entire disk
+			;;
+		[hs]d*)
+			# IDE or SCSI disk partition
+			partitions="$partitions /dev/$partition"
+			;;
 	esac
 done <<EOT
 $(awk 'BEGIN{old="__start"}{if($0==old){exit}else{old=$0;if($4&&$4!="name"){print $0}}}' /proc/partitions)
@@ -1420,8 +1441,6 @@ EOT
 # This is already done by linuxrc now.
 # However, for a harddisk-installed version, we are doing it again here.
 if checkbootparam "nodma"; then
-	#echo " ${BLUE}Skipping DMA accelleration as requested on boot commandline.${NORMAL}"
-#else
 	for d in $(cd /proc/ide 2>/dev/null && echo hd[a-z]); do
 		if test -d /proc/ide/$d; then
 			if egrep -q 'using_dma[ \t]+1' /proc/ide/$d/settings 2>/dev/null; then
@@ -1449,40 +1468,46 @@ fi
 
 if [ -n "$partitions" ]; then
 	while read p m f relax; do
-		case "$p" in *fd0*|*proc*|*pts*|*sys*|*cdrom*|\#*) continue;; esac
+		case "$p" in
+			*fd0*|*proc*|*pts*|*sys*|*cdrom*|\#*)
+			continue
+			;;
+		esac
 		options="users,exec"
 		fnew=""
-		case "$f" in swap)
-			if [ -n "$NOSWAP" ]; then
-				echo "${BLUE}Ignoring swap partition ${MAGENTA}$p${BLUE} as requested.${NORMAL}"
-			else
-				echo "${BLUE}Using swap partition ${MAGENTA}$p${BLUE}.${NORMAL}"
-				swapon $p 2>/dev/null
-			fi
-			continue
+		case "$f" in
+			swap)
+				if [ -n "$NOSWAP" ]; then
+					echo "${BLUE}Ignoring swap partition ${MAGENTA}$p${BLUE} as requested.${NORMAL}"
+				else
+					echo "${BLUE}Using swap partition ${MAGENTA}$p${BLUE}.${NORMAL}"
+					swapon $p 2>/dev/null
+				fi
+				continue
 			;;
 		esac
 		# Create mountdir if not already present
 		d="/media/${p##*/}" ; [ -d "$d" ] || mkdir -p "$d"
-		case "$f" in vfat|msdos)
-			if [ -z "$NOSWAP" ] && mount -o uid=${FLL_LIVE_USER},gid=$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4),ro -t $f $p $d 2>/dev/null; then
-				if [ -f $d/${FLL_DISTRO_NAME}.swp ]; then
-					mount -o remount,rw $d
-					if swapon $d/${FLL_DISTRO_NAME}.swp 2>/dev/null; then
-						echo "${BLUE}Using ${FLL_DISTRO_NAME} swapfile ${MAGENTA}$d/${FLL_DISTRO_NAME}.swp${BLUE}.${NORMAL}"
-						mount -o remount,ro $d 2>/dev/null
-						fnew="$d/${FLL_DISTRO_NAME}.swp none            swap    sw              0       0"
-						stringinfile "$fnew" "/etc/fstab" || echo "$fnew" >> /etc/fstab
+		case "$f" in
+			vfat|msdos)
+				if [ -z "$NOSWAP" ] && mount -o uid=${FLL_LIVE_USER},gid=$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4),ro -t $f $p $d 2>/dev/null; then
+					if [ -f $d/${FLL_DISTRO_NAME}.swp ]; then
+						mount -o remount,rw $d
+						if swapon $d/${FLL_DISTRO_NAME}.swp 2>/dev/null; then
+							echo "${BLUE}Using ${FLL_DISTRO_NAME} swapfile ${MAGENTA}$d/${FLL_DISTRO_NAME}.swp${BLUE}.${NORMAL}"
+							mount -o remount,ro $d 2>/dev/null
+							fnew="$d/${FLL_DISTRO_NAME}.swp none            swap    sw              0       0"
+							stringinfile "$fnew" "/etc/fstab" || echo "$fnew" >> /etc/fstab
+						else
+							umount $d
+						fi
 					else
 						umount $d
 					fi
-				else
-					umount $d
 				fi
-			fi
-			;;
-			esac
-		done <<EOT
+				;;
+		esac
+	done <<EOT
 $(cat /etc/fstab)
 EOT
 fi
@@ -1558,7 +1583,11 @@ modprobe cryptoloop 2>/dev/null
 trymount()
 {
 	# Check if already mounted
-	case "$(cat /proc/mounts)" in *\ $2\ *) return 0;; esac
+	case "$(cat /proc/mounts)" in
+		*\ $2\ *)
+			return 0
+			;;
+	esac
 	# Apparently, mount-aes DOES autodetect AES loopback files.
 	[ -b "$1" ] && { mount -t auto -o ro "$1" "$2" 2>/dev/null; RC="$?"; }
 	# We need to mount crypto-loop files with initial rw support

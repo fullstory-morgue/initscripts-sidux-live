@@ -1,6 +1,5 @@
-initscripts-kanotix-live (0.3.34) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.34) unstable; urgency=low
 
-  * NOT RELEASED YET
   * first round of bashism fixes, "source" and function definitions.
   * SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
   * HWSETUP_I18N="/etc/sysconfig/i18n"
@@ -9,8 +8,9 @@ initscripts-kanotix-live (0.3.34) UNRELEASED; urgency=low
   * HWSETUP_MOUSE="/etc/sysconfig/mouse"
   * HWSETUP_SERVICES="/etc/sysconfig/services"
   * HWSETUP_DESKTOP="/etc/sysconfig/desktop"
+  * moderate re- indent.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:36:55 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:42:58 +0100
 
 initscripts-kanotix-live (0.3.33) unstable; urgency=low
 
