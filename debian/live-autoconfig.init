@@ -2,7 +2,7 @@
 # /KNOPPIX/etc/init.d/knoppix-autoconfig
 # Basic system configuration and hardware setup
 # (C) Klaus Knopper <knopper@knopper.net> 2004
-# (C) 2003-2006 Joerg Schirottke <master@kanotix.com> 2003-2006
+# (C) 2003-2006 Joerg Schirottke <master@kanotix.com>
 # (C) 2005-2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
@@ -25,9 +25,12 @@ X_CONF="/etc/X11/xorg.conf"
 [ ! "$FLL_DISTRO_MODE" = "live" ] && exit 0
 
 case "$1" in
-	start) ;;
-	stop) ;;
-	restart|force-reload) ;;
+	start)
+		;;
+	stop)
+		;;
+	restart|force-reload)
+		;;
 esac
 
 # Ignore these signals: INT, TERM, SEGV
@@ -51,6 +54,9 @@ MAGENTA="[1;35m"
 CYAN="[1;36m"
 # BOLD WHITE: Hint
 WHITE="[1;37m"
+
+# get rid of these as soon as possible
+SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
 
 ### Utility Function(s)
 
@@ -938,7 +944,7 @@ SPLASH=$(getbootparam "splash" 2>/dev/null)
 if [ -n "$SPLASH" ]; then
 	OLDSPLASH=""
 	checkbootparam "oldsplash" && OLDSPLASH="y"
-	rm -f /etc/sysconfig/progress
+	rm -f "$SPLASHY_PROGRESS_PIPE"
 	RES=$(fbresolution 2>/dev/null)
 	[ -z "$RES" ] && RES=1024x768
 	if [ "$RES" = "1024x768" -o "$RES" = "800x600" ] && [ -x /sbin/splashy -a -z "$OLDSPLASH" ]; then
@@ -949,8 +955,8 @@ fi
 update_progress()
 {
 	# be sure we are non-blocking
-	if [ -p /etc/sysconfig/progress ]; then
-		(echo "$1" > /etc/sysconfig/progress) &
+	if [ -p "$SPLASHY_PROGRESS_PIPE" ]; then
+		(echo "$1" > "$SPLASHY_PROGRESS_PIPE") &
 	elif [ -p /etc/splashy/splashy.fifo ]; then
 		(echo "progress $1" > /etc/splashy/splashy.fifo) &
 	fi
@@ -1860,13 +1866,13 @@ update_progress 100
 
 if checkbootparam "splash"; then
 	sleep 1
-	[ -p /etc/sysconfig/progress -a -x /etc/init.d/splash.sh ] && /etc/init.d/splash.sh stop
+	[ -p "$SPLASHY_PROGRESS_PIPE" -a -x /etc/init.d/splash.sh ] && /etc/init.d/splash.sh stop
 	[ -p /etc/splashy/splashy.fifo ] && (echo exit > /etc/splashy/splashy.fifo) &
 	sleep 1
 fi
 
 # delete named pipe
-rm -f /etc/sysconfig/progress
+rm -f "$SPLASHY_PROGRESS_PIPE"
 rm -f /etc/splashy/splashy.fifo
 
 echo "6" > /proc/sys/kernel/printk
