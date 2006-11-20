@@ -57,6 +57,7 @@ WHITE="[1;37m"
 
 # get rid of these as soon as possible
 SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
+HWSETUP_I18N="/etc/sysconfig/i18n"
 
 ### Utility Function(s)
 
@@ -976,7 +977,7 @@ echo "$TZ" > /etc/timezone
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
 	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		/etc/sysconfig/i18n /etc/sysconfig/keyboard /etc/sysconfig/knoppix \
+		"$HWSETUP_I18N" /etc/sysconfig/keyboard /etc/sysconfig/knoppix \
 		2>/dev/null
 fi
 
@@ -985,12 +986,12 @@ CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 
 # Write KNOPPIX config files for other scripts to parse
 # Standard variables/files
-echo "LANG=\"$LANG\""                  > /etc/sysconfig/i18n
-echo "COUNTRY=\"$COUNTRY\""           >> /etc/sysconfig/i18n
-echo "LANGUAGE=\"$LANGUAGE\""         >> /etc/sysconfig/i18n
-echo "CHARSET=\"$CHARSET\""           >> /etc/sysconfig/i18n
-echo "XMODIFIERS=\"$XMODIFIERS\""     >> /etc/sysconfig/i18n
-#echo "TZ=\"$TZ\""                     >> /etc/sysconfig/i18n
+echo "LANG=\"$LANG\""                  > "$HWSETUP_I18N"
+echo "COUNTRY=\"$COUNTRY\""           >> "$HWSETUP_I18N"
+echo "LANGUAGE=\"$LANGUAGE\""         >> "$HWSETUP_I18N"
+echo "CHARSET=\"$CHARSET\""           >> "$HWSETUP_I18N"
+echo "XMODIFIERS=\"$XMODIFIERS\""     >> "$HWSETUP_I18N"
+#echo "TZ=\"$TZ\""                     >> "$HWSETUP_I18N"
 
 # Default Keyboard layout for console and X
 echo "KEYTABLE=\"$KEYTABLE\""          > /etc/sysconfig/keyboard
