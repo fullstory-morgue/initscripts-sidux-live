@@ -933,8 +933,8 @@ hostname "$FLL_DISTRO_NAME"
 
 # Set clock (Local time is more often used than GMT, so it is default)
 UTC=""
-checkbootparam utc &>/dev/null && UTC="-u"
-checkbootparam gmt &>/dev/null && UTC="-u"
+checkbootparam utc 2>&1 >/dev/null && UTC="-u"
+checkbootparam gmt 2>&1 >/dev/null && UTC="-u"
 
 # hwclock uses the TZ variable
 KTZ="$(getbootparam tz 2>/dev/null)"
@@ -1040,8 +1040,8 @@ checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
 echo "0" > /proc/sys/kernel/printk
 
 # Check for IDE-SCSI capable CD-Rom(s) first
-checkbootparam "idecd" || checkbootparam "atapicd" || modprobe ide-scsi &>/dev/null
-modprobe ide-cd &>/dev/null
+checkbootparam "idecd" || checkbootparam "atapicd" || modprobe ide-scsi 2>&1 >/dev/null
+modprobe ide-cd 2>&1 >/dev/null
 
 # Bring up loopback interface now
 ifconfig lo 127.0.0.1 up
@@ -1080,13 +1080,13 @@ else
 	echo " ${GREEN}Enable ${YELLOW}udev${GREEN}.${NORMAL}"
 	mkdir -p /media
 	if ! pidof udevd >&-; then
-		RUNLEVEL=S /etc/init.d/udev start &>/dev/null
+		RUNLEVEL=S /etc/init.d/udev start 2>&1 >/dev/null
 		# load capability LSM (needed for hal)
-		modprobe capability &>/dev/null
+		modprobe capability 2>&1 >/dev/null
 		if [ -x /etc/init.d/dbus-1 ]; then
-			/etc/init.d/dbus-1 start &>/dev/null
+			/etc/init.d/dbus-1 start 2>&1 >/dev/null
 		elif [ -x /etc/init.d/dbus ]; then
-			/etc/init.d/dbus start &>/dev/null
+			/etc/init.d/dbus start 2>&1 >/dev/null
 		fi
 	fi
 fi
@@ -1138,11 +1138,11 @@ if [ -d /proc/acpi ]; then
 					egrep -qi "${basename%%_acpi}" /proc/acpi/dsdt 2>/dev/null || continue
 					;;
 			esac
-			modprobe $basename &>/dev/null && echo -n " ${YELLOW}$basename${GREEN}" && found="yes"
+			modprobe $basename 2>&1 >/dev/null && echo -n " ${YELLOW}$basename${GREEN}" && found="yes"
 		done
 		test -z "$found" && echo -n "${BLUE}(none)"
 		echo "${NORMAL}"
-		fuser -k /proc/acpi/event &>/dev/null
+		fuser -k /proc/acpi/event 2>&1 >/dev/null
 		/etc/init.d/acpid start >/dev/null
 	fi
 else
@@ -1150,7 +1150,7 @@ else
 	if checkbootparam "noapm"; then
 		echo " ${BLUE}Skipping APM Bios detection as requested on boot commandline.${NORMAL}"
 	else
-		modprobe apm power_off=1 &>/dev/null && test -x /etc/init.d/apmd && /etc/init.d/apmd start && echo " ${GREEN}APM Bios found, power management functions enabled.${NORMAL}"
+		modprobe apm power_off=1 2>&1 >/dev/null && test -x /etc/init.d/apmd && /etc/init.d/apmd start && echo " ${GREEN}APM Bios found, power management functions enabled.${NORMAL}"
 	fi
 fi
 
@@ -1160,12 +1160,12 @@ fi
 if checkbootparam "nopcmcia"; then
 	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
 else
-	modprobe pcmcia_core &>/dev/null
+	modprobe pcmcia_core 2>&1 >/dev/null
 	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe yenta_socket &>/dev/null || modprobe i82365 &>/dev/null || modprobe tcic &>/dev/null 
+	modprobe yenta_socket 2>&1 >/dev/null || modprobe i82365 2>&1 >/dev/null || modprobe tcic 2>&1 >/dev/null 
 	if [ "$?" = "0" ]; then
-		modprobe ds &>/dev/null
-		if cardmgr &>/dev/null; then
+		modprobe ds 2>&1 >/dev/null
+		if cardmgr 2>&1 >/dev/null; then
 			echo " ${GREEN}PCMCIA found, cardmgr started.${NORMAL}"
 			sleep 4
 		fi
@@ -1176,16 +1176,16 @@ update_progress 40
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
 NOSERIAL=""
-checkbootparam noserial &>/dev/null && NOSERIAL="yes"
+checkbootparam noserial 2>&1 >/dev/null && NOSERIAL="yes"
 [ -n "$NOSERIAL" ] && HWSETUP_NOSERIAL="-m"
 # load serial module
-modprobe 8250 &>/dev/null
+modprobe 8250 2>&1 >/dev/null
 
 # load psmouse module
-modprobe psmouse &>/dev/null
+modprobe psmouse 2>&1 >/dev/null
 if checkbootparam "nohwsetup"; then
 	echo "${BLUE}Loading hardware profile from ${MAGENTA}/etc/modules${BLUE}.${NORMAL}"
-	/etc/init.d/modutils-knoppix start &>/dev/null
+	/etc/init.d/modutils-knoppix start 2>&1 >/dev/null
 else
 	echo -n "${WHITE}"
 	if hwsetup -p $HWSETUP_NOSERIAL >/dev/null; then
@@ -1197,23 +1197,23 @@ fi
 update_progress 60
 
 # activate PC Speaker
-modprobe pcspkr &>/dev/null
+modprobe pcspkr 2>&1 >/dev/null
 
 # Load fuse module
-modprobe fuse &>/dev/null
+modprobe fuse 2>&1 >/dev/null
 
 # activate input driver for char event devices
-modprobe evdev &>/dev/null
+modprobe evdev 2>&1 >/dev/null
 
 # dwl520e1 detection
 rm -f /etc/modprobe.d/dwl520e1
 if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
-	/usr/sbin/dwl520e1_fw_load &>/dev/null
-	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load &>/dev/null' > /etc/modprobe.d/dwl520e1
+	/usr/sbin/dwl520e1_fw_load 2>&1 >/dev/null
+	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load 2>&1 >/dev/null' > /etc/modprobe.d/dwl520e1
 fi
 
 # ipw3945 detection
-[ -e /sys/bus/pci/drivers/ipw3945/*/cmd ] && (pidof ipw3945d &>/dev/null || /sbin/ipw3945d --quiet &>/dev/null)
+[ -e /sys/bus/pci/drivers/ipw3945/*/cmd ] && (pidof ipw3945d 2>&1 >/dev/null || /sbin/ipw3945d --quiet 2>&1 >/dev/null)
 
 # Handle special options for ALSA sound drivers
 rm -f /etc/modprobe.d/alsa-special
@@ -1287,7 +1287,7 @@ if [[ "$SOUND_DRIVER" = snd-* ]]; then
 	echo alias snd-card-0 $SOUND_DRIVER > /etc/modprobe.d/sound
 	echo options $SOUND_DRIVER index=0 >> /etc/modprobe.d/sound
 	#set_mixers
-	aumix -m 0 -v $VOL -w $VOL -c $VOL &>/dev/null # set pcm & master & cd to $VOL, micro to 0
+	aumix -m 0 -v $VOL -w $VOL -c $VOL 2>&1 >/dev/null # set pcm & master & cd to $VOL, micro to 0
 fi
 
 # Read default keyboard from config file.
@@ -1345,7 +1345,7 @@ if [ -n "$INTERACTIVE" ]; then
 
 	echo -n "${CYAN}Do you want to (re)configure your soundcard?${NORMAL} [Y/n] "
 	read a
-	[ "$a" != "n" ] && sndconfig && ( exec aumix -m 0 &>/dev/null & )
+	[ "$a" != "n" ] && sndconfig && ( exec aumix -m 0 2>&1 >/dev/null & )
 
 	if [ -n "$MOUSE_FULLNAME" -o -n "$MOUSE_DEVICE" ]; then
 		echo -n " ${GREEN}Your mouse has been autodetected as: ${MAGENTA}"
@@ -1376,7 +1376,7 @@ if [ -n "$INTERACTIVE" ]; then
 fi
 
 if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
-	[ -n "$SOUND_DRIVER" ] && rmmod -r "$SOUND_DRIVER" &>/dev/null
+	[ -n "$SOUND_DRIVER" ] && rmmod -r "$SOUND_DRIVER" 2>&1 >/dev/null
 	# Export ALSA_CARD cariable to init script
 	case "$ALSA_CARD" in
 		auto*)
@@ -1463,7 +1463,7 @@ if checkbootparam "nofstab"; then
 	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
 else
 	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}... "
-	[ -d /${FLL_IMAGE_DIR} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r &>/dev/null
+	[ -d /${FLL_IMAGE_DIR} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r 2>&1 >/dev/null
 	if [ -e /var/run/rebuildfstab.pid ]; then
 		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
 		sleep 8
@@ -1543,7 +1543,7 @@ else
 	for DEVICE in $NETDEVICES; do
 		echo -n " ${GREEN}Network device ${MAGENTA}$DEVICE${GREEN} detected, DHCP broadcasting for IP.${NORMAL}"
 		trap 2 3 11
-		pump -i $DEVICE &>/dev/null &
+		pump -i $DEVICE 2>&1 >/dev/null &
 		trap "" 2 3 11
 		sleep 1
 		echo " ${BLUE}(Backgrounding)${NORMAL}"
@@ -1749,7 +1749,7 @@ for unioncheat in unionro unionrw unionfs ; do
 				else
 					getfilepath
 					MYPARAM="$(grep $filedev /proc/mounts | tail -n 1 | awk '{ print $2 }' -)"
-					grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro &>/dev/null && mount -o remount,rw $filedev $MYPARAM >/dev/null
+					grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro 2>&1 >/dev/null && mount -o remount,rw $filedev $MYPARAM >/dev/null
 					MYPARAM="$MYPARAM/$filepath"
 				fi
 			fi
@@ -1846,8 +1846,8 @@ fi
 # modem detection
 if ! checkbootparam "nomodem"; then
 	if lspci|grep Intel|grep -q "AC'97 Modem Controller"; then
-		/etc/init.d/sl-modem-daemon start &>/dev/null
-		grep -q ^sl-modem-daemon "$HWSETUP_SERVICES" &>/dev/null || echo sl-modem-daemon >> "$HWSETUP_SERVICES"
+		/etc/init.d/sl-modem-daemon start 2>&1 >/dev/null
+		grep -q ^sl-modem-daemon "$HWSETUP_SERVICES" 2>&1 >/dev/null || echo sl-modem-daemon >> "$HWSETUP_SERVICES"
 	fi
 fi
 
@@ -1867,14 +1867,14 @@ if ! checkbootparam "nopowernow"; then
 	grep -iq "VIA Nehemiah" /proc/cpuinfo && POWERNOW="longhaul"
 	if [ "$POWERNOW" ]; then
 		echo " ${GREEN}Enable ${YELLOW}Powernow${GREEN}.${NORMAL}"
-		modprobe $POWERNOW &>/dev/null
+		modprobe $POWERNOW 2>&1 >/dev/null
 		if [ -x /etc/init.d/powernowd ]; then
-			/etc/init.d/powernowd start &>/dev/null
-			grep -q ^powernowd "$HWSETUP_SERVICES" &>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
+			/etc/init.d/powernowd start 2>&1 >/dev/null
+			grep -q ^powernowd "$HWSETUP_SERVICES" 2>&1 >/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
 		fi
 		if [ -x /etc/init.d/powersaved ]; then
-			/etc/init.d/powersaved start &>/dev/null
-			grep -q ^powersaved "$HWSETUP_SERVICES" &>/dev/null || echo powersaved >>"$HWSETUP_SERVICES"
+			/etc/init.d/powersaved start 2>&1 >/dev/null
+			grep -q ^powersaved "$HWSETUP_SERVICES" 2>&1 >/dev/null || echo powersaved >>"$HWSETUP_SERVICES"
 		fi
 	fi
 else
@@ -1883,21 +1883,21 @@ fi
 
 # MS MM keyboard add-on
 # fix
-setkeycodes e001 126 &>/dev/null
-setkeycodes e059 127 &>/dev/null
+setkeycodes e001 126 2>&1 >/dev/null
+setkeycodes e059 127 2>&1 >/dev/null
 # fn keys
-setkeycodes e03b 59 &>/dev/null
-setkeycodes e008 60 &>/dev/null
-setkeycodes e007 61 &>/dev/null
-setkeycodes e03e 62 &>/dev/null
-setkeycodes e03f 63 &>/dev/null
-setkeycodes e040 64 &>/dev/null
-setkeycodes e041 65 &>/dev/null
-setkeycodes e042 66 &>/dev/null
-setkeycodes e043 67 &>/dev/null
-setkeycodes e023 68 &>/dev/null
-setkeycodes e057 87 &>/dev/null
-setkeycodes e058 88 &>/dev/null
+setkeycodes e03b 59 2>&1 >/dev/null
+setkeycodes e008 60 2>&1 >/dev/null
+setkeycodes e007 61 2>&1 >/dev/null
+setkeycodes e03e 62 2>&1 >/dev/null
+setkeycodes e03f 63 2>&1 >/dev/null
+setkeycodes e040 64 2>&1 >/dev/null
+setkeycodes e041 65 2>&1 >/dev/null
+setkeycodes e042 66 2>&1 >/dev/null
+setkeycodes e043 67 2>&1 >/dev/null
+setkeycodes e023 68 2>&1 >/dev/null
+setkeycodes e057 87 2>&1 >/dev/null
+setkeycodes e058 88 2>&1 >/dev/null
 
 # enable hotkeys
 [ -x /etc/init.d/hotkey-setup ] && /etc/init.d/hotkey-setup start

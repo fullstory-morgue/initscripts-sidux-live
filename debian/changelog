@@ -1,8 +1,9 @@
-initscripts-kanotix-live (0.3.35) UNRELEASED; urgency=low
+initscripts-kanotix-live (0.3.35) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * second round of bashism fixes, &>/dev/null -->  2>&1 >/dev/null.
+  * hide potential eject bugs again.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:47:54 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 02:03:46 +0100
 
 initscripts-kanotix-live (0.3.34) unstable; urgency=low
 
