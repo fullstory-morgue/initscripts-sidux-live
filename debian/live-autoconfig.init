@@ -62,6 +62,7 @@ HWSETUP_MAIN="/etc/sysconfig/knoppix"
 HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
 HWSETUP_SERVICES="/etc/sysconfig/services"
+HWSETUP_DESKTOP="/etc/sysconfig/desktop"
 
 ### Utility Function(s)
 
@@ -1004,7 +1005,7 @@ echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_KEYBOARD"
 echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
 
 # Desired desktop
-echo "DESKTOP=\"$DESKTOP\""            > /etc/sysconfig/desktop
+echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
 
 # Write all, including non-standard variables, to "$HWSETUP_MAIN"
 echo "LANG=\"$LANG\""                  > "$HWSETUP_MAIN"
