@@ -7,8 +7,9 @@ initscripts-kanotix-live (0.3.34) UNRELEASED; urgency=low
   * HWSETUP_MAIN="/etc/sysconfig/knoppix"
   * HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
   * HWSETUP_MOUSE="/etc/sysconfig/mouse"
+  * HWSETUP_SERVICES="/etc/sysconfig/services"
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:31:48 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:34:22 +0100
 
 initscripts-kanotix-live (0.3.33) unstable; urgency=low
 

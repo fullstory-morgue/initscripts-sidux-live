@@ -61,6 +61,7 @@ HWSETUP_I18N="/etc/sysconfig/i18n"
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
 HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
+HWSETUP_SERVICES="/etc/sysconfig/services"
 
 ### Utility Function(s)
 
@@ -1811,7 +1812,7 @@ fi
 if ! checkbootparam "nomodem"; then
 	if lspci|grep Intel|grep -q "AC'97 Modem Controller"; then
 		/etc/init.d/sl-modem-daemon start &>/dev/null
-		grep -q ^sl-modem-daemon /etc/sysconfig/services &>/dev/null || echo sl-modem-daemon >> /etc/sysconfig/services
+		grep -q ^sl-modem-daemon "$HWSETUP_SERVICES" &>/dev/null || echo sl-modem-daemon >> "$HWSETUP_SERVICES"
 	fi
 fi
 
@@ -1834,11 +1835,11 @@ if ! checkbootparam "nopowernow"; then
 		modprobe $POWERNOW &>/dev/null
 		if [ -x /etc/init.d/powernowd ]; then
 			/etc/init.d/powernowd start &>/dev/null
-			grep -q ^powernowd /etc/sysconfig/services &>/dev/null || echo powernowd >>/etc/sysconfig/services
+			grep -q ^powernowd "$HWSETUP_SERVICES" &>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
 		fi
 		if [ -x /etc/init.d/powersaved ]; then
 			/etc/init.d/powersaved start &>/dev/null
-			grep -q ^powersaved /etc/sysconfig/services &>/dev/null || echo powersaved >>/etc/sysconfig/services
+			grep -q ^powersaved "$HWSETUP_SERVICES" &>/dev/null || echo powersaved >>"$HWSETUP_SERVICES"
 		fi
 	fi
 else
