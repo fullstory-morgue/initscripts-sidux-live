@@ -1,3 +1,9 @@
+initscripts-kanotix-live (0.3.35) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:47:54 +0100
+
 initscripts-kanotix-live (0.3.34) unstable; urgency=low
 
   * first round of bashism fixes, "source" and function definitions.
