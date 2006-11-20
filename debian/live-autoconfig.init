@@ -60,6 +60,7 @@ SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
 HWSETUP_I18N="/etc/sysconfig/i18n"
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
 HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
+HWSETUP_MOUSE="/etc/sysconfig/mouse"
 
 ### Utility Function(s)
 
@@ -1233,12 +1234,12 @@ fi
 [ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
 
 # Workaround for new mouse detection
-if [ -f /etc/sysconfig/mouse ]; then
-	. /etc/sysconfig/mouse
+if [ -f "$HWSETUP_MOUSE" ]; then
+	. "$HWSETUP_MOUSE"
 	if [ "$MOUSETYPE" = "ps2" ]; then
 		ln -sf /dev/psaux /dev/mouse
-		perl -pi -e "s|/dev/input/mice|/dev/psaux|" /etc/sysconfig/mouse "$HWSETUP_MAIN"
-		. /etc/sysconfig/mouse
+		perl -pi -e "s|/dev/input/mice|/dev/psaux|" "$HWSETUP_MOUSE" "$HWSETUP_MAIN"
+		. "$HWSETUP_MOUSE"
 		. "$HWSETUP_MAIN"
 	fi
 fi
@@ -1337,7 +1338,7 @@ if [ -n "$INTERACTIVE" ]; then
 
 	echo -n "${CYAN}Do you want to (re)configure your mouse?${NORMAL} [Y/n] "
 	read a
-	[ -f /etc/sysconfig/mouse ] && . /etc/sysconfig/mouse
+	[ -f "$HWSETUP_MOUSE" ] && . "$HWSETUP_MOUSE"
 	[ "$a" != "n" ] && mouseconfig
 fi
 
