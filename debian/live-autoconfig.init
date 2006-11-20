@@ -59,6 +59,7 @@ WHITE="[1;37m"
 SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
 HWSETUP_I18N="/etc/sysconfig/i18n"
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
+HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
 
 ### Utility Function(s)
 
@@ -978,7 +979,7 @@ echo "$TZ" > /etc/timezone
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
 	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		"$HWSETUP_I18N" /etc/sysconfig/keyboard "$HWSETUP_MAIN" \
+		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
 		2>/dev/null
 fi
 
@@ -995,10 +996,10 @@ echo "XMODIFIERS=\"$XMODIFIERS\""     >> "$HWSETUP_I18N"
 #echo "TZ=\"$TZ\""                     >> "$HWSETUP_I18N"
 
 # Default Keyboard layout for console and X
-echo "KEYTABLE=\"$KEYTABLE\""          > /etc/sysconfig/keyboard
-echo "XKEYBOARD=\"$XKEYBOARD\""       >> /etc/sysconfig/keyboard
-echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> /etc/sysconfig/keyboard
-echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/sysconfig/keyboard
+echo "KEYTABLE=\"$KEYTABLE\""          > "$HWSETUP_KEYBOARD"
+echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_KEYBOARD"
+echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_KEYBOARD"
+echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
 
 # Desired desktop
 echo "DESKTOP=\"$DESKTOP\""            > /etc/sysconfig/desktop
@@ -1273,7 +1274,7 @@ fi
 
 # Read default keyboard from config file.
 # There seems to be no reliable autoprobe possible.
-[ -f /etc/sysconfig/keyboard ] && . /etc/sysconfig/keyboard
+[ -f "$HWSETUP_KEYBOARD" ] && . "$HWSETUP_KEYBOARD"
 # Set default keyboard before interactive setup
 [ -n "$KEYTABLE" ] && loadkeys -q $KEYTABLE
 [ -n "$CONSOLEFONT" ] && consolechars -f $CONSOLEFONT
