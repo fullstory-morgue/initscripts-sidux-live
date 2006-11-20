@@ -3,9 +3,10 @@ initscripts-kanotix-live (0.3.34) UNRELEASED; urgency=low
   * NOT RELEASED YET
   * first round of bashism fixes, "source" and function definitions.
   * SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
-  * /etc/sysconfig/i18n
+  * HWSETUP_I18N="/etc/sysconfig/i18n"
+  * HWSETUP_MAIN="/etc/sysconfig/knoppix"
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:22:13 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 01:28:53 +0100
 
 initscripts-kanotix-live (0.3.33) unstable; urgency=low
 

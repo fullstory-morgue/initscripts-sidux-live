@@ -58,6 +58,7 @@ WHITE="[1;37m"
 # get rid of these as soon as possible
 SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
 HWSETUP_I18N="/etc/sysconfig/i18n"
+HWSETUP_MAIN="/etc/sysconfig/knoppix"
 
 ### Utility Function(s)
 
@@ -977,7 +978,7 @@ echo "$TZ" > /etc/timezone
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
 	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		"$HWSETUP_I18N" /etc/sysconfig/keyboard /etc/sysconfig/knoppix \
+		"$HWSETUP_I18N" /etc/sysconfig/keyboard "$HWSETUP_MAIN" \
 		2>/dev/null
 fi
 
@@ -1002,17 +1003,17 @@ echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/sysconfig/keyboard
 # Desired desktop
 echo "DESKTOP=\"$DESKTOP\""            > /etc/sysconfig/desktop
 
-# Write all, including non-standard variables, to /etc/sysconfig/knoppix
-echo "LANG=\"$LANG\""                  > /etc/sysconfig/knoppix
-echo "COUNTRY=\"$COUNTRY\""           >> /etc/sysconfig/knoppix
-echo "LANGUAGE=\"$LANGUAGE\""         >> /etc/sysconfig/knoppix
-echo "CHARSET=\"$CHARSET\""           >> /etc/sysconfig/knoppix
-echo "KEYTABLE=\"$KEYTABLE\""         >> /etc/sysconfig/knoppix
-echo "XKEYBOARD=\"$XKEYBOARD\""       >> /etc/sysconfig/knoppix
-echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> /etc/sysconfig/knoppix
-echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/sysconfig/knoppix
-echo "DESKTOP=\"$DESKTOP\""           >> /etc/sysconfig/knoppix
-echo "TZ=\"$TZ\""                     >> /etc/sysconfig/knoppix
+# Write all, including non-standard variables, to "$HWSETUP_MAIN"
+echo "LANG=\"$LANG\""                  > "$HWSETUP_MAIN"
+echo "COUNTRY=\"$COUNTRY\""           >> "$HWSETUP_MAIN"
+echo "LANGUAGE=\"$LANGUAGE\""         >> "$HWSETUP_MAIN"
+echo "CHARSET=\"$CHARSET\""           >> "$HWSETUP_MAIN"
+echo "KEYTABLE=\"$KEYTABLE\""         >> "$HWSETUP_MAIN"
+echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_MAIN"
+echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_MAIN"
+echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_MAIN"
+echo "DESKTOP=\"$DESKTOP\""           >> "$HWSETUP_MAIN"
+echo "TZ=\"$TZ\""                     >> "$HWSETUP_MAIN"
 
 # Write locale setting to default position
 rm -f /etc/default/locale
@@ -1026,10 +1027,10 @@ else
 fi
 
 # Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> /etc/sysconfig/knoppix
+[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
 
 # disable 915resolution hack
-checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> /etc/sysconfig/knoppix
+checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
 
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
@@ -1228,16 +1229,16 @@ if [ -n "$ALSA_SPECIAL" ]; then
 fi
 
 # Read in what hwsetup has found
-[ -f /etc/sysconfig/knoppix ] && . /etc/sysconfig/knoppix
+[ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
 
 # Workaround for new mouse detection
 if [ -f /etc/sysconfig/mouse ]; then
 	. /etc/sysconfig/mouse
 	if [ "$MOUSETYPE" = "ps2" ]; then
 		ln -sf /dev/psaux /dev/mouse
-		perl -pi -e "s|/dev/input/mice|/dev/psaux|" /etc/sysconfig/mouse /etc/sysconfig/knoppix
+		perl -pi -e "s|/dev/input/mice|/dev/psaux|" /etc/sysconfig/mouse "$HWSETUP_MAIN"
 		. /etc/sysconfig/mouse
-		. /etc/sysconfig/knoppix
+		. "$HWSETUP_MAIN"
 	fi
 fi
        
@@ -1346,7 +1347,7 @@ if ! checkbootparam "nomkxf86config"; then
 fi
 
 # Read in changes
-[ -f /etc/sysconfig/knoppix ] && . /etc/sysconfig/knoppix
+[ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
 
 if [ -n "$INTERACTIVE" ]; then
 	echo -n "${CYAN}Do you want to (re)configure your graphics (X11) subsystem?${NORMAL} [Y/n] "
@@ -1527,7 +1528,7 @@ else
 		done
 	done
 fi
-echo 'BACKGROUND="'"$BACKGROUND"'"' >> /etc/sysconfig/knoppix
+echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
 
 findfile()
 {
