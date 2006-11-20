@@ -2,8 +2,8 @@
 # /KNOPPIX/etc/init.d/knoppix-autoconfig
 # Basic system configuration and hardware setup
 # (C) Klaus Knopper <knopper@knopper.net> 2004
-# modified for KANOTIX by Joerg Schirottke <master@kanotix.com> 2003-2006
-# (C) 2005, 2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+# (C) 2003-2006 Joerg Schirottke <master@kanotix.com> 2003-2006
+# (C) 2005-2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 export PATH
@@ -20,7 +20,7 @@ FLL_WALLPAPER="/usr/share/wallpapers/kanotix.png"
 
 X_CONF="/etc/X11/xorg.conf"
 
-[ -r /etc/default/distro ] && source /etc/default/distro
+[ -r /etc/default/distro ] && . /etc/default/distro
 
 [ ! "$FLL_DISTRO_MODE" = "live" ] && exit 0
 
@@ -55,19 +55,32 @@ WHITE="[1;37m"
 ### Utility Function(s)
 
 # Simple shell grep
-stringinfile(){
-	case "$(cat $2)" in *$1*) return 0;; esac
+stringinfile()
+{
+	case "$(cat $2)" in
+		*$1*)
+			return 0
+			;;
+	esac
+
 	return 1
 }
 
 # same for strings
-stringinstring(){
-	case "$2" in *$1*) return 0;; esac
+stringinstring()
+{
+	case "$2" in 
+		*$1*)
+			return 0
+			;;
+	esac
+
 	return 1
 }
 
 # Reread boot command line; echo last parameter's argument or return false.
-getbootparam(){
+getbootparam()
+{
 	stringinstring " $1=" "$CMDLINE" || return 1
 	result="${CMDLINE##*$1=}"
 	result="${result%%[ 	]*}"
@@ -76,7 +89,8 @@ getbootparam(){
 }
 
 # Check boot commandline for specified option
-checkbootparam(){
+checkbootparam()
+{
 	stringinstring " $1" "$CMDLINE"
 	return "$?"
 }
@@ -106,6 +120,7 @@ case "$CMDLINE" in
 		MYCONF="yes"
 		;;
 esac
+
 if [ -n "$MYCONF" ]; then
 	# Check for given config directory
 	MYCONFDIR="$(getbootparam 'myconfig')"
@@ -1206,16 +1221,16 @@ if [ -n "$ALSA_SPECIAL" ]; then
 fi
 
 # Read in what hwsetup has found
-[ -f /etc/sysconfig/knoppix ] && source /etc/sysconfig/knoppix
+[ -f /etc/sysconfig/knoppix ] && . /etc/sysconfig/knoppix
 
 # Workaround for new mouse detection
 if [ -f /etc/sysconfig/mouse ]; then
-	source /etc/sysconfig/mouse
+	. /etc/sysconfig/mouse
 	if [ "$MOUSETYPE" = "ps2" ]; then
 		ln -sf /dev/psaux /dev/mouse
 		perl -pi -e "s|/dev/input/mice|/dev/psaux|" /etc/sysconfig/mouse /etc/sysconfig/knoppix
-		source /etc/sysconfig/mouse
-		source /etc/sysconfig/knoppix
+		. /etc/sysconfig/mouse
+		. /etc/sysconfig/knoppix
 	fi
 fi
        
@@ -1250,7 +1265,7 @@ fi
 
 # Read default keyboard from config file.
 # There seems to be no reliable autoprobe possible.
-[ -f /etc/sysconfig/keyboard ] && source /etc/sysconfig/keyboard
+[ -f /etc/sysconfig/keyboard ] && . /etc/sysconfig/keyboard
 # Set default keyboard before interactive setup
 [ -n "$KEYTABLE" ] && loadkeys -q $KEYTABLE
 [ -n "$CONSOLEFONT" ] && consolechars -f $CONSOLEFONT
@@ -1313,7 +1328,7 @@ if [ -n "$INTERACTIVE" ]; then
 
 	echo -n "${CYAN}Do you want to (re)configure your mouse?${NORMAL} [Y/n] "
 	read a
-	[ -f /etc/sysconfig/mouse ] && source /etc/sysconfig/mouse
+	[ -f /etc/sysconfig/mouse ] && . /etc/sysconfig/mouse
 	[ "$a" != "n" ] && mouseconfig
 fi
 
@@ -1324,7 +1339,7 @@ if ! checkbootparam "nomkxf86config"; then
 fi
 
 # Read in changes
-[ -f /etc/sysconfig/knoppix ] && source /etc/sysconfig/knoppix
+[ -f /etc/sysconfig/knoppix ] && . /etc/sysconfig/knoppix
 
 if [ -n "$INTERACTIVE" ]; then
 	echo -n "${CYAN}Do you want to (re)configure your graphics (X11) subsystem?${NORMAL} [Y/n] "
@@ -1507,7 +1522,8 @@ else
 fi
 echo 'BACKGROUND="'"$BACKGROUND"'"' >> /etc/sysconfig/knoppix
 
-findfile(){
+findfile()
+{
 	FOUND=""
 	# search all partitions for a file in the root directory
 	for i in /media/[sh]d[a-z] /media/[sh]d[a-z][1-9] /media/[sh]d[a-z][1-9]?*; do
@@ -1527,7 +1543,8 @@ modprobe aes 2>/dev/null
 modprobe cryptoloop 2>/dev/null
 
 # Try to mount this filesystem read-only, without or with encryption
-trymount(){
+trymount()
+{
 	# Check if already mounted
 	case "$(cat /proc/mounts)" in *\ $2\ *) return 0;; esac
 	# Apparently, mount-aes DOES autodetect AES loopback files.
@@ -1549,12 +1566,14 @@ trymount(){
 }
 
 # Unionfs
-getfiledev(){
+getfiledev()
+{
 	filedev="$(echo $MYPARAM | grep ^/media/ | tail -n 1 | sed s/\\/media\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
 	[ -z "$filedev" ] && filedev="$(echo $MYPARAM | grep ^/dev/ | tail -n 1 | sed s/\\/dev\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
 }
 
-getfilepath(){
+getfilepath()
+{
 	filepath="$(echo $MYPARAM | grep ^/media/ | sed s/\\/media\\/\\\([^\\/]\\+\\\)\\///)"
 	[ -z "$filepath" ] && filepath="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\)\\///)"
 }
@@ -1573,7 +1592,7 @@ if [ -z "$NOCONFIGCD" ]; then
 		echo ""
 		echo " ${GREEN}${FLL_DISTRO_NAME} Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 		echo "6" > /proc/sys/kernel/printk
-		source "$MYCONFIG" /cdrom/${FLL_IMAGE_DIR} || true
+		. "$MYCONFIG" /cdrom/${FLL_IMAGE_DIR} || true
 		echo "0" > /proc/sys/kernel/printk
 	fi
 fi
@@ -1750,7 +1769,7 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 					FOUND_CONFIG="yes"
 					echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 					echo "6" > /proc/sys/kernel/printk
-					source "$MYCONFIG" "$MYCONFDIR" || true
+					. "$MYCONFIG" "$MYCONFDIR" || true
 					echo "0" > /proc/sys/kernel/printk
 				fi
 				umount "$MYCONFMOUNTPOINT" 2>/dev/null
@@ -1765,7 +1784,7 @@ if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][X
 	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 	echo "6" > /proc/sys/kernel/printk
-	source "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
+	. "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
 	echo "0" > /proc/sys/kernel/printk	
 fi
 
@@ -1774,7 +1793,7 @@ if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][X
 	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
 	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 	echo "6" > /proc/sys/kernel/printk
-	source "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
+	. "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
 	echo "0" > /proc/sys/kernel/printk	
 fi
 

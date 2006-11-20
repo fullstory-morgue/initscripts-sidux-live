@@ -6,15 +6,18 @@ export PATH
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
 FLL_DISTRO_NAME="Kanotix"
-[ -r /etc/default/distro ] && source /etc/default/distro
+[ -r /etc/default/distro ] && . /etc/default/distro
 FLL_DISTRO_NAME="$(echo $FLL_DISTRO_NAME | tr [a-z] [A-Z])"
 
 [ ! "$FLL_DISTRO_MODE" = "live" ] && exit 0
 
 case "$1" in
-	start) ;;
-	stop)  ;;
-	restart|force-reload) ;;
+	start)
+		;;
+	stop)
+		;;
+	restart|force-reload)
+		;;
 esac
 
 # Clean input/output
@@ -49,7 +52,8 @@ esac
 # No sync and no wtmp entry if running from CD
 options="$options -n"
 
-mysleep() {
+mysleep()
+{
 	for i in $(seq 1 40); do
 		sleep "0.075s"
 		echo -n "$1.${NORMAL}"
