@@ -1,16 +1,16 @@
-Source: initscripts-kanotix-live
+Source: initscripts-sidux-live
 Section: base
 Priority: optional
 Maintainer: Stefan Lippers-Hollmann <s.l-h@gmx.de>
 Build-Depends: cdbs (>= 0.4.23), debhelper (>= 5.0.0)
 Standards-Version: 3.7.2
 
-Package: initscripts-kanotix-live
+Package: initscripts-sidux-live
 Architecture: all
-Depends: distro-defaults, rebuildfstab-kanotix, udev (>= 0.071), sysvinit (>= 2.86), eject (>= 2.1.4-2.1), pcmciautils, hwsetup-ng
-Recommends: xf86config-kanotix (>= 0.9.11)
+Depends: distro-defaults, rebuildfstab, udev (>= 0.071), sysvinit (>= 2.86), eject (>= 2.1.4-2.1), pcmciautils, hwsetup-ng
+Recommends: xf86config-sidux (>= 0.9.11)
 Suggests: avm-firmware, drdsl, ltmodem-common, unionfs-utils, hotkey-setup
-Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix, eject-live, pcmcia-cs, usleep-kanotix
-Description: KANOTIX initscripts for live CDs
+Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix, eject-live, pcmcia-cs, usleep-kanotix, initscripts-kanotix-live
+Description: Sidux initscripts for live CDs
  Live specific initscripts for hardware detection and shutdown functions 
- on KANOTIX.
+ on Sidux.

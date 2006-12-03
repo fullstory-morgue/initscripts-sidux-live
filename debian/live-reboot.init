@@ -5,7 +5,7 @@ export PATH
 
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
-FLL_DISTRO_NAME="Kanotix"
+FLL_DISTRO_NAME="Sidux"
 [ -r /etc/default/distro ] && . /etc/default/distro
 FLL_DISTRO_NAME="$(echo $FLL_DISTRO_NAME | tr [a-z] [A-Z])"
 

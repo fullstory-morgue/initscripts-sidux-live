@@ -1,8 +1,10 @@
-initscripts-kanotix-live (0.3.36) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.36) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Nov 2006 02:05:24 +0100
+  * Initial version for sidux
+
+ -- Joaquim Boura <x-un-i@sidux.com>  Sun,  3 Dec 2006 13:49:49 +0100
 
 initscripts-kanotix-live (0.3.35) unstable; urgency=low
 

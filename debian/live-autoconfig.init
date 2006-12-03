@@ -13,10 +13,10 @@ umask 022
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
 FLL_IMAGE_DIR="KNOPPIX"
-FLL_DISTRO_NAME="Kanotix"
+FLL_DISTRO_NAME="Sidux"
 FLL_LIVE_USER="knoppix"
-FLL_PERSISTENT_HOME="kanotix.img"
-FLL_WALLPAPER="/usr/share/wallpapers/kanotix.png"
+FLL_PERSISTENT_HOME="sidux.img"
+FLL_WALLPAPER="/usr/share/wallpapers/sidux.png"
 
 X_CONF="/etc/X11/xorg.conf"
 
@@ -1555,7 +1555,7 @@ if [ -r "${FLL_WALLPAPER}" ]; then
 	BACKGROUND="${FLL_WALLPAPER}"
 else
 	# Search for custom background image for KDE/GNOME/X
-	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/kanotix; do
+	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
 		for j in png jpg gif; do
 			BACKGROUND="$i.$j"
 			[ -e "$BACKGROUND" ] && break 2

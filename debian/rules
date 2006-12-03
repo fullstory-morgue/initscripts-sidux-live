@@ -2,7 +2,7 @@
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 
-install/initscripts-kanotix-live::
+install/initscripts-sidux-live::
 	cp 		debian/live-reboot.init debian/live-halt.init
 	dh_installinit	--name=live-autoconfig --no-start \
 			--update-rcd-params="start 00 S ."
