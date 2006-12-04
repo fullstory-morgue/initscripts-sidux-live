@@ -11,6 +11,6 @@ Depends: distro-defaults, rebuildfstab, udev (>= 0.071), sysvinit (>= 2.86), eje
 Recommends: xf86config-sidux (>= 0.9.11)
 Suggests: avm-firmware, drdsl, ltmodem-common, unionfs-utils, hotkey-setup
 Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix, eject-live, pcmcia-cs, usleep-kanotix, initscripts-kanotix-live
-Description: Sidux initscripts for live CDs
+Description: sidux initscripts for live CDs
  Live specific initscripts for hardware detection and shutdown functions 
- on Sidux.
+ on sidux.

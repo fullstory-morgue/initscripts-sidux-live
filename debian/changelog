@@ -4,7 +4,9 @@ initscripts-sidux-live (0.3.36) UNRELEASED; urgency=low
 
   * Initial version for sidux
 
- -- Joaquim Boura <x-un-i@sidux.com>  Sun,  3 Dec 2006 13:49:49 +0100
+  * fixed mispelling
+
+ -- Joaquim Boura <x-un-i@sidux.com>  Mon,  4 Dec 2006 14:23:29 +0100
 
 initscripts-kanotix-live (0.3.35) unstable; urgency=low
 

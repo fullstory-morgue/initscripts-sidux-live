@@ -13,7 +13,7 @@ umask 022
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
 FLL_IMAGE_DIR="KNOPPIX"
-FLL_DISTRO_NAME="Sidux"
+FLL_DISTRO_NAME="sidux"
 FLL_LIVE_USER="knoppix"
 FLL_PERSISTENT_HOME="sidux.img"
 FLL_WALLPAPER="/usr/share/wallpapers/sidux.png"
