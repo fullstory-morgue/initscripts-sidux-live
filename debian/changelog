@@ -1,12 +1,14 @@
-initscripts-sidux-live (0.3.36) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.36) unstable; urgency=low
 
-  * NOT RELEASED YET
-
+  [ Joaquim Boura ]
   * Initial version for sidux
-
   * fixed mispelling
 
- -- Joaquim Boura <x-un-i@sidux.com>  Mon,  4 Dec 2006 14:23:29 +0100
+  [ Stefan Lippers-Hollmann ]
+  * minor debian/control cosmetics.
+  * depend on xorgconfig-sidux, not xf86config-sidux.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue,  5 Dec 2006 12:27:42 +0100
 
 initscripts-kanotix-live (0.3.35) unstable; urgency=low
 
