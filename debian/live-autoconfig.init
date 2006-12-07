@@ -14,9 +14,9 @@ umask 022
 FLL_DISTRO_MODE="installed"
 FLL_IMAGE_DIR="KNOPPIX"
 FLL_DISTRO_NAME="sidux"
-FLL_LIVE_USER="knoppix"
+FLL_LIVE_USER="sidux"
 FLL_PERSISTENT_HOME="sidux.img"
-FLL_WALLPAPER="/usr/share/wallpapers/sidux.png"
+FLL_WALLPAPER="/usr/share/wallpapers/sidux.jpg"
 
 X_CONF="/etc/X11/xorg.conf"
 
@@ -1039,10 +1039,6 @@ checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
 
-# Check for IDE-SCSI capable CD-Rom(s) first
-checkbootparam "idecd" || checkbootparam "atapicd" || modprobe ide-scsi 2>&1 >/dev/null
-modprobe ide-cd 2>&1 >/dev/null
-
 # Bring up loopback interface now
 ifconfig lo 127.0.0.1 up
 
@@ -1183,16 +1179,11 @@ modprobe 8250 2>&1 >/dev/null
 
 # load psmouse module
 modprobe psmouse 2>&1 >/dev/null
-if checkbootparam "nohwsetup"; then
-	echo "${BLUE}Loading hardware profile from ${MAGENTA}/etc/modules${BLUE}.${NORMAL}"
-	/etc/init.d/modutils-knoppix start 2>&1 >/dev/null
+echo -n "${WHITE}"
+if hwsetup -p $HWSETUP_NOSERIAL >/dev/null; then
+	echo -n "${NORMAL}"
 else
-	echo -n "${WHITE}"
-	if hwsetup -p $HWSETUP_NOSERIAL >/dev/null; then
-		echo -n "${NORMAL}"
-	else
-		echo " ${RED}Please check.${NORMAL}"
-	fi
+	echo " ${RED}Please check.${NORMAL}"
 fi
 update_progress 60
 
