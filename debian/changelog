@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.38) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  8 Dec 2006 00:45:45 +0100
+
 initscripts-sidux-live (0.3.37) unstable; urgency=low
 
   * use /usr/share/wallpaper/sidux.jpg
