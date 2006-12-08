@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.39) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  8 Dec 2006 01:34:15 +0100
+
 initscripts-sidux-live (0.3.38) unstable; urgency=low
 
   * use FLL_MOUNTPOINT.
