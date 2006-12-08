@@ -1,20 +1,16 @@
-initscripts-sidux-live (0.3.38) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.38) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * use FLL_MOUNTPOINT.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  8 Dec 2006 00:45:45 +0100
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Fri,  8 Dec 2006 00:00:29 +0000
 
 initscripts-sidux-live (0.3.37) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
   * use /usr/share/wallpaper/sidux.jpg
   * /etc/init.d/modutils-knoppix doesn't exist any longer.
   * ide-scsi is obsolete.
 
-  [ Niall Walsh ]
-  * use FLL_MOUNTPOINT
-
- -- Niall Walsh <niallwalsh@users.berlios.de>  Fri,  8 Dec 2006 00:00:29 +0000
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  8 Dec 2006 00:35:37 +0100
 
 initscripts-sidux-live (0.3.36) unstable; urgency=low
 
