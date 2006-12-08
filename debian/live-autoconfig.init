@@ -12,7 +12,7 @@ umask 022
 
 # override tool behaviour through distro-defaults
 FLL_DISTRO_MODE="installed"
-FLL_IMAGE_DIR="KNOPPIX"
+FLL_IMAGE_DIR="SIDUX"
 FLL_DISTRO_NAME="sidux"
 FLL_LIVE_USER="sidux"
 FLL_PERSISTENT_HOME="sidux.img"
@@ -21,6 +21,8 @@ FLL_WALLPAPER="/usr/share/wallpapers/sidux.jpg"
 X_CONF="/etc/X11/xorg.conf"
 
 [ -r /etc/default/distro ] && . /etc/default/distro
+
+[ -z "$FLL_MOUNTPOINT" ] && FLL_MOUNTPOINT="/$FLL_IMAGE_DIR"
 
 [ ! "$FLL_DISTRO_MODE" = "live" ] && exit 0
 
@@ -1376,7 +1378,7 @@ if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
 	esac
 	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
 	# Something went wrong ?
-	[ ! -r /etc/modules.conf ] && ln -sf /${FLL_IMAGE_DIR}/etc/modules.conf /etc/modules.conf
+	[ ! -r /etc/modules.conf ] && ln -sf /${FLL_MOUNTPOINT}/etc/modules.conf /etc/modules.conf
 fi
 
 # Start FC detection on vt10
@@ -1454,7 +1456,7 @@ if checkbootparam "nofstab"; then
 	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
 else
 	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}... "
-	[ -d /${FLL_IMAGE_DIR} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r 2>&1 >/dev/null
+	[ -d /${FLL_MOUNTPOINT} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r 2>&1 >/dev/null
 	if [ -e /var/run/rebuildfstab.pid ]; then
 		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
 		sleep 8
@@ -1719,7 +1721,7 @@ for unioncheat in unionro unionrw unionfs ; do
 	grep $unioncheat /home/${FLL_LIVE_USER}/.union >/dev/null 2>&1 && DOUNION="Yes" && MYPARAM="$(grep $unioncheat /home/${FLL_LIVE_USER}/.union 2>/dev/null | cut -d'=' -f2)"
 	checkbootparam "$unioncheat" && DOUNION="Yes" && MYPARAM="$(getbootparam "$unioncheat")"
 	if [ -n "$DOUNION" ] ;then
-		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/${FLL_IMAGE_DIR} none /${FLL_IMAGE_DIR} && UNIONMADE="yes" >/dev/null
+		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/${FLL_MOUNTPOINT} none /${FLL_MOUNTPOINT} && UNIONMADE="yes" >/dev/null
 		echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
 		UNIONMNTOPT=""
 		[ "$unioncheat" = "unionro" ] && UNIONMNTOPT="-o ro"
@@ -1750,9 +1752,9 @@ for unioncheat in unionro unionrw unionfs ; do
 			mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
 			MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
 		fi
-		[ -n "$MYPARAM" ] && unionctl /${FLL_IMAGE_DIR} --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
-		[ -z "$UNIONTIDY" ] && unionctl /${FLL_IMAGE_DIR} --mode /${FLL_IMAGE_DIR} ro > /dev/null && UNIONTIDY="yes"
-		[ -n "$UNIONMNTOPT" ] && unionctl /${FLL_IMAGE_DIR} --mode $MYPARAM ro > /dev/null
+		[ -n "$MYPARAM" ] && unionctl /${FLL_MOUNTPOINT} --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
+		[ -z "$UNIONTIDY" ] && unionctl /${FLL_MOUNTPOINT} --mode /${FLL_IMAGE_DIR} ro > /dev/null && UNIONTIDY="yes"
+		[ -n "$UNIONMNTOPT" ] && unionctl /${FLL_MOUNTPOINT} --mode $MYPARAM ro > /dev/null
 	fi
 done
 
