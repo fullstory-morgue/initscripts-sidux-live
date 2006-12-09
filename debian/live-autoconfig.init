@@ -1716,48 +1716,6 @@ EOT
 	fi
 fi
 
-for unioncheat in unionro unionrw unionfs ; do
-	DOUNION=""
-	grep $unioncheat /home/${FLL_LIVE_USER}/.union >/dev/null 2>&1 && DOUNION="Yes" && MYPARAM="$(grep $unioncheat /home/${FLL_LIVE_USER}/.union 2>/dev/null | cut -d'=' -f2)"
-	checkbootparam "$unioncheat" && DOUNION="Yes" && MYPARAM="$(getbootparam "$unioncheat")"
-	if [ -n "$DOUNION" ] ;then
-		[ -z "$UNIONMADE" ] && mount -t unionfs -o dirs=/${FLL_MOUNTPOINT} none /${FLL_MOUNTPOINT} && UNIONMADE="yes" >/dev/null
-		echo " ${GREEN}Enable ${YELLOW} $unioncheat ${GREEN}support.${NORMAL}"
-		UNIONMNTOPT=""
-		[ "$unioncheat" = "unionro" ] && UNIONMNTOPT="-o ro"
-		[ "$unioncheat" = "unionfs" ] && MYPARAM="/ramdisk/var/tmp/union/" && mkdir -p $MYPARAM
-		getfiledev
-		if [ -n "$filedev" ]; then
-			if grep $filedev /etc/fstab 2>&1 >/dev/null && ! grep $filedev /proc/mounts 2>&1 >/dev/null; then
-				mount $UNIONMNTOPT $filedev >/dev/null
-				getfilepath
-				MYPARAM="$(grep -v ^[:space:]*\# /etc/fstab | grep $filedev | head -n 1 | awk '{print $2}')"
-				MYPARAM="$MYPARAM/$filepath"
-			else
-				if ! grep $filedev /proc/mounts; then
-					mkdir -p /tmp/$unioncheat >/dev/null
-					mount $UNIONMNTOPT $filedev /tmp/$unioncheat >/dev/null
-					getfilepath
-					MYPARAM="/ramdisk/var/tmp/$unioncheat/$filepath"
-				else
-					getfilepath
-					MYPARAM="$(grep $filedev /proc/mounts | tail -n 1 | awk '{ print $2 }' -)"
-					grep $MYPARAM /proc/mounts | awk '{print $4 }' - | grep ro 2>&1 >/dev/null && mount -o remount,rw $filedev $MYPARAM >/dev/null
-					MYPARAM="$MYPARAM/$filepath"
-				fi
-			fi
-		fi
-		if [ -f "$MYPARAM" ]; then
-			mkdir -p /tmp/$unioncheat-loop >/dev/null
-			mount -o loop $UNIONMNTOPT $MYPARAM /tmp/$unioncheat-loop >/dev/null
-			MYPARAM="/ramdisk/var/tmp/$unioncheat-loop"
-		fi
-		[ -n "$MYPARAM" ] && unionctl /${FLL_MOUNTPOINT} --add $MYPARAM >/dev/null && echo " ${Green}Union ${YELLOW}$MYPARAM ${GREEN}enabled.${Normal}"
-		[ -z "$UNIONTIDY" ] && unionctl /${FLL_MOUNTPOINT} --mode /${FLL_IMAGE_DIR} ro > /dev/null && UNIONTIDY="yes"
-		[ -n "$UNIONMNTOPT" ] && unionctl /${FLL_MOUNTPOINT} --mode $MYPARAM ro > /dev/null
-	fi
-done
-
 if [ -z "$NOCONFIGCHEAT" ]; then
 	# Check for configuration floppy add-on if not running from HD
 	if [ -n "$MYCONF" ]; then
