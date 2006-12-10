@@ -1,8 +1,8 @@
-initscripts-sidux-live (0.3.40) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.40) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * disable broken i18n handling for now.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat,  9 Dec 2006 09:48:19 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 11 Dec 2006 00:12:18 +0100
 
 initscripts-sidux-live (0.3.39) unstable; urgency=low
 

@@ -1,5 +1,4 @@
 #!/bin/bash
-# /KNOPPIX/etc/init.d/knoppix-autoconfig
 # Basic system configuration and hardware setup
 # (C) Klaus Knopper <knopper@knopper.net> 2004
 # (C) 2003-2006 Joerg Schirottke <master@kanotix.com>
@@ -60,8 +59,8 @@ WHITE="[1;37m"
 # get rid of these as soon as possible
 SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
-HWSETUP_I18N="/etc/sysconfig/i18n"
-HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
+#I18N#HWSETUP_I18N="/etc/sysconfig/i18n"
+#I18N#HWSETUP_KEYBOARD="/etc/sysconfig/keyboard"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
 HWSETUP_SERVICES="/etc/sysconfig/services"
 HWSETUP_DESKTOP="/etc/sysconfig/desktop"
@@ -145,779 +144,779 @@ if [ -n "$MYCONF" ]; then
 	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
 fi
 
-### localization
-# Allow language specification via commandline. The default language
-# will be overridden via "lang=de" boot commandline
-LANGUAGE="$(getbootparam lang 2>/dev/null)"
-[ -n "$LANGUAGE" ] || LANGUAGE="de"
-
-# Set default console font (needed for first console + kernel 2.6)
-CONSOLEFONT="lat0-sun16"
-
-# The default language/keyboard to use. This CANNOT be autoprobed.
-# Most of these variables will be used to generate the KDE defaults
-# and will be inserted into /etc/sysconfig/* below.
-case "$LANGUAGE" in
-	de-legacy)
-		# German version
-		COUNTRY="de"
-		LANG="de_DE@euro"
-		KEYTABLE="de-latin1-nodeadkeys"
-		XKEYBOARD="de"
-		KDEKEYBOARD="de"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,fr"
-		TZ="Europe/Berlin"
-		;;
-	de-utf8|de)
-		# German version UTF-8
-		LANGUAGE="de_DE:de"
-		COUNTRY="de_DE"
-		LANG="de_DE.UTF-8"
-		KEYTABLE="de-latin1-nodeadkeys"
-		XKEYBOARD="de"
-		KDEKEYBOARD="de"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,fr"
-		TZ="Europe/Berlin"
-		;;
-	au-legacy)
-		# Australian version
-		LANGUAGE="en"
-		COUNTRY="au"
-		LANG="en_AU"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="iso8859-1"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,fr"
-		TZ="Australia/Sydney"
-		;;
-	au-utf8|au)
-		# Australian version
-		LANGUAGE="en_AU:en"
-		COUNTRY="au"
-		LANG="en_AU.UTF-8"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,fr"
-		TZ="Australia/Sydney"
-		;;
-	be-legacy)
-		# Belgian version
-		LANGUAGE="be"
-		COUNTRY="be"
-		LANG="C"
-		KEYTABLE="be2-latin1"
-		XKEYBOARD="be"
-		KDEKEYBOARD="be"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Brussels"
-		;;
-	be-utf8|be)
-		# Belgian version
-		LANGUAGE="be_BY:be"
-		COUNTRY="be"
-		LANG="be_BY.UTF-8"
-		KEYTABLE="be2-latin1"
-		XKEYBOARD="be"
-		KDEKEYBOARD="be"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Brussels"
-		;;
-	bg-legacy)
-		# Bulgarian version
-		LANGUAGE="bg"
-		COUNTRY="bg"
-		LANG="bg_BG"
-		KEYTABLE="bg"
-		XKEYBOARD="bg"
-		KDEKEYBOARD="bg"
-		CHARSET="microsoft-cp1251"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Sofia"
-		;;
-	bg-utf8|be)
-		# Bulgarian version
-		LANGUAGE="bg_BG:bg"
-		COUNTRY="bg"
-		LANG="bg_BG.UTF-8"
-		KEYTABLE="bg"
-		XKEYBOARD="bg"
-		KDEKEYBOARD="bg"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Sofia"
-		;;
-	br-legacy)
-		# Brazilian Version
-		LANGUAGE="pt_BR"
-		COUNTRY="br"
-		LANG="pt_BR"
-		KEYTABLE="br-abnt2"
-		XKEYBOARD="abnt2"
-		KDEKEYBOARD="br"
-		CHARSET="iso8859-1"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,br"
-		TZ="America/Sao_Paulo"
-		;;
-	br-utf8|be)
-		# Brazilian Version
-		LANGUAGE="pt_BR:pt"
-		COUNTRY="br"
-		LANG="pt_BR.UTF-8"
-		KEYTABLE="br-abnt2"
-		XKEYBOARD="abnt2"
-		KDEKEYBOARD="br"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,br"
-		TZ="America/Sao_Paulo"
-		;;
-	ch-legacy)
-		# Swiss version (basically de with some modifications)
-		LANGUAGE="de"
-		COUNTRY="ch"
-		LANG="de_CH"
-		KEYTABLE="sg-latin1"
-		XKEYBOARD="de_CH"
-		KDEKEYBOARD="de_CH"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Zurich"
-		;;
-	ch-utf8|ch)
-		# Swiss version (basically de with some modifications)
-		LANGUAGE="de_CH:de"
-		COUNTRY="ch"
-		LANG="de_CH.UTF-8"
-		KEYTABLE="sg-latin1"
-		XKEYBOARD="de_CH"
-		KDEKEYBOARD="de_CH"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Zurich"
-		;;
-	cn-legacy)
-		# Simplified Chinese version
-		COUNTRY="cn"
-		LANG="zh_CN.GB2312"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="gb2312.1980-0"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		XMODIFIERS="@im=Chinput"
-		TZ="Asia/Shanghai"
-		;;
-	cn-utf8|cn)
-		# Simplified Chinese version
-		COUNTRY="zh_CN:cn"
-		LANG="zh_CN.UTF-8"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		XMODIFIERS="@im=Chinput"
-		TZ="Asia/Shanghai"
-		;;
-	cs-legacy|cz-legacy)
-		# Czech version
-		LANGUAGE="cs"
-		COUNTRY="cs"
-		LANG="cs_CZ"
-		KEYTABLE="cz-lat2"
-		XKEYBOARD="cs"
-		KDEKEYBOARD="cs"
-		CHARSET="iso8859-2"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Prague"
-		CONSOLEFONT="iso02g"
-		;;
-	cs-utf8|cz-utf8|cs|cz)
-		# Czech version
-		LANGUAGE="cs_CZ:cs"
-		COUNTRY="cs"
-		LANG="cs_CZ.UTF-8"
-		KEYTABLE="cz-lat2"
-		XKEYBOARD="cs"
-		KDEKEYBOARD="cs"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Prague"
-		CONSOLEFONT="iso02g"
-		;;
-	dk-legacy|da-legacy)
-		# Dansk version
-		COUNTRY="dk"
-		LANG="da_DK"
-		# Workaround: "dk" broken in gettext, use da:da_DK
-		LANGUAGE="da:da_DK"
-		# Keytable "dk" is correct.
-		KEYTABLE="dk"
-		XKEYBOARD="dk"
-		KDEKEYBOARD="dk"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="dk,de,us,fr"
-		TZ="Europe/Copenhagen"
-		;;
-	dk-utf8|da-utf8|dk|da)
-		# Dansk version
-		COUNTRY="dk"
-		LANG="da_DK.UTF-8"
-		# Workaround: "dk" broken in gettext, use da:da_DK
-		LANGUAGE="da_DK:da"
-		# Keytable "dk" is correct.
-		KEYTABLE="dk"
-		XKEYBOARD="dk"
-		KDEKEYBOARD="dk"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="dk,de,us,fr"
-		TZ="Europe/Copenhagen"
-		;;
-	el-legacy)
-		# Greek version
-		LANGUAGE="el"
-		COUNTRY="gr"
-		LANG="el_GR"
-		KEYTABLE="gr"
-		XKEYBOARD="us,el"
-		KDEKEYBOARD="us"
-		CHARSET="iso8859-7"
-		CONSOLEFONT="iso07.f16"
-		IOCHARSET="8859-7"
-		IOCODEPAGE="737"
-		SYSFONTACM="iso07"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="el"
-		TZ="Europe/Athens"
-		;;
-	el-utf8|el)
-		# Greek version
-		LANGUAGE="el_GR:el"
-		COUNTRY="gr"
-		LANG="el_GR.UTF-8"
-		KEYTABLE="gr"
-		XKEYBOARD="us,el"
-		KDEKEYBOARD="us"
-		CHARSET="utf8"
-		CONSOLEFONT="iso07.f16"
-		IOCHARSET="8859-7"
-		IOCODEPAGE="737"
-		SYSFONTACM="iso07"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="el"
-		TZ="Europe/Athens"
-		;;
-	es-legacy)
-		# Spanish version
-		COUNTRY="es"
-		LANG="es_ES@euro"
-		KEYTABLE="es"
-		XKEYBOARD="es"
-		KDEKEYBOARD="es"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Madrid"
-		;;
-	es-utf8|es)
-		# Spanish version
-		LANGUAGE="es_ES:es"
-		COUNTRY="es"
-		LANG="es_ES.UTF-8"
-		KEYTABLE="es"
-		XKEYBOARD="es"
-		KDEKEYBOARD="es"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Madrid"
-		CONSOLEFONT="lat10-16"
-		;;
-	fi-legacy)
-		# Finnish version, though we may not have the kde-i18n files
-		COUNTRY="fi"
-		LANG="fi_FI@euro"
-		KEYTABLE="fi-latin1"
-		XKEYBOARD="fi"
-		KDEKEYBOARD="fi"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us"
-		TZ="Europe/Helsinki"
-		;;
-	fi-utf8|fi)
-		# Finnish version, though we may not have the kde-i18n files
-		LANGUAGE="fi_FI:fi"
-		COUNTRY="fi"
-		LANG="fi_FI.UTF-8"
-		KEYTABLE="fi-latin1"
-		XKEYBOARD="fi"
-		KDEKEYBOARD="fi"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us"
-		TZ="Europe/Helsinki"
-		;;
-	fr-legacy)
-		# French version
-		COUNTRY="fr"
-		LANG="fr_FR@euro"
-		KEYTABLE="fr"
-		XKEYBOARD="fr"
-		KDEKEYBOARD="fr"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us"
-		TZ="Europe/Paris"
-		;;
-	fr-utf8|fr)
-		# French version
-		LANGUAGE="fr_FR"
-		COUNTRY="fr"
-		LANG="fr_FR.UTF-8"
-		KEYTABLE="fr"
-		XKEYBOARD="fr"
-		KDEKEYBOARD="fr"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us"
-		TZ="Europe/Paris"
-		;;
-	ga-legacy)
-		# Irish Gaeilge version
-		COUNTRY="ie"
-		LANG="ga_IE@euro"
-		KEYTABLE="uk"
-		XKEYBOARD="uk"
-		KDEKEYBOARD="ie"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKYBOARDS="gb,us,de,es,fr,it"
-		TZ="Europe/Dublin"
-		;;
-	ga-utf8|ga)
-		# Irish Gaeilge version
-		COUNTRY="ie"
-		LANG="ga_IE@UTF-8"
-		KEYTABLE="uk"
-		XKEYBOARD="uk"
-		KDEKEYBOARD="ie"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKYBOARDS="gb,us,de,es,fr,it"
-		TZ="Europe/Dublin"
-		;;
-	he-legacy|il-legacy)
-		# Hebrew version
-		LANGUAGE="he"
-		COUNTRY="il"
-		LANG="he_IL"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="il"
-		CHARSET="iso8859-8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,fr,de"
-		TZ="Asia/Jerusalem"
-		;;
-	he-utf8|il-utf8|he|il)
-		# Hebrew version
-		LANGUAGE="he_IL:he"
-		COUNTRY="il"
-		LANG="he_IL.UTF-8"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="il"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,fr,de"
-		TZ="Asia/Jerusalem"
-		;;
-	ie-legacy)
-		# Irish (English) version
-		COUNTRY="ie"
-		LANG="en_IE@euro"
-		KEYTABLE="uk"
-		XKEYBOARD="uk"
-		KDEKEYBOARD="ie"
-		CHARSET="iso8859-15"
-		#Additional KDE Keyboards
-		KDEKEYBOARDS="gb,us,de,es,fr,it"
-		TZ="Europe/Dublin"
-		;;
-	ie-utf8|ie)
-		# Irish (English) version
-		LANGUAGE="en_IE:en"
-		COUNTRY="ie"
-		LANG="en_IE.UTF-8"
-		KEYTABLE="uk"
-		XKEYBOARD="uk"
-		KDEKEYBOARD="ie"
-		CHARSET="utf8"
-		#Additional KDE Keyboards
-		KDEKEYBOARDS="gb,us,de,es,fr,it"
-		TZ="Europe/Dublin"
-		;;
-	it-legacy)
-		# Italian version
-		COUNTRY="it"
-		LANG="it_IT@euro"
-		KEYTABLE="it"
-		XKEYBOARD="it"
-		KDEKEYBOARD="it"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="fr,us,de"
-		TZ="Europe/Rome"
-		;;
-	it-utf8|it)
-		# Italian version
-		LANGUAGE="it_IT"
-		COUNTRY="it"
-		LANG="it_IT.UTF-8"
-		KEYTABLE="it"
-		XKEYBOARD="it"
-		KDEKEYBOARD="it"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="fr,us,de"
-		TZ="Europe/Rome"
-		;;
-	ja-legacy)
-		# (limited) Japanese version
-		COUNTRY="jp"
-		LANG="ja_JP"
-		LANGUAGE="ja"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="fr,us,de"
-		TZ="Asia/Tokyo"
-		;;
-	ja-utf8|ja)
-		# (limited) Japanese version
-		LANGUAGE="ja_JP:ja"
-		COUNTRY="jp"
-		LANG="ja_JP.UTF-8"
-		LANGUAGE="ja"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="fr,us,de"
-		TZ="Asia/Tokyo"
-		;;
-	nl-legacy)
-		# Dutch version
-		COUNTRY="nl"
-		LANG="nl_NL@euro"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="en_US"
-		CHARSET="iso8859-15"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="nl,de,fr"
-		TZ="Europe/Amsterdam"
-		;;
-	nl-utf8|nl)
-		# Dutch version
-		LANGUAGE="nl_NL:nl"
-		COUNTRY="nl"
-		LANG="nl_NL.UTF-8"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="en_US"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="nl,de,fr"
-		TZ="Europe/Amsterdam"
-		;;
-	pl-legacy)
-		# Polish version
-		COUNTRY="pl"
-		LANG="pl_PL"
-		KEYTABLE="pl"
-		XKEYBOARD="pl"
-		KDEKEYBOARD="pl"
-		CHARSET="iso8859-2"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Warsaw"
-		CONSOLEFONT="iso02g"
-		;;
-	pl-utf8|pl)
-		# Polish version
-		LANGUAGE="pl_PL:pl"
-		COUNTRY="pl"
-		LANG="pl_PL.UTF-8"
-		KEYTABLE="pl"
-		XKEYBOARD="pl"
-		KDEKEYBOARD="pl"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Warsaw"
-		CONSOLEFONT="iso02g"
-		;;
-	pt-legacy)
-		# Portuguese version
-		COUNTRY="pt"
-		LANG="pt_PT@euro"
-		KEYTABLE="pt-latin1"
-		XKEYBOARD="pt"
-		KDEKEYBOARD="pt"
-		CHARSET="iso8859-1"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Lisbon"
-		CONSOLEFONT="lat10-16"
-		;;
-	pt-utf8|pl)
-		# Portuguese version
-		LANGUAGE="pt_PT:pt"
-		COUNTRY="pt"
-		LANG="pt_PT.UTF-8"
-		KEYTABLE="pt-latin1"
-		XKEYBOARD="pt"
-		KDEKEYBOARD="pt"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Lisbon"
-		CONSOLEFONT="lat10-16"
-		;;
-	ru-legacy)
-		# Russian version
-		COUNTRY="ru"
-		LANG="ru_RU.KOI8-R"
-		KEYTABLE="ru"
-		XKEYBOARD="ru"
-		KDEKEYBOARD="ru"
-		CHARSET="koi8-r"
-		CONSOLEFONT="Cyr_a8x16"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Moscow"
-		;;
-	ru-utf8|ru)
-		# Russian version
-		LANGUAGE="ru_RU:ru"
-		COUNTRY="ru"
-		LANG="ru_RU.UTF-8"
-		KEYTABLE="ru"
-		XKEYBOARD="ru"
-		KDEKEYBOARD="ru"
-		CHARSET="utf8"
-		CONSOLEFONT="Cyr_a8x16"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,us,fr"
-		TZ="Europe/Moscow"
-		;;
-	sk-legacy)
-		# Slovak version (guessed)
-		COUNTRY="sk"
-		LANG="sk"
-		KEYTABLE="sk-qwerty"
-		XKEYBOARD="sk"
-		KDEKEYBOARD="sk"
-		CHARSET="iso8859-2"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de"
-		TZ="Europe/Bratislava"
-		CONSOLEFONT="iso02g"
-		;;
-	sk-utf8|sk)
-		# Slovak version (guessed)
-		LANGUAGE="sk_SK:sk"
-		COUNTRY="sk"
-		LANG="sk_SK.UTF-8"
-		KEYTABLE="sk-qwerty"
-		XKEYBOARD="sk"
-		KDEKEYBOARD="sk"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de"
-		TZ="Europe/Bratislava"
-		CONSOLEFONT="iso02g"
-		;;
-	sl-legacy)
-		# Slovenian keyboard
-		LANGUAGE="sl"
-		COUNTRY="si"
-		LANG="sl_SI"
-		KEYTABLE="slovene"
-		XKEYBOARD="sl"
-		KDEKEYBOARD="si"
-		CHARSET="iso8859-2"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de"
-		TZ="Europe/Ljubljana"
-		CONSOLEFONT="iso02g"
-		;;
-	sl-utf8|sl)
-		# Slovenian keyboard
-		LANGUAGE="sl_SI:sl"
-		COUNTRY="si"
-		LANG="sl_SI.UTF-8"
-		KEYTABLE="slovene"
-		XKEYBOARD="sl"
-		KDEKEYBOARD="si"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de"
-		TZ="Europe/Ljubljana"
-		CONSOLEFONT="iso02g"
-		;;
-	tr-legacy)
-		# Turkish version (guessed)
-		COUNTRY="tr"
-		LANG="tr_TR"
-		KEYTABLE="tr_q-latin5"
-		XKEYBOARD="tr"
-		KDEKEYBOARD="tr"
-		CHARSET="iso8859-9"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Istanbul"
-		;;
-	tr-utf8|tr)
-		# Turkish version (guessed)
-		LANGUAGE="tr_TR"
-		COUNTRY="tr"
-		LANG="tr_TR.UTF-8"
-		KEYTABLE="tr_q-latin5"
-		XKEYBOARD="tr"
-		KDEKEYBOARD="tr"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us,de,fr"
-		TZ="Europe/Istanbul"
-		;;
-	tw-legacy)
-		# Traditional Chinese version (thanks to Chung-Yen Chang)
-		COUNTRY="tw"
-		LANG="zh_TW.Big5"
-		LANGUAGE="zh_TW.Big5"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		# CHARSET="big5-0"
-		CHARSET="iso8859-1"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us"
-		XMODIFIERS="@im=xcin"
-		TZ="Asia/Taipei"
-		;;
-	tw-utf8|tw)
-		# Traditional Chinese version (thanks to Chung-Yen Chang)
-		LANGUAGE="zh_TW:zh"
-		COUNTRY="tw"
-		LANG="zh_TW.UTF-8"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		# CHARSET="big5-0"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us"
-		XMODIFIERS="@im=xcin"
-		TZ="Asia/Taipei"
-		;;
-	uk-legacy)
-		# British version
-		COUNTRY="uk"
-		LANG="en_GB"
-		LANGUAGE="en"
-		KEYTABLE="uk"
-		XKEYBOARD="uk"
-		KDEKEYBOARD="gb"
-		CHARSET="iso8859-1"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us"
-		TZ="Europe/London"
-		;;
-	uk-utf8|uk)
-		# British version UTF-8
-		LANGUAGE="en_GB:en"
-		COUNTRY="uk"
-		LANG="en_GB.UTF-8"
-		KEYTABLE="uk"
-		XKEYBOARD="uk"
-		KDEKEYBOARD="gb"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="us"
-		TZ="Europe/London"
-		;;
-	us-legacy|c)
-		# American version
-		LANGUAGE="us"
-		COUNTRY="us"
-		LANG="C"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="iso8859-1"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,fr"
-		TZ="America/New_York"
-		;;
-	us-utf8|us|*)
-		# American version UTF-8
-		LANGUAGE="en_US:en"
-		COUNTRY="us"
-		LANG="en_US.UTF-8"
-		KEYTABLE="us"
-		XKEYBOARD="us"
-		KDEKEYBOARD="us"
-		CHARSET="utf8"
-		# Additional KDE Keyboards
-		KDEKEYBOARDS="de,fr"
-		TZ="America/New_York"
-		;;
-esac
-
-# Export it now, so error messages get translated, too
-export LANG COUNTRY CHARSET
-
-# Allow keyboard override by boot commandline
-KKEYBOARD="$(getbootparam keyboard 2>/dev/null)"
-[ -n "$KKEYBOARD" ] && KEYTABLE="$KKEYBOARD"
-KXKEYBOARD="$(getbootparam xkeyboard 2>/dev/null)"
-if [ -n "$KXKEYBOARD" ]; then
-	XKEYBOARD="$KXKEYBOARD"
-	KDEKEYBOARD="$KXKEYBOARD"
-elif [ -n "$KKEYBOARD" ]; then
-	XKEYBOARD="$KKEYBOARD"
-	KDEKEYBOARD="$KKEYBOARD"
-fi
+#I18N#### localization
+#I18N## Allow language specification via commandline. The default language
+#I18N## will be overridden via "lang=de" boot commandline
+#I18N#LANGUAGE="$(getbootparam lang 2>/dev/null)"
+#I18N#[ -n "$LANGUAGE" ] || LANGUAGE="de"
+#I18N#
+#I18N## Set default console font (needed for first console + kernel 2.6)
+#I18N#CONSOLEFONT="lat0-sun16"
+#I18N#
+#I18N## The default language/keyboard to use. This CANNOT be autoprobed.
+#I18N## Most of these variables will be used to generate the KDE defaults
+#I18N## and will be inserted into /etc/sysconfig/* below.
+#I18N#case "$LANGUAGE" in
+#I18N#	de-legacy)
+#I18N#		# German version
+#I18N#		COUNTRY="de"
+#I18N#		LANG="de_DE@euro"
+#I18N#		KEYTABLE="de-latin1-nodeadkeys"
+#I18N#		XKEYBOARD="de"
+#I18N#		KDEKEYBOARD="de"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,fr"
+#I18N#		TZ="Europe/Berlin"
+#I18N#		;;
+#I18N#	de-utf8|de)
+#I18N#		# German version UTF-8
+#I18N#		LANGUAGE="de_DE:de"
+#I18N#		COUNTRY="de_DE"
+#I18N#		LANG="de_DE.UTF-8"
+#I18N#		KEYTABLE="de-latin1-nodeadkeys"
+#I18N#		XKEYBOARD="de"
+#I18N#		KDEKEYBOARD="de"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,fr"
+#I18N#		TZ="Europe/Berlin"
+#I18N#		;;
+#I18N#	au-legacy)
+#I18N#		# Australian version
+#I18N#		LANGUAGE="en"
+#I18N#		COUNTRY="au"
+#I18N#		LANG="en_AU"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="iso8859-1"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,fr"
+#I18N#		TZ="Australia/Sydney"
+#I18N#		;;
+#I18N#	au-utf8|au)
+#I18N#		# Australian version
+#I18N#		LANGUAGE="en_AU:en"
+#I18N#		COUNTRY="au"
+#I18N#		LANG="en_AU.UTF-8"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,fr"
+#I18N#		TZ="Australia/Sydney"
+#I18N#		;;
+#I18N#	be-legacy)
+#I18N#		# Belgian version
+#I18N#		LANGUAGE="be"
+#I18N#		COUNTRY="be"
+#I18N#		LANG="C"
+#I18N#		KEYTABLE="be2-latin1"
+#I18N#		XKEYBOARD="be"
+#I18N#		KDEKEYBOARD="be"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Brussels"
+#I18N#		;;
+#I18N#	be-utf8|be)
+#I18N#		# Belgian version
+#I18N#		LANGUAGE="be_BY:be"
+#I18N#		COUNTRY="be"
+#I18N#		LANG="be_BY.UTF-8"
+#I18N#		KEYTABLE="be2-latin1"
+#I18N#		XKEYBOARD="be"
+#I18N#		KDEKEYBOARD="be"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Brussels"
+#I18N#		;;
+#I18N#	bg-legacy)
+#I18N#		# Bulgarian version
+#I18N#		LANGUAGE="bg"
+#I18N#		COUNTRY="bg"
+#I18N#		LANG="bg_BG"
+#I18N#		KEYTABLE="bg"
+#I18N#		XKEYBOARD="bg"
+#I18N#		KDEKEYBOARD="bg"
+#I18N#		CHARSET="microsoft-cp1251"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Sofia"
+#I18N#		;;
+#I18N#	bg-utf8|be)
+#I18N#		# Bulgarian version
+#I18N#		LANGUAGE="bg_BG:bg"
+#I18N#		COUNTRY="bg"
+#I18N#		LANG="bg_BG.UTF-8"
+#I18N#		KEYTABLE="bg"
+#I18N#		XKEYBOARD="bg"
+#I18N#		KDEKEYBOARD="bg"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Sofia"
+#I18N#		;;
+#I18N#	br-legacy)
+#I18N#		# Brazilian Version
+#I18N#		LANGUAGE="pt_BR"
+#I18N#		COUNTRY="br"
+#I18N#		LANG="pt_BR"
+#I18N#		KEYTABLE="br-abnt2"
+#I18N#		XKEYBOARD="abnt2"
+#I18N#		KDEKEYBOARD="br"
+#I18N#		CHARSET="iso8859-1"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,br"
+#I18N#		TZ="America/Sao_Paulo"
+#I18N#		;;
+#I18N#	br-utf8|be)
+#I18N#		# Brazilian Version
+#I18N#		LANGUAGE="pt_BR:pt"
+#I18N#		COUNTRY="br"
+#I18N#		LANG="pt_BR.UTF-8"
+#I18N#		KEYTABLE="br-abnt2"
+#I18N#		XKEYBOARD="abnt2"
+#I18N#		KDEKEYBOARD="br"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,br"
+#I18N#		TZ="America/Sao_Paulo"
+#I18N#		;;
+#I18N#	ch-legacy)
+#I18N#		# Swiss version (basically de with some modifications)
+#I18N#		LANGUAGE="de"
+#I18N#		COUNTRY="ch"
+#I18N#		LANG="de_CH"
+#I18N#		KEYTABLE="sg-latin1"
+#I18N#		XKEYBOARD="de_CH"
+#I18N#		KDEKEYBOARD="de_CH"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Zurich"
+#I18N#		;;
+#I18N#	ch-utf8|ch)
+#I18N#		# Swiss version (basically de with some modifications)
+#I18N#		LANGUAGE="de_CH:de"
+#I18N#		COUNTRY="ch"
+#I18N#		LANG="de_CH.UTF-8"
+#I18N#		KEYTABLE="sg-latin1"
+#I18N#		XKEYBOARD="de_CH"
+#I18N#		KDEKEYBOARD="de_CH"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Zurich"
+#I18N#		;;
+#I18N#	cn-legacy)
+#I18N#		# Simplified Chinese version
+#I18N#		COUNTRY="cn"
+#I18N#		LANG="zh_CN.GB2312"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="gb2312.1980-0"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		XMODIFIERS="@im=Chinput"
+#I18N#		TZ="Asia/Shanghai"
+#I18N#		;;
+#I18N#	cn-utf8|cn)
+#I18N#		# Simplified Chinese version
+#I18N#		COUNTRY="zh_CN:cn"
+#I18N#		LANG="zh_CN.UTF-8"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		XMODIFIERS="@im=Chinput"
+#I18N#		TZ="Asia/Shanghai"
+#I18N#		;;
+#I18N#	cs-legacy|cz-legacy)
+#I18N#		# Czech version
+#I18N#		LANGUAGE="cs"
+#I18N#		COUNTRY="cs"
+#I18N#		LANG="cs_CZ"
+#I18N#		KEYTABLE="cz-lat2"
+#I18N#		XKEYBOARD="cs"
+#I18N#		KDEKEYBOARD="cs"
+#I18N#		CHARSET="iso8859-2"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Prague"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	cs-utf8|cz-utf8|cs|cz)
+#I18N#		# Czech version
+#I18N#		LANGUAGE="cs_CZ:cs"
+#I18N#		COUNTRY="cs"
+#I18N#		LANG="cs_CZ.UTF-8"
+#I18N#		KEYTABLE="cz-lat2"
+#I18N#		XKEYBOARD="cs"
+#I18N#		KDEKEYBOARD="cs"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Prague"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	dk-legacy|da-legacy)
+#I18N#		# Dansk version
+#I18N#		COUNTRY="dk"
+#I18N#		LANG="da_DK"
+#I18N#		# Workaround: "dk" broken in gettext, use da:da_DK
+#I18N#		LANGUAGE="da:da_DK"
+#I18N#		# Keytable "dk" is correct.
+#I18N#		KEYTABLE="dk"
+#I18N#		XKEYBOARD="dk"
+#I18N#		KDEKEYBOARD="dk"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="dk,de,us,fr"
+#I18N#		TZ="Europe/Copenhagen"
+#I18N#		;;
+#I18N#	dk-utf8|da-utf8|dk|da)
+#I18N#		# Dansk version
+#I18N#		COUNTRY="dk"
+#I18N#		LANG="da_DK.UTF-8"
+#I18N#		# Workaround: "dk" broken in gettext, use da:da_DK
+#I18N#		LANGUAGE="da_DK:da"
+#I18N#		# Keytable "dk" is correct.
+#I18N#		KEYTABLE="dk"
+#I18N#		XKEYBOARD="dk"
+#I18N#		KDEKEYBOARD="dk"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="dk,de,us,fr"
+#I18N#		TZ="Europe/Copenhagen"
+#I18N#		;;
+#I18N#	el-legacy)
+#I18N#		# Greek version
+#I18N#		LANGUAGE="el"
+#I18N#		COUNTRY="gr"
+#I18N#		LANG="el_GR"
+#I18N#		KEYTABLE="gr"
+#I18N#		XKEYBOARD="us,el"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="iso8859-7"
+#I18N#		CONSOLEFONT="iso07.f16"
+#I18N#		IOCHARSET="8859-7"
+#I18N#		IOCODEPAGE="737"
+#I18N#		SYSFONTACM="iso07"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="el"
+#I18N#		TZ="Europe/Athens"
+#I18N#		;;
+#I18N#	el-utf8|el)
+#I18N#		# Greek version
+#I18N#		LANGUAGE="el_GR:el"
+#I18N#		COUNTRY="gr"
+#I18N#		LANG="el_GR.UTF-8"
+#I18N#		KEYTABLE="gr"
+#I18N#		XKEYBOARD="us,el"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="utf8"
+#I18N#		CONSOLEFONT="iso07.f16"
+#I18N#		IOCHARSET="8859-7"
+#I18N#		IOCODEPAGE="737"
+#I18N#		SYSFONTACM="iso07"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="el"
+#I18N#		TZ="Europe/Athens"
+#I18N#		;;
+#I18N#	es-legacy)
+#I18N#		# Spanish version
+#I18N#		COUNTRY="es"
+#I18N#		LANG="es_ES@euro"
+#I18N#		KEYTABLE="es"
+#I18N#		XKEYBOARD="es"
+#I18N#		KDEKEYBOARD="es"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Madrid"
+#I18N#		;;
+#I18N#	es-utf8|es)
+#I18N#		# Spanish version
+#I18N#		LANGUAGE="es_ES:es"
+#I18N#		COUNTRY="es"
+#I18N#		LANG="es_ES.UTF-8"
+#I18N#		KEYTABLE="es"
+#I18N#		XKEYBOARD="es"
+#I18N#		KDEKEYBOARD="es"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Madrid"
+#I18N#		CONSOLEFONT="lat10-16"
+#I18N#		;;
+#I18N#	fi-legacy)
+#I18N#		# Finnish version, though we may not have the kde-i18n files
+#I18N#		COUNTRY="fi"
+#I18N#		LANG="fi_FI@euro"
+#I18N#		KEYTABLE="fi-latin1"
+#I18N#		XKEYBOARD="fi"
+#I18N#		KDEKEYBOARD="fi"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us"
+#I18N#		TZ="Europe/Helsinki"
+#I18N#		;;
+#I18N#	fi-utf8|fi)
+#I18N#		# Finnish version, though we may not have the kde-i18n files
+#I18N#		LANGUAGE="fi_FI:fi"
+#I18N#		COUNTRY="fi"
+#I18N#		LANG="fi_FI.UTF-8"
+#I18N#		KEYTABLE="fi-latin1"
+#I18N#		XKEYBOARD="fi"
+#I18N#		KDEKEYBOARD="fi"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us"
+#I18N#		TZ="Europe/Helsinki"
+#I18N#		;;
+#I18N#	fr-legacy)
+#I18N#		# French version
+#I18N#		COUNTRY="fr"
+#I18N#		LANG="fr_FR@euro"
+#I18N#		KEYTABLE="fr"
+#I18N#		XKEYBOARD="fr"
+#I18N#		KDEKEYBOARD="fr"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us"
+#I18N#		TZ="Europe/Paris"
+#I18N#		;;
+#I18N#	fr-utf8|fr)
+#I18N#		# French version
+#I18N#		LANGUAGE="fr_FR"
+#I18N#		COUNTRY="fr"
+#I18N#		LANG="fr_FR.UTF-8"
+#I18N#		KEYTABLE="fr"
+#I18N#		XKEYBOARD="fr"
+#I18N#		KDEKEYBOARD="fr"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us"
+#I18N#		TZ="Europe/Paris"
+#I18N#		;;
+#I18N#	ga-legacy)
+#I18N#		# Irish Gaeilge version
+#I18N#		COUNTRY="ie"
+#I18N#		LANG="ga_IE@euro"
+#I18N#		KEYTABLE="uk"
+#I18N#		XKEYBOARD="uk"
+#I18N#		KDEKEYBOARD="ie"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKYBOARDS="gb,us,de,es,fr,it"
+#I18N#		TZ="Europe/Dublin"
+#I18N#		;;
+#I18N#	ga-utf8|ga)
+#I18N#		# Irish Gaeilge version
+#I18N#		COUNTRY="ie"
+#I18N#		LANG="ga_IE@UTF-8"
+#I18N#		KEYTABLE="uk"
+#I18N#		XKEYBOARD="uk"
+#I18N#		KDEKEYBOARD="ie"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKYBOARDS="gb,us,de,es,fr,it"
+#I18N#		TZ="Europe/Dublin"
+#I18N#		;;
+#I18N#	he-legacy|il-legacy)
+#I18N#		# Hebrew version
+#I18N#		LANGUAGE="he"
+#I18N#		COUNTRY="il"
+#I18N#		LANG="he_IL"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="il"
+#I18N#		CHARSET="iso8859-8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,fr,de"
+#I18N#		TZ="Asia/Jerusalem"
+#I18N#		;;
+#I18N#	he-utf8|il-utf8|he|il)
+#I18N#		# Hebrew version
+#I18N#		LANGUAGE="he_IL:he"
+#I18N#		COUNTRY="il"
+#I18N#		LANG="he_IL.UTF-8"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="il"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,fr,de"
+#I18N#		TZ="Asia/Jerusalem"
+#I18N#		;;
+#I18N#	ie-legacy)
+#I18N#		# Irish (English) version
+#I18N#		COUNTRY="ie"
+#I18N#		LANG="en_IE@euro"
+#I18N#		KEYTABLE="uk"
+#I18N#		XKEYBOARD="uk"
+#I18N#		KDEKEYBOARD="ie"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		#Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="gb,us,de,es,fr,it"
+#I18N#		TZ="Europe/Dublin"
+#I18N#		;;
+#I18N#	ie-utf8|ie)
+#I18N#		# Irish (English) version
+#I18N#		LANGUAGE="en_IE:en"
+#I18N#		COUNTRY="ie"
+#I18N#		LANG="en_IE.UTF-8"
+#I18N#		KEYTABLE="uk"
+#I18N#		XKEYBOARD="uk"
+#I18N#		KDEKEYBOARD="ie"
+#I18N#		CHARSET="utf8"
+#I18N#		#Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="gb,us,de,es,fr,it"
+#I18N#		TZ="Europe/Dublin"
+#I18N#		;;
+#I18N#	it-legacy)
+#I18N#		# Italian version
+#I18N#		COUNTRY="it"
+#I18N#		LANG="it_IT@euro"
+#I18N#		KEYTABLE="it"
+#I18N#		XKEYBOARD="it"
+#I18N#		KDEKEYBOARD="it"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="fr,us,de"
+#I18N#		TZ="Europe/Rome"
+#I18N#		;;
+#I18N#	it-utf8|it)
+#I18N#		# Italian version
+#I18N#		LANGUAGE="it_IT"
+#I18N#		COUNTRY="it"
+#I18N#		LANG="it_IT.UTF-8"
+#I18N#		KEYTABLE="it"
+#I18N#		XKEYBOARD="it"
+#I18N#		KDEKEYBOARD="it"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="fr,us,de"
+#I18N#		TZ="Europe/Rome"
+#I18N#		;;
+#I18N#	ja-legacy)
+#I18N#		# (limited) Japanese version
+#I18N#		COUNTRY="jp"
+#I18N#		LANG="ja_JP"
+#I18N#		LANGUAGE="ja"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="fr,us,de"
+#I18N#		TZ="Asia/Tokyo"
+#I18N#		;;
+#I18N#	ja-utf8|ja)
+#I18N#		# (limited) Japanese version
+#I18N#		LANGUAGE="ja_JP:ja"
+#I18N#		COUNTRY="jp"
+#I18N#		LANG="ja_JP.UTF-8"
+#I18N#		LANGUAGE="ja"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="fr,us,de"
+#I18N#		TZ="Asia/Tokyo"
+#I18N#		;;
+#I18N#	nl-legacy)
+#I18N#		# Dutch version
+#I18N#		COUNTRY="nl"
+#I18N#		LANG="nl_NL@euro"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="en_US"
+#I18N#		CHARSET="iso8859-15"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="nl,de,fr"
+#I18N#		TZ="Europe/Amsterdam"
+#I18N#		;;
+#I18N#	nl-utf8|nl)
+#I18N#		# Dutch version
+#I18N#		LANGUAGE="nl_NL:nl"
+#I18N#		COUNTRY="nl"
+#I18N#		LANG="nl_NL.UTF-8"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="en_US"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="nl,de,fr"
+#I18N#		TZ="Europe/Amsterdam"
+#I18N#		;;
+#I18N#	pl-legacy)
+#I18N#		# Polish version
+#I18N#		COUNTRY="pl"
+#I18N#		LANG="pl_PL"
+#I18N#		KEYTABLE="pl"
+#I18N#		XKEYBOARD="pl"
+#I18N#		KDEKEYBOARD="pl"
+#I18N#		CHARSET="iso8859-2"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Warsaw"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	pl-utf8|pl)
+#I18N#		# Polish version
+#I18N#		LANGUAGE="pl_PL:pl"
+#I18N#		COUNTRY="pl"
+#I18N#		LANG="pl_PL.UTF-8"
+#I18N#		KEYTABLE="pl"
+#I18N#		XKEYBOARD="pl"
+#I18N#		KDEKEYBOARD="pl"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Warsaw"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	pt-legacy)
+#I18N#		# Portuguese version
+#I18N#		COUNTRY="pt"
+#I18N#		LANG="pt_PT@euro"
+#I18N#		KEYTABLE="pt-latin1"
+#I18N#		XKEYBOARD="pt"
+#I18N#		KDEKEYBOARD="pt"
+#I18N#		CHARSET="iso8859-1"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Lisbon"
+#I18N#		CONSOLEFONT="lat10-16"
+#I18N#		;;
+#I18N#	pt-utf8|pl)
+#I18N#		# Portuguese version
+#I18N#		LANGUAGE="pt_PT:pt"
+#I18N#		COUNTRY="pt"
+#I18N#		LANG="pt_PT.UTF-8"
+#I18N#		KEYTABLE="pt-latin1"
+#I18N#		XKEYBOARD="pt"
+#I18N#		KDEKEYBOARD="pt"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Lisbon"
+#I18N#		CONSOLEFONT="lat10-16"
+#I18N#		;;
+#I18N#	ru-legacy)
+#I18N#		# Russian version
+#I18N#		COUNTRY="ru"
+#I18N#		LANG="ru_RU.KOI8-R"
+#I18N#		KEYTABLE="ru"
+#I18N#		XKEYBOARD="ru"
+#I18N#		KDEKEYBOARD="ru"
+#I18N#		CHARSET="koi8-r"
+#I18N#		CONSOLEFONT="Cyr_a8x16"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Moscow"
+#I18N#		;;
+#I18N#	ru-utf8|ru)
+#I18N#		# Russian version
+#I18N#		LANGUAGE="ru_RU:ru"
+#I18N#		COUNTRY="ru"
+#I18N#		LANG="ru_RU.UTF-8"
+#I18N#		KEYTABLE="ru"
+#I18N#		XKEYBOARD="ru"
+#I18N#		KDEKEYBOARD="ru"
+#I18N#		CHARSET="utf8"
+#I18N#		CONSOLEFONT="Cyr_a8x16"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,us,fr"
+#I18N#		TZ="Europe/Moscow"
+#I18N#		;;
+#I18N#	sk-legacy)
+#I18N#		# Slovak version (guessed)
+#I18N#		COUNTRY="sk"
+#I18N#		LANG="sk"
+#I18N#		KEYTABLE="sk-qwerty"
+#I18N#		XKEYBOARD="sk"
+#I18N#		KDEKEYBOARD="sk"
+#I18N#		CHARSET="iso8859-2"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de"
+#I18N#		TZ="Europe/Bratislava"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	sk-utf8|sk)
+#I18N#		# Slovak version (guessed)
+#I18N#		LANGUAGE="sk_SK:sk"
+#I18N#		COUNTRY="sk"
+#I18N#		LANG="sk_SK.UTF-8"
+#I18N#		KEYTABLE="sk-qwerty"
+#I18N#		XKEYBOARD="sk"
+#I18N#		KDEKEYBOARD="sk"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de"
+#I18N#		TZ="Europe/Bratislava"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	sl-legacy)
+#I18N#		# Slovenian keyboard
+#I18N#		LANGUAGE="sl"
+#I18N#		COUNTRY="si"
+#I18N#		LANG="sl_SI"
+#I18N#		KEYTABLE="slovene"
+#I18N#		XKEYBOARD="sl"
+#I18N#		KDEKEYBOARD="si"
+#I18N#		CHARSET="iso8859-2"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de"
+#I18N#		TZ="Europe/Ljubljana"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	sl-utf8|sl)
+#I18N#		# Slovenian keyboard
+#I18N#		LANGUAGE="sl_SI:sl"
+#I18N#		COUNTRY="si"
+#I18N#		LANG="sl_SI.UTF-8"
+#I18N#		KEYTABLE="slovene"
+#I18N#		XKEYBOARD="sl"
+#I18N#		KDEKEYBOARD="si"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de"
+#I18N#		TZ="Europe/Ljubljana"
+#I18N#		CONSOLEFONT="iso02g"
+#I18N#		;;
+#I18N#	tr-legacy)
+#I18N#		# Turkish version (guessed)
+#I18N#		COUNTRY="tr"
+#I18N#		LANG="tr_TR"
+#I18N#		KEYTABLE="tr_q-latin5"
+#I18N#		XKEYBOARD="tr"
+#I18N#		KDEKEYBOARD="tr"
+#I18N#		CHARSET="iso8859-9"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Istanbul"
+#I18N#		;;
+#I18N#	tr-utf8|tr)
+#I18N#		# Turkish version (guessed)
+#I18N#		LANGUAGE="tr_TR"
+#I18N#		COUNTRY="tr"
+#I18N#		LANG="tr_TR.UTF-8"
+#I18N#		KEYTABLE="tr_q-latin5"
+#I18N#		XKEYBOARD="tr"
+#I18N#		KDEKEYBOARD="tr"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us,de,fr"
+#I18N#		TZ="Europe/Istanbul"
+#I18N#		;;
+#I18N#	tw-legacy)
+#I18N#		# Traditional Chinese version (thanks to Chung-Yen Chang)
+#I18N#		COUNTRY="tw"
+#I18N#		LANG="zh_TW.Big5"
+#I18N#		LANGUAGE="zh_TW.Big5"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		# CHARSET="big5-0"
+#I18N#		CHARSET="iso8859-1"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us"
+#I18N#		XMODIFIERS="@im=xcin"
+#I18N#		TZ="Asia/Taipei"
+#I18N#		;;
+#I18N#	tw-utf8|tw)
+#I18N#		# Traditional Chinese version (thanks to Chung-Yen Chang)
+#I18N#		LANGUAGE="zh_TW:zh"
+#I18N#		COUNTRY="tw"
+#I18N#		LANG="zh_TW.UTF-8"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		# CHARSET="big5-0"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us"
+#I18N#		XMODIFIERS="@im=xcin"
+#I18N#		TZ="Asia/Taipei"
+#I18N#		;;
+#I18N#	uk-legacy)
+#I18N#		# British version
+#I18N#		COUNTRY="uk"
+#I18N#		LANG="en_GB"
+#I18N#		LANGUAGE="en"
+#I18N#		KEYTABLE="uk"
+#I18N#		XKEYBOARD="uk"
+#I18N#		KDEKEYBOARD="gb"
+#I18N#		CHARSET="iso8859-1"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us"
+#I18N#		TZ="Europe/London"
+#I18N#		;;
+#I18N#	uk-utf8|uk)
+#I18N#		# British version UTF-8
+#I18N#		LANGUAGE="en_GB:en"
+#I18N#		COUNTRY="uk"
+#I18N#		LANG="en_GB.UTF-8"
+#I18N#		KEYTABLE="uk"
+#I18N#		XKEYBOARD="uk"
+#I18N#		KDEKEYBOARD="gb"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="us"
+#I18N#		TZ="Europe/London"
+#I18N#		;;
+#I18N#	us-legacy|c)
+#I18N#		# American version
+#I18N#		LANGUAGE="us"
+#I18N#		COUNTRY="us"
+#I18N#		LANG="C"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="iso8859-1"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,fr"
+#I18N#		TZ="America/New_York"
+#I18N#		;;
+#I18N#	us-utf8|us|*)
+#I18N#		# American version UTF-8
+#I18N#		LANGUAGE="en_US:en"
+#I18N#		COUNTRY="us"
+#I18N#		LANG="en_US.UTF-8"
+#I18N#		KEYTABLE="us"
+#I18N#		XKEYBOARD="us"
+#I18N#		KDEKEYBOARD="us"
+#I18N#		CHARSET="utf8"
+#I18N#		# Additional KDE Keyboards
+#I18N#		KDEKEYBOARDS="de,fr"
+#I18N#		TZ="America/New_York"
+#I18N#		;;
+#I18N#esac
+#I18N#
+#I18N## Export it now, so error messages get translated, too
+#I18N#export LANG COUNTRY CHARSET
+#I18N#
+#I18N## Allow keyboard override by boot commandline
+#I18N#KKEYBOARD="$(getbootparam keyboard 2>/dev/null)"
+#I18N#[ -n "$KKEYBOARD" ] && KEYTABLE="$KKEYBOARD"
+#I18N#KXKEYBOARD="$(getbootparam xkeyboard 2>/dev/null)"
+#I18N#if [ -n "$KXKEYBOARD" ]; then
+#I18N#	XKEYBOARD="$KXKEYBOARD"
+#I18N#	KDEKEYBOARD="$KXKEYBOARD"
+#I18N#elif [ -n "$KKEYBOARD" ]; then
+#I18N#	XKEYBOARD="$KKEYBOARD"
+#I18N#	KDEKEYBOARD="$KKEYBOARD"
+#I18N#fi
 
 # Also read desired desktop, if any
 DESKTOP="$(getbootparam desktop 2>/dev/null)"
@@ -976,10 +975,12 @@ echo " ${GREEN}Running Linux Kernel ${YELLOW}$KERNEL${GREEN}.${NORMAL}"
 # / must be read-write in any case, starting from here
 mount -o remount,rw / 2>/dev/null
 
-rm -f /etc/localtime
-cp "/usr/share/zoneinfo/$TZ" /etc/localtime
-rm -f /etc/timezone
-echo "$TZ" > /etc/timezone
+if [ -n "$TZ" ]; then
+	rm -f /etc/localtime
+	cp "/usr/share/zoneinfo/$TZ" /etc/localtime
+	rm -f /etc/timezone
+	echo "$TZ" > /etc/timezone
+fi
 
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
@@ -991,46 +992,48 @@ fi
 # override dpi setting
 CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 
-# Write KNOPPIX config files for other scripts to parse
-# Standard variables/files
-echo "LANG=\"$LANG\""                  > "$HWSETUP_I18N"
-echo "COUNTRY=\"$COUNTRY\""           >> "$HWSETUP_I18N"
-echo "LANGUAGE=\"$LANGUAGE\""         >> "$HWSETUP_I18N"
-echo "CHARSET=\"$CHARSET\""           >> "$HWSETUP_I18N"
-echo "XMODIFIERS=\"$XMODIFIERS\""     >> "$HWSETUP_I18N"
-#echo "TZ=\"$TZ\""                     >> "$HWSETUP_I18N"
+#I18N## Write KNOPPIX config files for other scripts to parse
+#I18N## Standard variables/files
+#I18N#echo "LANG=\"$LANG\""                  > "$HWSETUP_I18N"
+#I18N#echo "COUNTRY=\"$COUNTRY\""           >> "$HWSETUP_I18N"
+#I18N#echo "LANGUAGE=\"$LANGUAGE\""         >> "$HWSETUP_I18N"
+#I18N#echo "CHARSET=\"$CHARSET\""           >> "$HWSETUP_I18N"
+#I18N#echo "XMODIFIERS=\"$XMODIFIERS\""     >> "$HWSETUP_I18N"
+#I18N##echo "TZ=\"$TZ\""                     >> "$HWSETUP_I18N"
 
-# Default Keyboard layout for console and X
-echo "KEYTABLE=\"$KEYTABLE\""          > "$HWSETUP_KEYBOARD"
-echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_KEYBOARD"
-echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_KEYBOARD"
-echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
+#I18N## Default Keyboard layout for console and X
+#I18N#echo "KEYTABLE=\"$KEYTABLE\""          > "$HWSETUP_KEYBOARD"
+#I18N#echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_KEYBOARD"
+#I18N#echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_KEYBOARD"
+#I18N#echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
 
 # Desired desktop
 echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
 
-# Write all, including non-standard variables, to "$HWSETUP_MAIN"
-echo "LANG=\"$LANG\""                  > "$HWSETUP_MAIN"
-echo "COUNTRY=\"$COUNTRY\""           >> "$HWSETUP_MAIN"
-echo "LANGUAGE=\"$LANGUAGE\""         >> "$HWSETUP_MAIN"
-echo "CHARSET=\"$CHARSET\""           >> "$HWSETUP_MAIN"
-echo "KEYTABLE=\"$KEYTABLE\""         >> "$HWSETUP_MAIN"
-echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_MAIN"
-echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_MAIN"
-echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_MAIN"
-echo "DESKTOP=\"$DESKTOP\""           >> "$HWSETUP_MAIN"
-echo "TZ=\"$TZ\""                     >> "$HWSETUP_MAIN"
+#I18N## Write all, including non-standard variables, to "$HWSETUP_MAIN"
+#I18N#echo "LANG=\"$LANG\""                  > "$HWSETUP_MAIN"
+#I18N#echo "COUNTRY=\"$COUNTRY\""           >> "$HWSETUP_MAIN"
+#I18N#echo "LANGUAGE=\"$LANGUAGE\""         >> "$HWSETUP_MAIN"
+#I18N#echo "CHARSET=\"$CHARSET\""           >> "$HWSETUP_MAIN"
+#I18N#echo "KEYTABLE=\"$KEYTABLE\""         >> "$HWSETUP_MAIN"
+#I18N#echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_MAIN"
+#I18N#echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_MAIN"
+#I18N#echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_MAIN"
+#I18N#echo "DESKTOP=\"$DESKTOP\""           >> "$HWSETUP_MAIN"
+#I18N#echo "TZ=\"$TZ\""                     >> "$HWSETUP_MAIN"
 
 # Write locale setting to default position
-rm -f /etc/default/locale
-echo -e "#  File generated by update-locale\nLANG=$LANG" > /etc/default/locale
-
-# Unicode console fix
-if [ "$(locale charmap)" = "UTF-8" ]; then
-	unicode_start 2> /dev/null
-else
-	unicode_stop 2> /dev/null
+if [ -n "$LANG" ]; then
+	rm -f /etc/default/locale
+	echo -e "#  File generated by update-locale\nLANG=$LANG" > /etc/default/locale
 fi
+
+#I18N#ode console fix
+#I18N#$(locale charmap)" = "UTF-8" ]; then
+	unicode_start 2> /dev/null
+#I18N#
+#I18N#	unicode_stop 2> /dev/null
+#I18N#fi
 
 # Write DPI setting if specified
 [ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
@@ -1067,11 +1070,9 @@ echo -n "${GREEN}"
 awk -F: '/^processor/{printf " Processor"$2" is "};/^model name/{printf $2};/^vendor_id/{printf vendor};/^cpu MHz/{printf " %dMHz",int($2)};/^cache size/{printf ","$2" Cache"};/^$/{print ""}' /proc/cpuinfo 2>/dev/null
 echo -n "${NORMAL}"
 
-# KANOTIX autoconfig
 update_progress 10
 
 # udev support
-
 if checkbootparam "noudev"; then
 	echo "${BLUE}Skipping udev as requested on boot commandline.${NORMAL}"
 else
@@ -1283,12 +1284,12 @@ if [[ "$SOUND_DRIVER" = snd-* ]]; then
 	aumix -m 0 -v $VOL -w $VOL -c $VOL 2>&1 >/dev/null # set pcm & master & cd to $VOL, micro to 0
 fi
 
-# Read default keyboard from config file.
-# There seems to be no reliable autoprobe possible.
-[ -f "$HWSETUP_KEYBOARD" ] && . "$HWSETUP_KEYBOARD"
-# Set default keyboard before interactive setup
-[ -n "$KEYTABLE" ] && loadkeys -q $KEYTABLE
-[ -n "$CONSOLEFONT" ] && consolechars -f $CONSOLEFONT
+#I18N## Read default keyboard from config file.
+#I18N## There seems to be no reliable autoprobe possible.
+#I18N#[ -f "$HWSETUP_KEYBOARD" ] && . "$HWSETUP_KEYBOARD"
+#I18N## Set default keyboard before interactive setup
+#I18N#[ -n "$KEYTABLE" ] && loadkeys -q $KEYTABLE
+#I18N#[ -n "$CONSOLEFONT" ] && consolechars -f $CONSOLEFONT
 
 # Check for blind option or brltty
 BLIND=""
@@ -1353,6 +1354,7 @@ if [ -n "$INTERACTIVE" ]; then
 fi
 
 update_progress 80
+
 # KNOPPIX automatic XFree86 Setup
 if ! checkbootparam "nomkxf86config"; then
 	[ -x /usr/sbin/mkxf86config ] && /usr/sbin/mkxf86config
@@ -1586,8 +1588,10 @@ trymount()
 			return 0
 			;;
 	esac
+
 	# Apparently, mount-aes DOES autodetect AES loopback files.
 	[ -b "$1" ] && { mount -t auto -o ro "$1" "$2" 2>/dev/null; RC="$?"; }
+
 	# We need to mount crypto-loop files with initial rw support
 	[ -f "$1" ] && { mount -t auto -o loop,rw "$1" "$2" 2>/dev/null; RC="$?"; }
 	# Mount succeeded?
