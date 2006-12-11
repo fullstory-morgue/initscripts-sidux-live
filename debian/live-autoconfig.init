@@ -1160,12 +1160,14 @@ if checkbootparam "nopcmcia"; then
 	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
 else
 	modprobe pcmcia_core 2>&1 >/dev/null
+
 	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe yenta_socket 2>&1 >/dev/null || modprobe i82365 2>&1 >/dev/null || modprobe tcic 2>&1 >/dev/null 
+	modprobe 	yenta_socket 2>&1 >/dev/null || \
+			modprobe i82365 2>&1 >/dev/null || \
+			modprobe tcic 2>&1 >/dev/null 
 	if [ "$?" = "0" ]; then
-		modprobe ds 2>&1 >/dev/null
-		if cardmgr 2>&1 >/dev/null; then
-			echo " ${GREEN}PCMCIA found, cardmgr started.${NORMAL}"
+		if /etc/init.d/pcmciautils start 2>&1 >/dev/null; then
+			echo " ${GREEN}PCMCIA started.${NORMAL}"
 			sleep 4
 		fi
 	fi
@@ -1629,8 +1631,7 @@ checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
 
 if [ -z "$NOCONFIGCD" ]; then
 	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/knoppix.sh)
-	MYCONFIG="$(ls -1d /cdrom/${FLL_IMAGE_DIR}/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
-	[ -z "$MYCONFIG" ] && MYCONFIG="$(ls -1d /cdrom/${FLL_IMAGE_DIR}/[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+	MYCONFIG="$(ls -1 /cdrom/${FLL_IMAGE_DIR}/ | grep -i "^${FLL_DISTRO_NAME}\\.sh$" 2>/dev/null)"
 	if [ -n "$MYCONFIG" -a -f "$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
 		echo ""
 		echo " ${GREEN}${FLL_DISTRO_NAME} Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
