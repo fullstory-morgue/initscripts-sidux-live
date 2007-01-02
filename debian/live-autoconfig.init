@@ -1630,7 +1630,7 @@ checkbootparam noconfighome && NOCONFIGHOME="Y"
 checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
 
 if [ -z "$NOCONFIGCD" ]; then
-	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/knoppix.sh)
+	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/${FLL_DISTRO_NAME}.sh)
 	MYCONFIG="$(ls -1 /cdrom/${FLL_IMAGE_DIR}/ | grep -i "^${FLL_DISTRO_NAME}\\.sh$" 2>/dev/null)"
 	if [ -n "$MYCONFIG" -a -f "$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
 		echo ""
@@ -1739,7 +1739,7 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 					MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
 					;;
 				[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-					MYCONFDIR="$(findfile knoppix.sh)"
+					MYCONFDIR="$(findfile ${FLL_DISTRO_NAME}.sh)"
 					if [ -n "$MYCONFDIR" ]; then
 						MYCONFDEVICE="${MYCONFDIR##/media/}"
 						MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
@@ -1781,18 +1781,9 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 	fi
 fi
 
-# old .knoppix.sh
-if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] ]; then
-	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
-	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
-	echo "6" > /proc/sys/kernel/printk
-	. "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
-	echo "0" > /proc/sys/kernel/printk	
-fi
-
-# new .kanotix.sh
-if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] ]; then
-	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+# ${FLL_DISTRO_NAME}.sh
+if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.${FLL_DISTRO_NAME}.sh ]; then
+	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.${FLL_DISTRO_NAME}.sh 2>/dev/null)"
 	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 	echo "6" > /proc/sys/kernel/printk
 	. "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
