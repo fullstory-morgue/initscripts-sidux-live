@@ -1,3 +1,11 @@
+initscripts-sidux-live (0.3.43) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * sysvinit is essential and ugly hacks are sealed in history.
+  * we just need eject, not a special version.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue,  2 Jan 2007 16:34:54 +0100
+
 initscripts-sidux-live (0.3.42) unstable; urgency=low
 
   * use ${FLL_DISTRO_NAME}.sh instead of knoppix.sh/ kanotix.sh.

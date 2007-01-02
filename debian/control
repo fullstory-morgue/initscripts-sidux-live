@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: initscripts-sidux-live
 Architecture: all
-Depends: distro-defaults, rebuildfstab, udev, sysvinit, eject (>= 2.1.4-2.1), pcmciautils, hwsetup-ng
+Depends: distro-defaults, rebuildfstab, udev, eject, pcmciautils, hwsetup-ng
 Recommends: xorgconfig-sidux
 Suggests: avm-firmware, drdsl, ltmodem-common, unionfs-utils, hotkey-setup
 Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix, eject-live, pcmcia-cs, usleep-kanotix, initscripts-kanotix-live
