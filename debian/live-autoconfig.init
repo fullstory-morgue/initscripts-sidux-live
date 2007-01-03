@@ -1078,15 +1078,13 @@ if checkbootparam "noudev"; then
 else
 	echo " ${GREEN}Enable ${YELLOW}udev${GREEN}.${NORMAL}"
 	mkdir -p /media
-	if ! pidof udevd >&-; then
-		RUNLEVEL=S /etc/init.d/udev start 2>&1 >/dev/null
-		# load capability LSM (needed for hal)
-		modprobe capability 2>&1 >/dev/null
-		if [ -x /etc/init.d/dbus-1 ]; then
-			/etc/init.d/dbus-1 start 2>&1 >/dev/null
-		elif [ -x /etc/init.d/dbus ]; then
-			/etc/init.d/dbus start 2>&1 >/dev/null
-		fi
+	# load capability LSM (needed for hal)
+	modprobe capability 2>&1 >/dev/null
+	echo " ${GREEN}Starting ${YELLOW}dbus ${GREEN}and ${YELLOW}hal.${NORMAL}"
+	if [ -x /etc/init.d/dbus-1 ]; then
+		/etc/init.d/dbus-1 start 2>&1 >/dev/null
+	elif [ -x /etc/init.d/dbus ]; then
+		/etc/init.d/dbus start 2>&1 >/dev/null
 	fi
 fi
 
