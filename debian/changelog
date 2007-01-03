@@ -1,7 +1,6 @@
-initscripts-sidux-live (0.3.43) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.43) unstable; urgency=low
 
   [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
   * sysvinit is essential and ugly hacks are sealed in history.
   * we just need eject, not a special version.
 
