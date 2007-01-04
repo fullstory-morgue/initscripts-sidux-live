@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.3.46.4) unstable; urgency=low
+initscripts-sidux-live (0.3.47) unstable; urgency=low
 
   * fix i18n bug, remove debconf preseeding for now.
   * recommend tzdata.
