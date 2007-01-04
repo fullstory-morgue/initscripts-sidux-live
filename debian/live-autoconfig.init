@@ -334,7 +334,7 @@ case "$LANGUAGE" in
 	ga-utf8|ga)
 		## Irish Gaeilge version
 		#COUNTRY="ie"
-		LANG="ga_IE@UTF-8"
+		LANG="ga_IE.UTF-8"
 		#KEYTABLE="uk"
 		#XKEYBOARD="uk"
 		#KDEKEYBOARD="ie"
