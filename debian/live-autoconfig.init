@@ -188,6 +188,8 @@ export LANG
 rm -f /etc/default/locale
 update-locale "LANG=$LANG"
 
+echo "locales	locales/default_environment_locale	select	$LANG" | /usr/bin/debconf-set-selections
+
 #I18N#### localization
 #I18N## Allow language specification via commandline. The default language
 #I18N## will be overridden via "lang=de" boot commandline
