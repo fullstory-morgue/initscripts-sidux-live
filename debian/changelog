@@ -1,15 +1,21 @@
-initscripts-sidux-live (0.3.47) unstable; urgency=low
+initscripts-sidux-live (0.3.48) unstable; urgency=low
+
+  [ Andreas Weber ]
+  * i18n Support added (debconf)
 
   [ Stefan Lippers-Hollmann ]
+  * add debconf-utils to dependencies.
+
+ -- Andreas Weber <andreas@it-weber.com>  Thu,  4 Jan 2007 20:18:30 +0100
+
+initscripts-sidux-live (0.3.47) unstable; urgency=low
+
   * fix i18n bug, remove debconf preseeding for now.
   * recommend tzdata.
   * hwclock needs udev support.
   * enable udev unconditionally (disable noudev cheat).
 
-  [ Andreas Weber ]
-  * i18n Support added (debconf)
-
- -- Andreas Weber <andreas@it-weber.com>  Thu,  4 Jan 2007 20:18:30 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  4 Jan 2007 18:56:11 +0100
 
 initscripts-sidux-live (0.3.46) unstable; urgency=low
 
