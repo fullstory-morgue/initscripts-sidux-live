@@ -64,6 +64,7 @@ HWSETUP_MAIN="/etc/sysconfig/knoppix"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
 HWSETUP_SERVICES="/etc/sysconfig/services"
 HWSETUP_DESKTOP="/etc/sysconfig/desktop"
+touch "$HWSETUP_SERVICES"
 
 ### Utility Function(s)
 
@@ -143,6 +144,53 @@ if [ -n "$MYCONF" ]; then
 	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'custom')"
 	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
 fi
+
+# localization
+# Allow language specification via commandline. The default language
+# will be overridden via "lang=de" boot commandline
+LANGUAGE="$(getbootparam lang 2>/dev/null)"
+[ -n "$LANGUAGE" ] || LANGUAGE="de"
+
+# The default language/keyboard to use. This CANNOT be autoprobed.
+# Most of these variables will be used to generate the KDE defaults
+case "$LANGUAGE" in
+	de-utf8|de)
+		# German version UTF-8
+		#LANGUAGE="de_DE:de"
+		#COUNTRY="de_DE"
+		LANG="de_DE.UTF-8"
+		#KEYTABLE="de-latin1-nodeadkeys"
+		#XKEYBOARD="de"
+		#KDEKEYBOARD="de"
+		#CHARSET="utf8"
+		## Additional KDE Keyboards
+		#KDEKEYBOARDS="us,fr"
+		TZ="Europe/Berlin"
+	;;
+	us-utf8|us|*)
+		# American version UTF-8
+		#LANGUAGE="en_US:en"
+		#COUNTRY="us"
+		LANG="en_US.UTF-8"
+		#KEYTABLE="us"
+		#XKEYBOARD="us"
+		#KDEKEYBOARD="us"
+		#CHARSET="utf8"
+		## Additional KDE Keyboards
+		#KDEKEYBOARDS="de,fr"
+		TZ="America/New_York"
+		;;
+esac
+
+export LANG
+
+# XXX: nasty hack: set default locae for debconf
+. /usr/share/debconf/confmodule
+db_set locales/default_environment_locale "$LANG"
+
+# ensure that /etc/default/locale is an ordinary file and not a symlink
+rm -f /etc/default/locale
+update-locale "LANG=$LANG"
 
 #I18N#### localization
 #I18N## Allow language specification via commandline. The default language
