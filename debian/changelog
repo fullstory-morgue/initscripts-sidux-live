@@ -1,9 +1,8 @@
-initscripts-sidux-live (0.3.49) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.49) unstable; urgency=low
 
-  * NOT RELEASED YET
   * activate all LANG= and TZ= definitions again, remove legacy ones.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  4 Jan 2007 21:19:49 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  4 Jan 2007 21:48:27 +0100
 
 initscripts-sidux-live (0.3.48) unstable; urgency=low
 
