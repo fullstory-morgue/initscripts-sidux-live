@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.46) unstable; urgency=low
+
+  * no udev-mtab for now.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  4 Jan 2007 14:46:41 +0100
+
 initscripts-sidux-live (0.3.45) unstable; urgency=low
 
   * i18n debugging.

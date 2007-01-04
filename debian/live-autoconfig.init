@@ -1135,9 +1135,9 @@ else
 	fi
 	[ -x /etc/init.d/dbus ] && /etc/init.d/dbus start 2>&1 >/dev/null
 
-	if ! pidof udevd >&-; then
-		/etc/rcS.d/S36udev-mtab start 2>&1 >/dev/null
-	fi
+	#if ! pidof udevd >&-; then
+	#	/etc/rcS.d/S36udev-mtab start 2>&1 >/dev/null
+	#fi
 fi
 
 if [ -n "$SPLASH" ]; then
