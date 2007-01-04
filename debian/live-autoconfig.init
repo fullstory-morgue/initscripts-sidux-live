@@ -343,19 +343,6 @@ case "$LANGUAGE" in
 		#KDEKYBOARDS="gb,us,de,es,fr,it"
 		TZ="Europe/Dublin"
 		;;
-	he-legacy|il-legacy)
-		## Hebrew version
-		#LANGUAGE="he"
-		#COUNTRY="il"
-		LANG="he_IL"
-		#KEYTABLE="us"
-		#XKEYBOARD="us"
-		#KDEKEYBOARD="il"
-		#CHARSET="iso8859-8"
-		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,fr,de"
-		TZ="Asia/Jerusalem"
-		;;
 	he-utf8|il-utf8|he|il)
 		## Hebrew version
 		#LANGUAGE="he_IL:he"
