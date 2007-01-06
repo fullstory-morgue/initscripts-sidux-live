@@ -166,6 +166,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us,fr"
 		TZ="Europe/Berlin"
+		CD_COUNTRY="German"
 	;;
 	au-utf8|au)
 		## Australian version
@@ -179,6 +180,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us,fr"
 		TZ="Australia/Sydney"
+		CD_COUNTRY="us_american"
 		;;
 	be-utf8|be)
 		## Belgian version
@@ -192,6 +194,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us,de,fr"
 		TZ="Europe/Brussels"
+		CD_COUNTRY="Belgian"
 		;;
 	bg-utf8|be)
 		## Bulgarian version
@@ -205,6 +208,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us,de,fr"
 		TZ="Europe/Sofia"
+		CD_COUNTRY="Bulgarian"
 		;;
 	br-utf8|be)
 		## Brazilian Version
@@ -218,6 +222,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us,br"
 		TZ="America/Sao_Paulo"
+		CD_COUNTRY="Brazilian"
 		;;
 	ch-utf8|ch)
 		## Swiss version (basically de with some modifications)
@@ -231,6 +236,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="de,us,fr"
 		TZ="Europe/Zurich"
+		CD_COUNTRY="Swiss-de"
 		;;
 	cn-utf8|cn)
 		## Simplified Chinese version
@@ -244,6 +250,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="us,de,fr"
 		#XMODIFIERS="@im=Chinput"
 		TZ="Asia/Shanghai"
+		CD_COUNTRY=""
 		;;
 	cs-utf8|cz-utf8|cs|cz)
 		## Czech version
@@ -258,6 +265,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="us,de,fr"
 		TZ="Europe/Prague"
 		#CONSOLEFONT="iso02g"
+		CD_COUNTRY="Czech-qwerty"
 		;;
 	dk-utf8|da-utf8|dk|da)
 		## Dansk version
@@ -273,6 +281,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="dk,de,us,fr"
 		TZ="Europe/Copenhagen"
+		CD_COUNTRY="Danish"
 		;;
 	el-utf8|el)
 		## Greek version
@@ -290,6 +299,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="el"
 		TZ="Europe/Athens"
+		CD_COUNTRY="Greek"
 		;;
 	es-utf8|es)
 		## Spanish version
@@ -304,6 +314,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="de,us,fr"
 		TZ="Europe/Madrid"
 		#CONSOLEFONT="lat10-16"
+		CD_COUNTRY="Spanish"
 		;;
 	fi-utf8|fi)
 		## Finnish version, though we may not have the kde-i18n files
@@ -317,6 +328,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us"
 		TZ="Europe/Helsinki"
+		CD_COUNTRY="Swedish"
 		;;
 	fr-utf8|fr)
 		## French version
@@ -330,6 +342,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="de,us"
 		TZ="Europe/Paris"
+		CD_COUNTRY="French"
 		;;
 	ga-utf8|ga)
 		## Irish Gaeilge version
@@ -342,6 +355,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKYBOARDS="gb,us,de,es,fr,it"
 		TZ="Europe/Dublin"
+		CD_COUNTRY="British"
 		;;
 	he-utf8|il-utf8|he|il)
 		## Hebrew version
@@ -355,6 +369,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us,fr,de"
 		TZ="Asia/Jerusalem"
+		CD_COUNTRY="Hebrew"
 		;;
 	ie-utf8|ie)
 		## Irish (English) version
@@ -368,6 +383,7 @@ case "$LANGUAGE" in
 		##Additional KDE Keyboards
 		#KDEKEYBOARDS="gb,us,de,es,fr,it"
 		TZ="Europe/Dublin"
+		CD_COUNTRY="British"
 		;;
 	it-utf8|it)
 		## Italian version
@@ -381,6 +397,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="fr,us,de"
 		TZ="Europe/Rome"
+		CD_COUNTRY="Italian"
 		;;
 	ja-utf8|ja)
 		## (limited) Japanese version
@@ -395,6 +412,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="fr,us,de"
 		TZ="Asia/Tokyo"
+		CD_COUNTRY="Japanese"
 		;;
 	nl-utf8|nl)
 		## Dutch version
@@ -408,6 +426,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="nl,de,fr"
 		TZ="Europe/Amsterdam"
+		CD_COUNTRY="Dutch"
 		;;
 	pl-utf8|pl)
 		## Polish version
@@ -422,6 +441,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="de,us,fr"
 		TZ="Europe/Warsaw"
 		#CONSOLEFONT="iso02g"
+		CD_COUNTRY="Polish"
 		;;
 	pt-utf8|pl)
 		## Portuguese version
@@ -436,6 +456,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="de,us,fr"
 		TZ="Europe/Lisbon"
 		#CONSOLEFONT="lat10-16"
+		CD_COUNTRY="Portugese"
 		;;
 	ru-utf8|ru)
 		## Russian version
@@ -450,6 +471,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="de,us,fr"
 		TZ="Europe/Moscow"
+		CD_COUNTRY="Russian"
 		;;
 	sk-utf8|sk)
 		## Slovak version (guessed)
@@ -464,6 +486,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="us,de"
 		TZ="Europe/Bratislava"
 		#CONSOLEFONT="iso02g"
+		CD_COUNTRY="Slovak-qwerty"
 		;;
 	sl-utf8|sl)
 		## Slovenian keyboard
@@ -478,6 +501,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="us,de"
 		TZ="Europe/Ljubljana"
 		#CONSOLEFONT="iso02g"
+		CD_COUNTRY="Slovene"
 		;;
 	tr-utf8|tr)
 		## Turkish version (guessed)
@@ -491,6 +515,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us,de,fr"
 		TZ="Europe/Istanbul"
+		CD_COUNTRY="Turkish"
 		;;
 	tw-utf8|tw)
 		## Traditional Chinese version (thanks to Chung-Yen Chang)
@@ -506,6 +531,7 @@ case "$LANGUAGE" in
 		#KDEKEYBOARDS="us"
 		#XMODIFIERS="@im=xcin"
 		TZ="Asia/Taipei"
+		CD_COUNTRY=""
 		;;
 	uk-utf8|uk)
 		## British version UTF-8
@@ -519,6 +545,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="us"
 		TZ="Europe/London"
+		CD_COUNTRY="British"
 		;;
 	us-utf8|us)
 		# American version UTF-8
@@ -532,6 +559,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="de,fr"
 		TZ="America/New_York"
+		CD_COUNTRY="us_american"
 		;;
 	*)
 		# American version UTF-8
@@ -545,6 +573,7 @@ case "$LANGUAGE" in
 		## Additional KDE Keyboards
 		#KDEKEYBOARDS="de,fr"
 		TZ="Europe/London"
+		CD_COUNTRY="us_american"
 		;;
 esac
 
@@ -555,6 +584,68 @@ rm -f /etc/default/locale
 update-locale "LANG=$LANG"
 
 echo "locales	locales/default_environment_locale	select	$LANG" | /usr/bin/debconf-set-selections
+
+# fix console-data
+case $CD_COUNTRY in
+	French) CD_FAMILY="azerty"; CD_KEYMAP="Standard"; CD_VARIANT="Same as X11 (latin 9)";CD_FULL="$CD_COUNTRY";; #Issue
+	Belgian) CD_FAMILY="azerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	us_american) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="US american";; #ok
+	British) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Bulgarian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Byelorussian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Brazilian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Canadian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="English"; CD_FULL="$CD_COUNTRY";; #ok
+	Canadian-fr) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="French"; CD_FULL="$CD_COUNTRY";; #ok
+	Czech-qwerty) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Danish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Spanish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Estonian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Finnish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Polish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Greek) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Italian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Lithuanian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Latvian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Norwegian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Japanese) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Dutch) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Hebrew) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Hungarian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Icelandic) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Latin_American) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="Latin American";; #ok
+	Macedonian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Portugese) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Romanian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Russian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Serbian-qwerty) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Swedish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Slovak-qwerty) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Thai) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Turkish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Ukrainian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Swiss-fr) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="French"; CD_FULL="$CD_COUNTRY";; #ok
+	Swiss-de) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="German"; CD_FULL="German";; #ok
+	German) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Slovak-qwertz) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Czech-qwertz) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Hungarian) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Slovene) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Croat) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	Serbian-qwertz) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
+	*) CD_FAMILY="qwerty"; CD_KEYMAP="us"; CD_VARIANT="Standard"; CD_FULL="US american";; #ok
+esac
+
+CD_LAYOUT="$(echo $CD_COUNTRY | cut -d'-' -f1)"
+CD_LAYOUT_PATH=$(echo $CD_COUNTRY | tr [A-Z] [a-z] | cut -d'-' -f1)
+CD_FULL_FIX="$(echo $CD_FULL | cut -d'-' -f1)"
+CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
+
+echo "console-data console-data/keymap/policy select Select keymap from arch list" | debconf-set-selections
+echo "console-data console-data/keymap/family select $CD_FAMILY" | debconf-set-selections
+echo "console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX" | debconf-set-selections
+echo "console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT" | debconf-set-selections
+echo "console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP" | debconf-set-selections
+echo "console-data console-data/keymap/full select $CD_FULL" | debconf-set-selections
 
 #I18N## Allow keyboard override by boot commandline
 #I18N#KKEYBOARD="$(getbootparam keyboard 2>/dev/null)"
