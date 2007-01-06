@@ -161,10 +161,10 @@ case "$LANGUAGE" in
 		LANG="de_DE.UTF-8"
 		#KEYTABLE="de-latin1-nodeadkeys"
 		#XKEYBOARD="de"
-		#KDEKEYBOARD="de"
+		KDEKEYBOARD="de"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,fr"
+		KDEKEYBOARDS="de,us"
 		TZ="Europe/Berlin"
 		CD_COUNTRY="German"
 	;;
@@ -175,10 +175,10 @@ case "$LANGUAGE" in
 		LANG="en_AU.UTF-8"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="us"
+		KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,fr"
+		KDEKEYBOARDS="us"
 		TZ="Australia/Sydney"
 		CD_COUNTRY="us_american"
 		;;
@@ -189,10 +189,10 @@ case "$LANGUAGE" in
 		LANG="be_BY.UTF-8"
 		#KEYTABLE="be2-latin1"
 		#XKEYBOARD="be"
-		#KDEKEYBOARD="be"
+		KDEKEYBOARD="be"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,de,fr"
+		KDEKEYBOARDS="be,fr,us"
 		TZ="Europe/Brussels"
 		CD_COUNTRY="Belgian"
 		;;
@@ -203,10 +203,10 @@ case "$LANGUAGE" in
 		LANG="bg_BG.UTF-8"
 		#KEYTABLE="bg"
 		#XKEYBOARD="bg"
-		#KDEKEYBOARD="bg"
+		KDEKEYBOARD="bg"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,de,fr"
+		KDEKEYBOARDS="bg,us"
 		TZ="Europe/Sofia"
 		CD_COUNTRY="Bulgarian"
 		;;
@@ -217,10 +217,10 @@ case "$LANGUAGE" in
 		LANG="pt_BR.UTF-8"
 		#KEYTABLE="br-abnt2"
 		#XKEYBOARD="abnt2"
-		#KDEKEYBOARD="br"
+		KDEKEYBOARD="br"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,br"
+		KDEKEYBOARDS="br,us"
 		TZ="America/Sao_Paulo"
 		CD_COUNTRY="Brazilian"
 		;;
@@ -231,10 +231,10 @@ case "$LANGUAGE" in
 		LANG="de_CH.UTF-8"
 		#KEYTABLE="sg-latin1"
 		#XKEYBOARD="de_CH"
-		#KDEKEYBOARD="de_CH"
+		KDEKEYBOARD="de_CH"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,us,fr"
+		KDEKEYBOARDS="de_CH,de,fr,us"
 		TZ="Europe/Zurich"
 		CD_COUNTRY="Swiss-de"
 		;;
@@ -244,10 +244,10 @@ case "$LANGUAGE" in
 		LANG="zh_CN.UTF-8"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="us"
+		KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,de,fr"
+		KDEKEYBOARDS="us"
 		#XMODIFIERS="@im=Chinput"
 		TZ="Asia/Shanghai"
 		CD_COUNTRY=""
@@ -259,10 +259,10 @@ case "$LANGUAGE" in
 		LANG="cs_CZ.UTF-8"
 		#KEYTABLE="cz-lat2"
 		#XKEYBOARD="cs"
-		#KDEKEYBOARD="cs"
+		KDEKEYBOARD="cs"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,de,fr"
+		KDEKEYBOARDS="cs,us"
 		TZ="Europe/Prague"
 		#CONSOLEFONT="iso02g"
 		CD_COUNTRY="Czech-qwerty"
@@ -276,10 +276,10 @@ case "$LANGUAGE" in
 		## Keytable "dk" is correct.
 		#KEYTABLE="dk"
 		#XKEYBOARD="dk"
-		#KDEKEYBOARD="dk"
+		KDEKEYBOARD="dk"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="dk,de,us,fr"
+		KDEKEYBOARDS="dk,us"
 		TZ="Europe/Copenhagen"
 		CD_COUNTRY="Danish"
 		;;
@@ -289,15 +289,15 @@ case "$LANGUAGE" in
 		#COUNTRY="gr"
 		LANG="el_GR.UTF-8"
 		#KEYTABLE="gr"
-		#XKEYBOARD="us,el"
-		#KDEKEYBOARD="us"
+		#XKEYBOARD="gr"
+		KDEKEYBOARD="gr"
 		#CHARSET="utf8"
 		#CONSOLEFONT="iso07.f16"
 		#IOCHARSET="8859-7"
 		#IOCODEPAGE="737"
 		#SYSFONTACM="iso07"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="el"
+		KDEKEYBOARDS="gr,us"
 		TZ="Europe/Athens"
 		CD_COUNTRY="Greek"
 		;;
@@ -308,10 +308,10 @@ case "$LANGUAGE" in
 		LANG="es_ES.UTF-8"
 		#KEYTABLE="es"
 		#XKEYBOARD="es"
-		#KDEKEYBOARD="es"
+		KDEKEYBOARD="es"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,us,fr"
+		KDEKEYBOARDS="es,us"
 		TZ="Europe/Madrid"
 		#CONSOLEFONT="lat10-16"
 		CD_COUNTRY="Spanish"
@@ -323,10 +323,10 @@ case "$LANGUAGE" in
 		LANG="fi_FI.UTF-8"
 		#KEYTABLE="fi-latin1"
 		#XKEYBOARD="fi"
-		#KDEKEYBOARD="fi"
+		KDEKEYBOARD="fi"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us"
+		KDEKEYBOARDS="fi,us"
 		TZ="Europe/Helsinki"
 		CD_COUNTRY="Swedish"
 		;;
@@ -337,10 +337,10 @@ case "$LANGUAGE" in
 		LANG="fr_FR.UTF-8"
 		#KEYTABLE="fr"
 		#XKEYBOARD="fr"
-		#KDEKEYBOARD="fr"
+		KDEKEYBOARD="fr"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,us"
+		KDEKEYBOARDS="fr,us"
 		TZ="Europe/Paris"
 		CD_COUNTRY="French"
 		;;
@@ -349,11 +349,11 @@ case "$LANGUAGE" in
 		#COUNTRY="ie"
 		LANG="ga_IE.UTF-8"
 		#KEYTABLE="uk"
-		#XKEYBOARD="uk"
-		#KDEKEYBOARD="ie"
+		#XKEYBOARD="il"
+		KDEKEYBOARD="il"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKYBOARDS="gb,us,de,es,fr,it"
+		KDEKYBOARDS="il"
 		TZ="Europe/Dublin"
 		CD_COUNTRY="British"
 		;;
@@ -364,10 +364,10 @@ case "$LANGUAGE" in
 		LANG="he_IL.UTF-8"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="il"
+		KDEKEYBOARD="il"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,fr,de"
+		KDEKEYBOARDS="il,us"
 		TZ="Asia/Jerusalem"
 		CD_COUNTRY="Hebrew"
 		;;
@@ -378,10 +378,10 @@ case "$LANGUAGE" in
 		LANG="en_IE.UTF-8"
 		#KEYTABLE="uk"
 		#XKEYBOARD="uk"
-		#KDEKEYBOARD="ie"
+		KDEKEYBOARD="ie"
 		#CHARSET="utf8"
 		##Additional KDE Keyboards
-		#KDEKEYBOARDS="gb,us,de,es,fr,it"
+		KDEKEYBOARDS="ie,gb,us"
 		TZ="Europe/Dublin"
 		CD_COUNTRY="British"
 		;;
@@ -392,10 +392,10 @@ case "$LANGUAGE" in
 		LANG="it_IT.UTF-8"
 		#KEYTABLE="it"
 		#XKEYBOARD="it"
-		#KDEKEYBOARD="it"
+		KDEKEYBOARD="it"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="fr,us,de"
+		KDEKEYBOARDS="it,us"
 		TZ="Europe/Rome"
 		CD_COUNTRY="Italian"
 		;;
@@ -407,10 +407,10 @@ case "$LANGUAGE" in
 		#LANGUAGE="ja"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="us"
+		KDEKEYBOARD="jp"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="fr,us,de"
+		KDEKEYBOARDS="jp,us"
 		TZ="Asia/Tokyo"
 		CD_COUNTRY="Japanese"
 		;;
@@ -421,10 +421,10 @@ case "$LANGUAGE" in
 		LANG="nl_NL.UTF-8"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="en_US"
+		KDEKEYBOARD="nl"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="nl,de,fr"
+		KDEKEYBOARDS="nl,us"
 		TZ="Europe/Amsterdam"
 		CD_COUNTRY="Dutch"
 		;;
@@ -435,10 +435,10 @@ case "$LANGUAGE" in
 		LANG="pl_PL.UTF-8"
 		#KEYTABLE="pl"
 		#XKEYBOARD="pl"
-		#KDEKEYBOARD="pl"
+		KDEKEYBOARD="pl"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,us,fr"
+		KDEKEYBOARDS="pl,us"
 		TZ="Europe/Warsaw"
 		#CONSOLEFONT="iso02g"
 		CD_COUNTRY="Polish"
@@ -450,10 +450,10 @@ case "$LANGUAGE" in
 		LANG="pt_PT.UTF-8"
 		#KEYTABLE="pt-latin1"
 		#XKEYBOARD="pt"
-		#KDEKEYBOARD="pt"
+		KDEKEYBOARD="pt"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,us,fr"
+		KDEKEYBOARDS="pt,us"
 		TZ="Europe/Lisbon"
 		#CONSOLEFONT="lat10-16"
 		CD_COUNTRY="Portugese"
@@ -465,11 +465,11 @@ case "$LANGUAGE" in
 		LANG="ru_RU.UTF-8"
 		#KEYTABLE="ru"
 		#XKEYBOARD="ru"
-		#KDEKEYBOARD="ru"
+		KDEKEYBOARD="ru"
 		#CHARSET="utf8"
 		#CONSOLEFONT="Cyr_a8x16"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,us,fr"
+		KDEKEYBOARDS="ru,us"
 		TZ="Europe/Moscow"
 		CD_COUNTRY="Russian"
 		;;
@@ -480,10 +480,10 @@ case "$LANGUAGE" in
 		LANG="sk_SK.UTF-8"
 		#KEYTABLE="sk-qwerty"
 		#XKEYBOARD="sk"
-		#KDEKEYBOARD="sk"
+		KDEKEYBOARD="sk"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,de"
+		KDEKEYBOARDS="sk,us"
 		TZ="Europe/Bratislava"
 		#CONSOLEFONT="iso02g"
 		CD_COUNTRY="Slovak-qwerty"
@@ -495,10 +495,10 @@ case "$LANGUAGE" in
 		LANG="sl_SI.UTF-8"
 		#KEYTABLE="slovene"
 		#XKEYBOARD="sl"
-		#KDEKEYBOARD="si"
+		KDEKEYBOARD="si"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,de"
+		KDEKEYBOARDS="si,us"
 		TZ="Europe/Ljubljana"
 		#CONSOLEFONT="iso02g"
 		CD_COUNTRY="Slovene"
@@ -510,10 +510,10 @@ case "$LANGUAGE" in
 		LANG="tr_TR.UTF-8"
 		#KEYTABLE="tr_q-latin5"
 		#XKEYBOARD="tr"
-		#KDEKEYBOARD="tr"
+		KDEKEYBOARD="tr"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us,de,fr"
+		KDEKEYBOARDS="tr,us"
 		TZ="Europe/Istanbul"
 		CD_COUNTRY="Turkish"
 		;;
@@ -524,11 +524,11 @@ case "$LANGUAGE" in
 		LANG="zh_TW.UTF-8"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="us"
+		KDEKEYBOARD="us"
 		## CHARSET="big5-0"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us"
+		KDEKEYBOARDS="us"
 		#XMODIFIERS="@im=xcin"
 		TZ="Asia/Taipei"
 		CD_COUNTRY=""
@@ -540,10 +540,10 @@ case "$LANGUAGE" in
 		LANG="en_GB.UTF-8"
 		#KEYTABLE="uk"
 		#XKEYBOARD="uk"
-		#KDEKEYBOARD="gb"
+		KDEKEYBOARD="gb"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="us"
+		KDEKEYBOARDS="gb,us"
 		TZ="Europe/London"
 		CD_COUNTRY="British"
 		;;
@@ -554,10 +554,10 @@ case "$LANGUAGE" in
 		LANG="en_US.UTF-8"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="us"
+		KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,fr"
+		KDEKEYBOARDS="us,ca"
 		TZ="America/New_York"
 		CD_COUNTRY="us_american"
 		;;
@@ -568,10 +568,10 @@ case "$LANGUAGE" in
 		LANG="en_US.UTF-8"
 		#KEYTABLE="us"
 		#XKEYBOARD="us"
-		#KDEKEYBOARD="us"
+		KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
-		#KDEKEYBOARDS="de,fr"
+		KDEKEYBOARDS="us,ca"
 		TZ="Europe/London"
 		CD_COUNTRY="us_american"
 		;;
@@ -726,6 +726,17 @@ CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 #I18N#echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_KEYBOARD"
 #I18N#echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_KEYBOARD"
 #I18N#echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
+
+# Set KDE i18n Keyboard
+if grep -q ^KDEKEYBOARDS /etc/default/distro 2> /dev/null; then
+	sed -e 's/^FLL_KDEKEYBOARD=.*$/KDEKEYBOARD='"$KDEKEYBOARD"'/'
+	sed -e 's/^FLL_KDEKEYBOARDS=.*$/KDEKEYBOARDS='"$KDEKEYBOARDS"'/'
+else
+	echo "" >> /etc/default/distro
+	echo "# kde i18n settings" >> /etc/default/distro
+	echo "FLL_KDEKEYBOARD=\"$KDEKEYBOARD\"" >> /etc/default/distro
+	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
+fi
 
 # Desired desktop
 echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
