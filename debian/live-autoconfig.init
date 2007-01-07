@@ -43,7 +43,7 @@ CRE="
 [K"
 NORMAL="[0;39m"
 # RED: Failure or error message
-
+RED="[1;31m"
 # GREEN: Success message
 GREEN="[1;32m"
 # YELLOW: Descriptions
@@ -110,6 +110,16 @@ checkbootparam()
 	return "$?"
 }
 
+# Run debconf with errorhandling
+set_debconf() {
+	[ ! -z "$1" ] || return
+	echo "$1" | /usr/bin/debconf-set-selections 1>&2 /dev/null 
+	if [ ! "$?" = "0" ]; then
+		[ -w /SIDUX/var/cache/debconf/config.dat ] || sleep 1
+		[ -w /SIDUX/var/cache/debconf/template.dat ] || sleep 1
+		echo "$1" | /usr/bin/debconf-set-selections 1>&2 /dev/null || echo " ${RED}debconf failed ($1)${NORMAL}"
+	fi
+}
 ### EOF utility functions
 
 # We need /proc here, so mount it in case we skipped the bootfloppy
@@ -162,7 +172,7 @@ case "$LANGUAGE" in
 		LANG="de_DE.UTF-8"
 		KEYTABLE="de-latin1-nodeadkeys"
 		#XKEYBOARD="de"
-		KDEKEYBOARD="de"
+		##KDEKEYBOARD="de"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="de,us"
@@ -176,7 +186,7 @@ case "$LANGUAGE" in
 		LANG="en_AU.UTF-8"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="us"
+		##KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="us"
@@ -190,7 +200,7 @@ case "$LANGUAGE" in
 		LANG="be_BY.UTF-8"
 		KEYTABLE="be2-latin1"
 		#XKEYBOARD="be"
-		KDEKEYBOARD="be"
+		#KDEKEYBOARD="be"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="be,fr,us"
@@ -204,7 +214,7 @@ case "$LANGUAGE" in
 		LANG="bg_BG.UTF-8"
 		KEYTABLE="bg"
 		#XKEYBOARD="bg"
-		KDEKEYBOARD="bg"
+		#KDEKEYBOARD="bg"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="bg,us"
@@ -218,7 +228,7 @@ case "$LANGUAGE" in
 		LANG="pt_BR.UTF-8"
 		KEYTABLE="br-abnt2"
 		#XKEYBOARD="abnt2"
-		KDEKEYBOARD="br"
+		#KDEKEYBOARD="br"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="br,us"
@@ -232,7 +242,7 @@ case "$LANGUAGE" in
 		LANG="de_CH.UTF-8"
 		KEYTABLE="sg-latin1"
 		#XKEYBOARD="de_CH"
-		KDEKEYBOARD="de_CH"
+		#KDEKEYBOARD="de_CH"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="de_CH,de,fr,us"
@@ -245,7 +255,7 @@ case "$LANGUAGE" in
 		LANG="zh_CN.UTF-8"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="us"
+		#KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="us"
@@ -260,7 +270,7 @@ case "$LANGUAGE" in
 		LANG="cs_CZ.UTF-8"
 		KEYTABLE="cz-lat2"
 		#XKEYBOARD="cs"
-		KDEKEYBOARD="cs"
+		#KDEKEYBOARD="cs"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="cs,us"
@@ -277,7 +287,7 @@ case "$LANGUAGE" in
 		## Keytable "dk" is correct.
 		KEYTABLE="dk"
 		#XKEYBOARD="dk"
-		KDEKEYBOARD="dk"
+		#KDEKEYBOARD="dk"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="dk,us"
@@ -291,7 +301,7 @@ case "$LANGUAGE" in
 		LANG="el_GR.UTF-8"
 		KEYTABLE="gr"
 		#XKEYBOARD="gr"
-		KDEKEYBOARD="gr"
+		#KDEKEYBOARD="gr"
 		#CHARSET="utf8"
 		#CONSOLEFONT="iso07.f16"
 		#IOCHARSET="8859-7"
@@ -309,7 +319,7 @@ case "$LANGUAGE" in
 		LANG="es_ES.UTF-8"
 		KEYTABLE="es"
 		#XKEYBOARD="es"
-		KDEKEYBOARD="es"
+		#KDEKEYBOARD="es"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="es,us"
@@ -324,7 +334,7 @@ case "$LANGUAGE" in
 		LANG="fi_FI.UTF-8"
 		KEYTABLE="fi-latin1"
 		#XKEYBOARD="fi"
-		KDEKEYBOARD="fi"
+		#KDEKEYBOARD="fi"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="fi,us"
@@ -338,7 +348,7 @@ case "$LANGUAGE" in
 		LANG="fr_FR.UTF-8"
 		KEYTABLE="fr"
 		#XKEYBOARD="fr"
-		KDEKEYBOARD="fr"
+		#KDEKEYBOARD="fr"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="fr,us"
@@ -351,7 +361,7 @@ case "$LANGUAGE" in
 		LANG="ga_IE.UTF-8"
 		KEYTABLE="uk"
 		#XKEYBOARD="il"
-		KDEKEYBOARD="il"
+		#KDEKEYBOARD="il"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKYBOARDS="il"
@@ -365,7 +375,7 @@ case "$LANGUAGE" in
 		LANG="he_IL.UTF-8"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="il"
+		#KDEKEYBOARD="il"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="il,us"
@@ -379,7 +389,7 @@ case "$LANGUAGE" in
 		LANG="en_IE.UTF-8"
 		KEYTABLE="uk"
 		#XKEYBOARD="uk"
-		KDEKEYBOARD="ie"
+		#KDEKEYBOARD="ie"
 		#CHARSET="utf8"
 		##Additional KDE Keyboards
 		KDEKEYBOARDS="ie,gb,us"
@@ -393,7 +403,7 @@ case "$LANGUAGE" in
 		LANG="it_IT.UTF-8"
 		KEYTABLE="it"
 		#XKEYBOARD="it"
-		KDEKEYBOARD="it"
+		#KDEKEYBOARD="it"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="it,us"
@@ -408,7 +418,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="ja"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="jp"
+		#KDEKEYBOARD="jp"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="jp,us"
@@ -422,7 +432,7 @@ case "$LANGUAGE" in
 		LANG="nl_NL.UTF-8"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="nl"
+		#KDEKEYBOARD="nl"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="nl,us"
@@ -436,7 +446,7 @@ case "$LANGUAGE" in
 		LANG="pl_PL.UTF-8"
 		KEYTABLE="pl"
 		#XKEYBOARD="pl"
-		KDEKEYBOARD="pl"
+		#KDEKEYBOARD="pl"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="pl,us"
@@ -451,7 +461,7 @@ case "$LANGUAGE" in
 		LANG="pt_PT.UTF-8"
 		KEYTABLE="pt-latin1"
 		#XKEYBOARD="pt"
-		KDEKEYBOARD="pt"
+		#KDEKEYBOARD="pt"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="pt,us"
@@ -466,7 +476,7 @@ case "$LANGUAGE" in
 		LANG="ru_RU.UTF-8"
 		KEYTABLE="ru"
 		#XKEYBOARD="ru"
-		KDEKEYBOARD="ru"
+		#KDEKEYBOARD="ru"
 		#CHARSET="utf8"
 		#CONSOLEFONT="Cyr_a8x16"
 		## Additional KDE Keyboards
@@ -481,7 +491,7 @@ case "$LANGUAGE" in
 		LANG="sk_SK.UTF-8"
 		KEYTABLE="sk-qwerty"
 		#XKEYBOARD="sk"
-		KDEKEYBOARD="sk"
+		#KDEKEYBOARD="sk"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="sk,us"
@@ -496,7 +506,7 @@ case "$LANGUAGE" in
 		LANG="sl_SI.UTF-8"
 		KEYTABLE="slovene"
 		#XKEYBOARD="sl"
-		KDEKEYBOARD="si"
+		#KDEKEYBOARD="si"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="si,us"
@@ -511,7 +521,7 @@ case "$LANGUAGE" in
 		LANG="tr_TR.UTF-8"
 		KEYTABLE="tr_q-latin5"
 		#XKEYBOARD="tr"
-		KDEKEYBOARD="tr"
+		#KDEKEYBOARD="tr"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="tr,us"
@@ -525,7 +535,7 @@ case "$LANGUAGE" in
 		LANG="zh_TW.UTF-8"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="us"
+		#KDEKEYBOARD="us"
 		## CHARSET="big5-0"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
@@ -541,7 +551,7 @@ case "$LANGUAGE" in
 		LANG="en_GB.UTF-8"
 		KEYTABLE="uk"
 		#XKEYBOARD="uk"
-		KDEKEYBOARD="gb"
+		#KDEKEYBOARD="gb"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="gb,us"
@@ -555,7 +565,7 @@ case "$LANGUAGE" in
 		LANG="en_US.UTF-8"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="us"
+		#KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="us,ca"
@@ -569,7 +579,7 @@ case "$LANGUAGE" in
 		LANG="en_US.UTF-8"
 		KEYTABLE="us"
 		#XKEYBOARD="us"
-		KDEKEYBOARD="us"
+		#KDEKEYBOARD="us"
 		#CHARSET="utf8"
 		## Additional KDE Keyboards
 		KDEKEYBOARDS="us,ca"
@@ -583,13 +593,6 @@ export LANG
 # ensure that /etc/default/locale is an ordinary file and not a symlink
 rm -f /etc/default/locale
 update-locale "LANG=$LANG"
-
-check_debconf() {
-	ps -ae | grep debconf && sleep 5
-}
-
-check_debconf
-echo "locales locales/default_environment_locale select $LANG" | /usr/bin/debconf-set-selections
 
 # fix console-data
 case $CD_COUNTRY in
@@ -880,18 +883,13 @@ CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
 rm -f /etc/console/boottime.kmap.gz
 /usr/sbin/install-keymap "$KEYTABLE" &
 
-check_debconf
-echo "console-data console-data/keymap/policy select Select keymap from arch list" | debconf-set-selections
-check_debconf
-echo "console-data console-data/keymap/family select $CD_FAMILY" | debconf-set-selections
-check_debconf
-echo "console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX" | debconf-set-selections
-check_debconf
-echo "console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT" | debconf-set-selections
-check_debconf
-echo "console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP" | debconf-set-selections
-check_debconf
-echo "console-data console-data/keymap/full select $CD_FULL" | debconf-set-selections
+set_debconf "locales locales/default_environment_locale select $LANG \
+console-data console-data/keymap/policy select Select keymap from arch list \
+console-data console-data/keymap/family select $CD_FAMILY \
+console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
+console-data console-data/keymap/full select $CD_FULL"
 
 #I18N## Allow keyboard override by boot commandline
 #I18N#KKEYBOARD="$(getbootparam keyboard 2>/dev/null)"
@@ -899,10 +897,10 @@ echo "console-data console-data/keymap/full select $CD_FULL" | debconf-set-selec
 #I18N#KXKEYBOARD="$(getbootparam xkeyboard 2>/dev/null)"
 #I18N#if [ -n "$KXKEYBOARD" ]; then
 #I18N#	XKEYBOARD="$KXKEYBOARD"
-#I18N#	KDEKEYBOARD="$KXKEYBOARD"
+#I18N#	#KDEKEYBOARD="$KXKEYBOARD"
 #I18N#elif [ -n "$KKEYBOARD" ]; then
 #I18N#	XKEYBOARD="$KKEYBOARD"
-#I18N#	KDEKEYBOARD="$KKEYBOARD"
+#I18N#	#KDEKEYBOARD="$KKEYBOARD"
 #I18N#fi
 
 # Also read desired desktop, if any
@@ -970,20 +968,18 @@ CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 #I18N## Default Keyboard layout for console and X
 #I18N#echo "KEYTABLE=\"$KEYTABLE\""          > "$HWSETUP_KEYBOARD"
 #I18N#echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_KEYBOARD"
-#I18N#echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_KEYBOARD"
+#I18N#echo "#KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_KEYBOARD"
 #I18N#echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
 
 # Set KDE i18n Keyboard
 rm -f /etc/default/distro
 cat "${FLL_MOUNTPOINT}/etc/default/distro" > /etc/default/distro
 if grep -q ^KDEKEYBOARDS /etc/default/distro 2> /dev/null; then
-	sed -i 	-e 's/^FLL_KDEKEYBOARD=.*$/FLL_KDEKEYBOARD='"$KDEKEYBOARD"'/' \
-		-e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
+	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
 			/etc/default/distro
 else
 	echo "" >> /etc/default/distro
 	echo "# kde i18n settings" >> /etc/default/distro
-	echo "FLL_KDEKEYBOARD=\"$KDEKEYBOARD\"" >> /etc/default/distro
 	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
 fi
 
@@ -997,7 +993,7 @@ echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
 #I18N#echo "CHARSET=\"$CHARSET\""           >> "$HWSETUP_MAIN"
 #I18N#echo "KEYTABLE=\"$KEYTABLE\""         >> "$HWSETUP_MAIN"
 #I18N#echo "XKEYBOARD=\"$XKEYBOARD\""       >> "$HWSETUP_MAIN"
-#I18N#echo "KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_MAIN"
+#I18N#echo "#KDEKEYBOARD=\"$KDEKEYBOARD\""   >> "$HWSETUP_MAIN"
 #I18N#echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_MAIN"
 #I18N#echo "DESKTOP=\"$DESKTOP\""           >> "$HWSETUP_MAIN"
 #I18N#echo "TZ=\"$TZ\""                     >> "$HWSETUP_MAIN"
