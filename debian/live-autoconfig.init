@@ -977,8 +977,9 @@ CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 rm -f /etc/default/distro
 cat "${FLL_MOUNTPOINT}/etc/default/distro" > /etc/default/distro
 if grep -q ^KDEKEYBOARDS /etc/default/distro 2> /dev/null; then
-	sed -e 's/^FLL_KDEKEYBOARD=.*$/FLL_KDEKEYBOARD='"$KDEKEYBOARD"'/'
-	sed -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/'
+	sed -i 	-e 's/^FLL_KDEKEYBOARD=.*$/FLL_KDEKEYBOARD='"$KDEKEYBOARD"'/' \
+		-e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
+			/etc/default/distro
 else
 	echo "" >> /etc/default/distro
 	echo "# kde i18n settings" >> /etc/default/distro
