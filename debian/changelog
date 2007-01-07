@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.3.53) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun,  7 Jan 2007 03:45:09 +0100
+  [ Andreas Weber ]
+  * workarround for debconf Problem (locked Database)  
+
+ -- Andreas Weber <andreas@it-weber.com>  Sun,  7 Jan 2007 13:15:56 +0100
 
 initscripts-sidux-live (0.3.52) unstable; urgency=low
 

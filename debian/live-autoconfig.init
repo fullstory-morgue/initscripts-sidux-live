@@ -584,7 +584,12 @@ export LANG
 rm -f /etc/default/locale
 update-locale "LANG=$LANG"
 
-echo "locales	locales/default_environment_locale	select	$LANG" | /usr/bin/debconf-set-selections
+check_debconf() {
+	ps -ae | grep debconf && sleep 5
+}
+
+check_debconf
+echo "locales locales/default_environment_locale select $LANG" | /usr/bin/debconf-set-selections
 
 # fix console-data
 case $CD_COUNTRY in
@@ -875,11 +880,17 @@ CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
 rm -f /etc/console/boottime.kmap.gz
 /usr/sbin/install-keymap "$KEYTABLE" &
 
+check_debconf
 echo "console-data console-data/keymap/policy select Select keymap from arch list" | debconf-set-selections
+check_debconf
 echo "console-data console-data/keymap/family select $CD_FAMILY" | debconf-set-selections
+check_debconf
 echo "console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX" | debconf-set-selections
+check_debconf
 echo "console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT" | debconf-set-selections
+check_debconf
 echo "console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP" | debconf-set-selections
+check_debconf
 echo "console-data console-data/keymap/full select $CD_FULL" | debconf-set-selections
 
 #I18N## Allow keyboard override by boot commandline
