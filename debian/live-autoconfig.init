@@ -13,6 +13,7 @@ umask 022
 FLL_DISTRO_MODE="installed"
 FLL_IMAGE_DIR="SIDUX"
 FLL_DISTRO_NAME="sidux"
+FLL_MOUNTPOINT="/SIDUX"
 FLL_LIVE_USER="sidux"
 FLL_PERSISTENT_HOME="sidux.img"
 FLL_WALLPAPER="/usr/share/wallpapers/sidux.jpg"
@@ -159,7 +160,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="de_DE:de"
 		#COUNTRY="de_DE"
 		LANG="de_DE.UTF-8"
-		#KEYTABLE="de-latin1-nodeadkeys"
+		KEYTABLE="de-latin1-nodeadkeys"
 		#XKEYBOARD="de"
 		KDEKEYBOARD="de"
 		#CHARSET="utf8"
@@ -173,7 +174,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="en_AU:en"
 		#COUNTRY="au"
 		LANG="en_AU.UTF-8"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="us"
 		#CHARSET="utf8"
@@ -187,7 +188,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="be_BY:be"
 		#COUNTRY="be"
 		LANG="be_BY.UTF-8"
-		#KEYTABLE="be2-latin1"
+		KEYTABLE="be2-latin1"
 		#XKEYBOARD="be"
 		KDEKEYBOARD="be"
 		#CHARSET="utf8"
@@ -201,7 +202,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="bg_BG:bg"
 		#COUNTRY="bg"
 		LANG="bg_BG.UTF-8"
-		#KEYTABLE="bg"
+		KEYTABLE="bg"
 		#XKEYBOARD="bg"
 		KDEKEYBOARD="bg"
 		#CHARSET="utf8"
@@ -215,7 +216,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="pt_BR:pt"
 		#COUNTRY="br"
 		LANG="pt_BR.UTF-8"
-		#KEYTABLE="br-abnt2"
+		KEYTABLE="br-abnt2"
 		#XKEYBOARD="abnt2"
 		KDEKEYBOARD="br"
 		#CHARSET="utf8"
@@ -229,7 +230,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="de_CH:de"
 		#COUNTRY="ch"
 		LANG="de_CH.UTF-8"
-		#KEYTABLE="sg-latin1"
+		KEYTABLE="sg-latin1"
 		#XKEYBOARD="de_CH"
 		KDEKEYBOARD="de_CH"
 		#CHARSET="utf8"
@@ -242,7 +243,7 @@ case "$LANGUAGE" in
 		## Simplified Chinese version
 		#COUNTRY="zh_CN:cn"
 		LANG="zh_CN.UTF-8"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="us"
 		#CHARSET="utf8"
@@ -257,7 +258,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="cs_CZ:cs"
 		#COUNTRY="cs"
 		LANG="cs_CZ.UTF-8"
-		#KEYTABLE="cz-lat2"
+		KEYTABLE="cz-lat2"
 		#XKEYBOARD="cs"
 		KDEKEYBOARD="cs"
 		#CHARSET="utf8"
@@ -274,7 +275,7 @@ case "$LANGUAGE" in
 		## Workaround: "dk" broken in gettext, use da:da_DK
 		#LANGUAGE="da_DK:da"
 		## Keytable "dk" is correct.
-		#KEYTABLE="dk"
+		KEYTABLE="dk"
 		#XKEYBOARD="dk"
 		KDEKEYBOARD="dk"
 		#CHARSET="utf8"
@@ -288,7 +289,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="el_GR:el"
 		#COUNTRY="gr"
 		LANG="el_GR.UTF-8"
-		#KEYTABLE="gr"
+		KEYTABLE="gr"
 		#XKEYBOARD="gr"
 		KDEKEYBOARD="gr"
 		#CHARSET="utf8"
@@ -306,7 +307,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="es_ES:es"
 		#COUNTRY="es"
 		LANG="es_ES.UTF-8"
-		#KEYTABLE="es"
+		KEYTABLE="es"
 		#XKEYBOARD="es"
 		KDEKEYBOARD="es"
 		#CHARSET="utf8"
@@ -321,7 +322,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="fi_FI:fi"
 		#COUNTRY="fi"
 		LANG="fi_FI.UTF-8"
-		#KEYTABLE="fi-latin1"
+		KEYTABLE="fi-latin1"
 		#XKEYBOARD="fi"
 		KDEKEYBOARD="fi"
 		#CHARSET="utf8"
@@ -335,7 +336,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="fr_FR"
 		#COUNTRY="fr"
 		LANG="fr_FR.UTF-8"
-		#KEYTABLE="fr"
+		KEYTABLE="fr"
 		#XKEYBOARD="fr"
 		KDEKEYBOARD="fr"
 		#CHARSET="utf8"
@@ -348,7 +349,7 @@ case "$LANGUAGE" in
 		## Irish Gaeilge version
 		#COUNTRY="ie"
 		LANG="ga_IE.UTF-8"
-		#KEYTABLE="uk"
+		KEYTABLE="uk"
 		#XKEYBOARD="il"
 		KDEKEYBOARD="il"
 		#CHARSET="utf8"
@@ -362,7 +363,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="he_IL:he"
 		#COUNTRY="il"
 		LANG="he_IL.UTF-8"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="il"
 		#CHARSET="utf8"
@@ -376,7 +377,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="en_IE:en"
 		#COUNTRY="ie"
 		LANG="en_IE.UTF-8"
-		#KEYTABLE="uk"
+		KEYTABLE="uk"
 		#XKEYBOARD="uk"
 		KDEKEYBOARD="ie"
 		#CHARSET="utf8"
@@ -390,7 +391,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="it_IT"
 		#COUNTRY="it"
 		LANG="it_IT.UTF-8"
-		#KEYTABLE="it"
+		KEYTABLE="it"
 		#XKEYBOARD="it"
 		KDEKEYBOARD="it"
 		#CHARSET="utf8"
@@ -405,7 +406,7 @@ case "$LANGUAGE" in
 		#COUNTRY="jp"
 		LANG="ja_JP.UTF-8"
 		#LANGUAGE="ja"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="jp"
 		#CHARSET="utf8"
@@ -419,7 +420,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="nl_NL:nl"
 		#COUNTRY="nl"
 		LANG="nl_NL.UTF-8"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="nl"
 		#CHARSET="utf8"
@@ -433,7 +434,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="pl_PL:pl"
 		#COUNTRY="pl"
 		LANG="pl_PL.UTF-8"
-		#KEYTABLE="pl"
+		KEYTABLE="pl"
 		#XKEYBOARD="pl"
 		KDEKEYBOARD="pl"
 		#CHARSET="utf8"
@@ -448,7 +449,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="pt_PT:pt"
 		#COUNTRY="pt"
 		LANG="pt_PT.UTF-8"
-		#KEYTABLE="pt-latin1"
+		KEYTABLE="pt-latin1"
 		#XKEYBOARD="pt"
 		KDEKEYBOARD="pt"
 		#CHARSET="utf8"
@@ -463,7 +464,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="ru_RU:ru"
 		#COUNTRY="ru"
 		LANG="ru_RU.UTF-8"
-		#KEYTABLE="ru"
+		KEYTABLE="ru"
 		#XKEYBOARD="ru"
 		KDEKEYBOARD="ru"
 		#CHARSET="utf8"
@@ -478,7 +479,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="sk_SK:sk"
 		#COUNTRY="sk"
 		LANG="sk_SK.UTF-8"
-		#KEYTABLE="sk-qwerty"
+		KEYTABLE="sk-qwerty"
 		#XKEYBOARD="sk"
 		KDEKEYBOARD="sk"
 		#CHARSET="utf8"
@@ -493,7 +494,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="sl_SI:sl"
 		#COUNTRY="si"
 		LANG="sl_SI.UTF-8"
-		#KEYTABLE="slovene"
+		KEYTABLE="slovene"
 		#XKEYBOARD="sl"
 		KDEKEYBOARD="si"
 		#CHARSET="utf8"
@@ -508,7 +509,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="tr_TR"
 		#COUNTRY="tr"
 		LANG="tr_TR.UTF-8"
-		#KEYTABLE="tr_q-latin5"
+		KEYTABLE="tr_q-latin5"
 		#XKEYBOARD="tr"
 		KDEKEYBOARD="tr"
 		#CHARSET="utf8"
@@ -522,7 +523,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="zh_TW:zh"
 		#COUNTRY="tw"
 		LANG="zh_TW.UTF-8"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="us"
 		## CHARSET="big5-0"
@@ -538,7 +539,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="en_GB:en"
 		#COUNTRY="uk"
 		LANG="en_GB.UTF-8"
-		#KEYTABLE="uk"
+		KEYTABLE="uk"
 		#XKEYBOARD="uk"
 		KDEKEYBOARD="gb"
 		#CHARSET="utf8"
@@ -552,7 +553,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="en_US:en"
 		#COUNTRY="us"
 		LANG="en_US.UTF-8"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="us"
 		#CHARSET="utf8"
@@ -566,7 +567,7 @@ case "$LANGUAGE" in
 		#LANGUAGE="en_US:en"
 		#COUNTRY="us"
 		LANG="en_US.UTF-8"
-		#KEYTABLE="us"
+		KEYTABLE="us"
 		#XKEYBOARD="us"
 		KDEKEYBOARD="us"
 		#CHARSET="utf8"
@@ -587,58 +588,292 @@ echo "locales	locales/default_environment_locale	select	$LANG" | /usr/bin/debcon
 
 # fix console-data
 case $CD_COUNTRY in
-	French) CD_FAMILY="azerty"; CD_KEYMAP="Standard"; CD_VARIANT="Same as X11 (latin 9)";CD_FULL="$CD_COUNTRY";; #Issue
-	Belgian) CD_FAMILY="azerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	us_american) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="US american";; #ok
-	British) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Bulgarian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Byelorussian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Brazilian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Canadian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="English"; CD_FULL="$CD_COUNTRY";; #ok
-	Canadian-fr) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="French"; CD_FULL="$CD_COUNTRY";; #ok
-	Czech-qwerty) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Danish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Spanish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Estonian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Finnish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Polish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Greek) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Italian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Lithuanian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Latvian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Norwegian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Japanese) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Dutch) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Hebrew) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Hungarian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Icelandic) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Latin_American) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="Latin American";; #ok
-	Macedonian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Portugese) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Romanian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Russian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Serbian-qwerty) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Swedish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Slovak-qwerty) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Thai) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Turkish) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Ukrainian) CD_FAMILY="qwerty"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Swiss-fr) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="French"; CD_FULL="$CD_COUNTRY";; #ok
-	Swiss-de) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="German"; CD_FULL="German";; #ok
-	German) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Slovak-qwertz) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Czech-qwertz) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Hungarian) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Slovene) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Croat) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	Serbian-qwertz) CD_FAMILY="qwertz"; CD_KEYMAP="Standard"; CD_VARIANT="Standard"; CD_FULL="$CD_COUNTRY";; #ok
-	*) CD_FAMILY="qwerty"; CD_KEYMAP="us"; CD_VARIANT="Standard"; CD_FULL="US american";; #ok
+	French)
+		#Issue
+		CD_FAMILY="azerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Same as X11 (latin 9)"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Belgian)
+		CD_FAMILY="azerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	us_american)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="US american"
+		;;
+	British)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Bulgarian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Byelorussian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Brazilian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Canadian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="English"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Canadian-fr)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="French"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Czech-qwerty)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Danish)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Spanish)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Estonian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Finnish)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Polish)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Greek)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Italian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Lithuanian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Latvian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Norwegian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Japanese)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Dutch)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Hebrew)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Hungarian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Icelandic)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Latin_American)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="Latin American"
+		;;
+	Macedonian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Portugese)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Romanian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Russian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Serbian-qwerty)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Swedish)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Slovak-qwerty)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Thai)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Turkish)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Ukrainian)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Swiss-fr)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="French"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Swiss-de)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="German"
+		CD_FULL="German"
+		;;
+	German)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Slovak-qwertz)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Czech-qwertz)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Hungarian)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Slovene)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Croat)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	Serbian-qwertz)
+		CD_FAMILY="qwertz"
+		CD_KEYMAP="Standard"
+		CD_VARIANT="Standard"
+		CD_FULL="$CD_COUNTRY"
+		;;
+	*)
+		CD_FAMILY="qwerty"
+		CD_KEYMAP="us"
+		CD_VARIANT="Standard"
+		CD_FULL="US american"
+		;;
 esac
 
 CD_LAYOUT="$(echo $CD_COUNTRY | cut -d'-' -f1)"
 CD_LAYOUT_PATH=$(echo $CD_COUNTRY | tr [A-Z] [a-z] | cut -d'-' -f1)
 CD_FULL_FIX="$(echo $CD_FULL | cut -d'-' -f1)"
 CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
+
+rm -f /etc/console/boottime.kmap.gz
+/usr/sbin/install-keymap "$KEYTABLE" &
 
 echo "console-data console-data/keymap/policy select Select keymap from arch list" | debconf-set-selections
 echo "console-data console-data/keymap/family select $CD_FAMILY" | debconf-set-selections
@@ -728,6 +963,8 @@ CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 #I18N#echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
 
 # Set KDE i18n Keyboard
+rm -f /etc/default/distro
+cat "${FLL_MOUNTPOINT}/etc/default/distro" > /etc/default/distro
 if grep -q ^KDEKEYBOARDS /etc/default/distro 2> /dev/null; then
 	sed -e 's/^FLL_KDEKEYBOARD=.*$/KDEKEYBOARD='"$KDEKEYBOARD"'/'
 	sed -e 's/^FLL_KDEKEYBOARDS=.*$/KDEKEYBOARDS='"$KDEKEYBOARDS"'/'
