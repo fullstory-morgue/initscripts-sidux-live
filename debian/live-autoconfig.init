@@ -972,8 +972,6 @@ CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 #I18N#echo "KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> "$HWSETUP_KEYBOARD"
 
 # Set KDE i18n Keyboard
-rm -f /etc/default/distro
-cat "${FLL_MOUNTPOINT}/etc/default/distro" > /etc/default/distro
 if grep -q ^KDEKEYBOARDS /etc/default/distro 2> /dev/null; then
 	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
 			/etc/default/distro
