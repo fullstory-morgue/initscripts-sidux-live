@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.3.56) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 14 Jan 2007 15:23:33 +0100
+  [ Andreas Weber ]
+  * Debugmode enabled for debconf 
+
+ -- Andreas Weber <andreas@it-weber.com>  Sun, 14 Jan 2007 20:17:56 +0100
 
 initscripts-sidux-live (0.3.55) unstable; urgency=low
 

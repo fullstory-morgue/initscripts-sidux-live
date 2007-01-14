@@ -111,15 +111,8 @@ checkbootparam()
 # Run debconf with errorhandling
 set_debconf() {
 	[ ! -z "$1" ] || return
-	[ -f /SIDUX/var/cache/debconf/config.dat ] || touch /SIDUX/var/cache/debconf/config.dat
-	[ -w /SIDUX/var/cache/debconf/config.dat ] || sleep 1
-	[ -w /SIDUX/var/cache/debconf/template.dat ] || sleep 1
-	echo "$1" | /usr/bin/debconf-set-selections 1>&2 /dev/null
-	if [ ! "$?" = "0" ]; then
-		[ -w /SIDUX/var/cache/debconf/config.dat ] || sleep 1
-		[ -w /SIDUX/var/cache/debconf/template.dat ] || sleep 1
-		echo "$1" | /usr/bin/debconf-set-selections 1>&2 /dev/null || echo " ${RED}debconf failed ($1)${NORMAL}"
-	fi
+	[ -w /SIDUX/var/cache/debconf/config.dat ] || ps -ef | grep "config.dat" >> /var/log/debconf_error.log
+	DEBCONF_DEBUG=developer echo "$1" | /usr/bin/debconf-set-selections
 }
 ### EOF utility functions
 
