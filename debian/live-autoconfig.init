@@ -1045,12 +1045,10 @@ modprobe capability > /dev/null 2>&1
 
 if ! pidof udevd >&-; then
 	RUNLEVEL=S /etc/init.d/udev start > /dev/null 2>&1
+	RUNLEVEL=S /etc/init.d/udev-mtab start > /dev/null 2>&1
 fi
-[ -x /etc/init.d/dbus ] && /etc/init.d/dbus start > /dev/null 2>&1
 
-if ! pidof udevd >&-; then
-	/etc/rcS.d/S36udev-mtab start > /dev/null 2>&1
-fi
+[ -x /etc/init.d/dbus ] && /etc/init.d/dbus start > /dev/null 2>&1
 
 # Set clock (Local time is more often used than GMT, so it is default)
 UTC=""
