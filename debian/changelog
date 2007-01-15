@@ -1,8 +1,8 @@
-initscripts-sidux-live (0.3.57) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.57) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * mount /dev/shm.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 14 Jan 2007 20:37:21 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 15 Jan 2007 21:47:32 +0100
 
 initscripts-sidux-live (0.3.56) unstable; urgency=low
 

@@ -889,8 +889,9 @@ fi
 
 update_progress 20
 
-# Mount /dev/pts
-stringinfile "/dev/pts" /proc/mounts || mount -t devpts -o mode=0622 /dev/pts /dev/pts 2>/dev/null
+# mount virtual file systems
+stringinfile "/dev/pts" /proc/mounts || mount -t devpts -o rw,nosuid,noexec /dev/pts /dev/pts 2>/dev/null
+stringinfile "/dev/shm" /proc/mounts || mount -t tmpfs -o rw,nosuid,nodev tmpfs /dev/shm 2>/dev/null
 
 # check if usbcore is already loaded.
 USBCORE_TIMEOUT="$(getbootparam usbwait 2>/dev/null)"
