@@ -977,7 +977,7 @@ modprobe 8250 > /dev/null 2>&1
 # load psmouse module
 modprobe psmouse > /dev/null 2>&1
 echo -n "${WHITE}"
-if hwsetup -p $HWSETUP_NOSERIAL >/dev/null; then
+if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
 	echo -n "${NORMAL}"
 else
 	echo " ${RED}Please check.${NORMAL}"

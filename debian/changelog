@@ -1,8 +1,8 @@
-initscripts-sidux-live (0.3.58) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.58) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * hwsetup doesn't take -p anymore.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 15 Jan 2007 21:53:12 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 15 Jan 2007 23:06:33 +0100
 
 initscripts-sidux-live (0.3.57) unstable; urgency=low
 
