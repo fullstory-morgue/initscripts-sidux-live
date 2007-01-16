@@ -1659,10 +1659,10 @@ if ! checkbootparam "nocpufreq" || ! checkbootparam "nopowernow"; then
 		
 		# start power management, powersaved is given preference
 		if start_service powersaved >/dev/null; then
-			echo " ${YELLOW}powersaved${GREEN}.${NORMAL}"
+			echo " ${MAGENTA}powersaved${GREEN}.${NORMAL}"
 			grep -q ^powersaved "$HWSETUP_SERVICES" 2>/dev/null || echo powersaved >>"$HWSETUP_SERVICES"
 		elif start_service powernowd >/dev/null; then
-			echo " ${YELLOW}powernowd${GREEN}.${NORMAL}"
+			echo " ${MAGENTA}powernowd${GREEN}.${NORMAL}"
 			grep -q ^powernowd "$HWSETUP_SERVICES" 2>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
 		else
 			echo " ${RED}Failed!${NORMAL}"
@@ -1691,7 +1691,7 @@ setkeycodes e057 87 >/dev/null 2>&1
 setkeycodes e058 88 >/dev/null 2>&1
 
 # enable hotkeys
-start_service hotkey-setup >/dev/null
+start_service hotkey-setup >/dev/null 2>&1
 
 update_progress 100
 
