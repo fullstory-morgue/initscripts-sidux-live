@@ -1362,15 +1362,25 @@ fi
 if checkbootparam "nodhcp"; then
 	echo " ${BLUE}Skipping DHCP broadcast/network detection as requested on boot commandline.${NORMAL}"
 else
-	NETDEVICES="$(awk -F: '/eth.:|tr.:/{print $1}' /proc/net/dev 2>/dev/null)"
-	for DEVICE in $NETDEVICES; do
-		echo -n " ${GREEN}Network device ${MAGENTA}$DEVICE${GREEN} detected, DHCP broadcasting for IP.${NORMAL}"
-		trap 2 3 11
-		pump -i $DEVICE >/dev/null 2>&1 &
-		trap "" 2 3 11
-		sleep 1
-		echo " ${BLUE}(Backgrounding)${NORMAL}"
-	done
+	NETDEVICES="$(perl -e 'print($_,"\n") for map {s/.*\///; grep( /^(eth|ath|wlan|ra|tr)\d*$/,$_);} </sys/class/net/*>' 2>/dev/null)"
+	if [ -n "$NETDEVICES" ]; then
+		CONNETDEVS=""
+		for DEVICE in $NETDEVICES; do
+			ifplugstatus --quiet "$DEVICE"
+			if [ "$?" = "2" ]; then
+				# link beat detected
+				CONNETDEVS="$CONNETDEVS $DEVICE"
+				echo "" 			>> /etc/network/interfaces
+				echo "auto $DEVICE" 		>> /etc/network/interfaces
+				echo "iface $DEVICE inet dhcp" 	>> /etc/network/interfaces
+			fi
+		done
+		
+		if [ -n "$CONNETDEVS" ]; then
+			echo " ${GREEN}DHCP broadcasting for IP on connected network devices:${NORMAL} ${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
+			( ifup -a >/dev/null 2>&1 ) &
+		fi
+	fi
 fi
 
 if [ -r "${FLL_WALLPAPER}" ]; then
