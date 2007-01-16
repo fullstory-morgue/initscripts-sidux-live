@@ -1631,6 +1631,11 @@ if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.${FLL_DISTRO_NAME}.sh ]; t
 fi
 
 ###############################################################################
+# enable dbus & hald
+###############################################################################
+start_service dbus >/dev/null
+
+###############################################################################
 # power management
 ###############################################################################
 if [ -d /proc/acpi ]; then
@@ -1705,14 +1710,8 @@ setkeycodes e023 68 >/dev/null 2>&1
 setkeycodes e057 87 >/dev/null 2>&1
 setkeycodes e058 88 >/dev/null 2>&1
 
-###############################################################################
-# services
-###############################################################################
 # enable hotkeys
 start_service hotkey-setup >/dev/null
-
-# enable dbus & hald
-start_service dbus >/dev/null
 
 update_progress 100
 
