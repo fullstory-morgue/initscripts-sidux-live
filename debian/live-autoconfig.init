@@ -38,6 +38,10 @@ esac
 # Ignore these signals: INT, TERM, SEGV
 trap "" 2 3 11
 
+###############################################################################
+#	ANSI COLORS
+###############################################################################
+
 # ANSI COLORS
 CRE="
 [K"
@@ -65,8 +69,9 @@ HWSETUP_SERVICES="/etc/sysconfig/services"
 HWSETUP_DESKTOP="/etc/sysconfig/desktop"
 touch "$HWSETUP_SERVICES"
 
-### Utility Function(s)
-
+###############################################################################
+#	Utility Functions
+###############################################################################
 # Simple shell grep
 stringinfile()
 {
@@ -109,7 +114,8 @@ checkbootparam()
 }
 
 # Run debconf with errorhandling
-set_debconf() {
+set_debconf()
+{
 	[ -n "$1" ] || return
 	if [ ! -w /SIDUX/var/cache/debconf/config.dat ]; then
 		ps -ef | grep "config.dat" >> /var/log/debconf_error.log
@@ -117,7 +123,8 @@ set_debconf() {
 	DEBCONF_DEBUG=developer echo "$1" | /usr/bin/debconf-set-selections
 }
 
-start_service() {
+start_service()
+{
 	if [ -x /etc/init.d/$1 ]; then
 		if [ -n "$2" ]; then
 			RUNLEVEL="$2" /etc/init.d/$1 start
@@ -131,35 +138,17 @@ start_service() {
 }
 ### EOF utility functions
 
-# mount critical virtual filesystems
+###############################################################################
+#	 mount critical virtual filesystems
+###############################################################################
 start_service mountkernfs.sh
 
-# Read in boot parameters
+# Read in boot parameters from /proc/cmdline
 [ -z "$CMDLINE" ] && CMDLINE="$(< /proc/cmdline)"
 
-# Check if we are in interactive startup mode
-INTERACTIVE=""
-stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
-
-# Check if we want the config floppy
-MYCONF=""
-case "$CMDLINE" in
-	*\ myconf*|*\ floppyconf*|*\ custom*|*\ config*)
-		MYCONF="yes"
-		;;
-esac
-
-if [ -n "$MYCONF" ]; then
-	# Check for given config directory
-	MYCONFDIR="$(getbootparam 'myconfig')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'myconf')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconfig')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconf')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'custom')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
-fi
-
-# localization
+###############################################################################
+#	localization
+###############################################################################
 # Allow language specification via commandline. The default language
 # will be overridden via "lang=de" boot commandline
 LANGUAGE="$(getbootparam lang 2>/dev/null)"
@@ -460,11 +449,17 @@ esac
 
 export LANG
 
+###############################################################################
+# update locale settings
+###############################################################################
 # ensure that /etc/default/locale is an ordinary file and not a symlink
 rm -f /etc/default/locale
+# write locale
 update-locale "LANG=$LANG"
 
+###############################################################################
 # fix console-data
+###############################################################################
 case $CD_COUNTRY in
 	French)
 		#Issue
@@ -752,6 +747,35 @@ CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
 
 /usr/sbin/install-keymap "$KEYTABLE" &
 
+# Set KDE i18n Keyboard
+if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
+	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
+			/etc/default/distro
+else
+	echo "" >> /etc/default/distro
+	echo "# kde i18n settings" >> /etc/default/distro
+	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
+fi
+
+###############################################################################
+# hwsetup
+###############################################################################
+# Delete obsolete links and files before starting autoconfig
+if ! checkbootparam "nohwsetup"; then
+	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
+		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
+		2>/dev/null
+fi
+
+# override dpi setting
+CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
+
+# Write DPI setting if specified
+[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
+
+# disable 915resolution hack
+checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
+
 # Also read desired desktop, if any
 DESKTOP="$(getbootparam desktop 2>/dev/null)"
 # Allow only supported windowmanagers
@@ -763,10 +787,27 @@ case "$DESKTOP" in
 		;;
 esac
 
-# Set hostname
-start_service hostname.sh >/dev/null || hostname "$FLL_DISTRO_NAME"
+# Desired desktop
+echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
 
+# set wallpaper
+if [ -r "${FLL_WALLPAPER}" ]; then
+	# Set $BACKGROUND according to distro defaults
+	BACKGROUND="${FLL_WALLPAPER}"
+else
+	# Search for custom background image for KDE/GNOME/X
+	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
+		for j in png jpg gif; do
+			BACKGROUND="$i.$j"
+			[ -e "$BACKGROUND" ] && break 2
+		done
+	done
+fi
+echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
+
+###############################################################################
 # enable splash if possible
+###############################################################################
 SPLASH=$(getbootparam "splash" 2>/dev/null)
 [ -z "$SPLASH" ] && checkbootparam "splash" && SPLASH=on
 [ "$SPLASH" = "off" ] && SPLASH=""
@@ -792,45 +833,14 @@ update_progress()
 	fi
 }
 
+###############################################################################
+# main
+###############################################################################
 # / must be read-write in any case, starting from here
 mount -o remount,rw / 2>/dev/null
 
-# Delete obsolete links and files before starting autoconfig
-if ! checkbootparam "nohwsetup"; then
-	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
-		2>/dev/null
-fi
-
-# override dpi setting
-CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
-
-# Set KDE i18n Keyboard
-if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
-	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
-			/etc/default/distro
-else
-	echo "" >> /etc/default/distro
-	echo "# kde i18n settings" >> /etc/default/distro
-	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
-fi
-
-# Desired desktop
-echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
-
-# Write locale setting to default position
-if [ -n "$LANG" ]; then
-	rm -f /etc/default/locale
-	echo -e "#  File generated by update-locale\nLANG=$LANG" > /etc/default/locale
-fi
-
+# put console in unicode mode
 unicode_start 2>/dev/null
-
-# Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
-
-# disable 915resolution hack
-checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
 
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
@@ -855,12 +865,16 @@ fi
 
 update_progress 10
 
-# udev support
-echo " ${GREEN}Enable ${YELLOW}udev${GREEN}.${NORMAL}"
+###############################################################################
+# begin hardware detection and autoconfiguration
+###############################################################################
+echo " ${GREEN}Enabling ${YELLOW}udev${GREEN}.${NORMAL}"
 
-mkdir -p /media
 # load capability LSM (needed for hal)
 modprobe capability >/dev/null 2>&1
+
+# load fuse module
+modprobe fuse >/dev/null 2>&1
 
 if ! pidof udevd >&-; then
 	start_service udev S
@@ -870,6 +884,44 @@ fi
 # mount special filesystems under /dev
 start_service mountdevsubfs.sh
 
+###############################################################################
+# usbcore workaround
+###############################################################################
+# check if usbcore is not already loaded and allow some grace time
+if ! stringinfile "usbcore" /proc/modules || ! stringinfile "/proc/bus/usb" /proc/mounts; then
+	USBCORE_TIMEOUT="$(getbootparam usbwait 2>/dev/null)"
+	[ -z "$USBCORE_TIMEOUT" ] && USBCORE_TIMEOUT=5
+	USBCORE_TIMEOUT=$((USBCORE_TIMEOUT))
+	[ $USBCORE_TIMEOUT -lt 0 -o $USBCORE_TIMEOUT -gt 60 ] && USBCORE_TIMEOUT=5
+
+	echo -n "${BLUE}Waiting for ${YELLOW}usbcore${BLUE}. ${NORMAL}"
+	
+	for x in $(seq ${USBCORE_TIMEOUT}); do
+		stringinfile "usbcore" /proc/modules && break
+		echo -n "${BLUE}$((${USBCORE_TIMEOUT}-${x})) s${NORMAL}"
+		for y in $(seq 10); do
+			stringinfile "usbcore" /proc/modules && break
+			sleep 0.1
+		done
+		for z in $(seq $((${#x}+2))); do echo -ne "\b \b"; done
+	done
+	
+	# mount usbfs
+	if stringinfile "usbcore" /proc/modules; then
+		if ! stringinfile "/proc/bus/usb" /proc/mounts && \
+			mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null; then
+			echo "${GREEN}Done.${NORMAL}"
+		else
+			echo "${RED}Unable to mount usbfs on /proc/bus/usb.${NORMAL}"
+		fi
+	else
+		echo "${RED}Timeout reached.${NORMAL}"
+	fi
+fi
+
+###############################################################################
+# setup localhost
+###############################################################################
 # ensure ifup down has an ifstate file to write to
 if start_service ifupdown >/dev/null; then
 	# Bring up loopback interface now
@@ -878,7 +930,8 @@ else
 	ifconfig lo 127.0.0.1 up
 fi
 
-start_service dbus >/dev/null
+# set hostname
+start_service hostname.sh >/dev/null || hostname "$FLL_DISTRO_NAME"
 
 # Set clock (Local time is more often used than GMT, so it is default)
 UTC=""
@@ -898,80 +951,21 @@ if [ -n "$TZ" ]; then
 	echo "$TZ" > /etc/timezone
 fi
 
-if [ -n "$SPLASH" ]; then
-	if ! [ -p /etc/splashy/splashy.fifo ]; then
-		[ "$RES" = "1024x768" -a -x /etc/init.d/splash.sh ] && /etc/init.d/splash.sh start
-	fi
-fi
-
 update_progress 20
 
-# check if usbcore is already loaded.
-USBCORE_TIMEOUT="$(getbootparam usbwait 2>/dev/null)"
-[ -z "$USBCORE_TIMEOUT" ] && USBCORE_TIMEOUT=5
-USBCORE_TIMEOUT=$((USBCORE_TIMEOUT))
-[ $USBCORE_TIMEOUT -lt 0 -o $USBCORE_TIMEOUT -gt 60 ] && USBCORE_TIMEOUT=5
-
-echo -n "${BLUE}Waiting for ${YELLOW}usbcore${BLUE}. ${NORMAL}"
-for x in $(seq ${USBCORE_TIMEOUT}); do
-	stringinfile "usbcore" /proc/modules && break
-	echo -n "${BLUE}$((${USBCORE_TIMEOUT}-${x})) s${NORMAL}"
-	for y in $(seq 10); do
-		stringinfile "usbcore" /proc/modules && break
-		sleep 0.1
-	done
-	for z in $(seq $((${#x}+2))); do echo -ne "\b \b"; done
-done
-stringinfile "usbcore" /proc/modules && echo "${GREEN}Done.${NORMAL}" || echo "${RED}Timeout reached.${NORMAL}"
-
-# Activate usbfs
-stringinfile "/proc/bus/usb" /proc/mounts || mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null
-
-if [ -d /proc/acpi ]; then
-	# ACPI
-	if checkbootparam "noacpi"; then
-		echo " ${BLUE}Skipping ACPI Bios detection as requested on boot commandline.${NORMAL}"
-	else
-		echo -n " ${GREEN}ACPI Bios found, activating modules:"
-		found=""
-		for a in /lib/modules/$KERNEL/kernel/drivers/acpi/*; do
-			basename="${a##*/}"
-			basename="${basename%%.*}"
-			case "$basename" in
-				*_acpi)
-					egrep -qi "${basename%%_acpi}" /proc/acpi/dsdt 2>/dev/null || continue
-					;;
-			esac
-			modprobe $basename >/dev/null 2>&1 && echo -n " ${YELLOW}$basename${GREEN}" && found="yes"
-		done
-		test -z "$found" && echo -n "${BLUE}(none)"
-		echo "${NORMAL}"
-		fuser -k /proc/acpi/event >/dev/null 2>&1
-		start_service acpid >/dev/null
-	fi
-else
-	# APM
-	if checkbootparam "noapm"; then
-		echo " ${BLUE}Skipping APM Bios detection as requested on boot commandline.${NORMAL}"
-	else
-		if modprobe apm power_off=1 >/dev/null 2>&1 && start_service apmd; then
-				echo " ${GREEN}APM Bios found, power management functions enabled.${NORMAL}"
-		fi
-	fi
-fi
-
-# First: PCMCIA Check/Setup
-# This needs to be done before other modules are being loaded by hwsetup
-
+###############################################################################
+# pcmcia/cardbus autoconfiguration
+###############################################################################
 if checkbootparam "nopcmcia"; then
 	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
 else
 	modprobe pcmcia_core >/dev/null 2>&1
 
 	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe 	yenta_socket >/dev/null 2>&1 || \
+	modprobe yenta_socket >/dev/null 2>&1 || \
 			modprobe i82365 >/dev/null 2>&1 || \
 			modprobe tcic >/dev/null 2>&1 
+	
 	if [ "$?" = "0" ]; then
 		if start_service pcmciautils >/dev/null; then
 			echo " ${GREEN}PCMCIA started.${NORMAL}"
@@ -981,47 +975,64 @@ else
 fi
 
 update_progress 40
-# Second: Search & configure supported hardware
+
+###############################################################################
+# hwsetup-ng
+###############################################################################
 # Check for options relevant to hwsetup
 NOSERIAL=""
-checkbootparam noserial >/dev/null 2>&1 && NOSERIAL="yes"
-[ -n "$NOSERIAL" ] && HWSETUP_NOSERIAL="-m"
-# load serial module
-modprobe 8250 >/dev/null 2>&1
+if checkbootparam noserial >/dev/null 2>&1; then
+	NOSERIAL="yes"
+	HWSETUP_NOSERIAL="-m"
+else
+	# load serial module
+	modprobe 8250 >/dev/null 2>&1
+fi
 
-# load psmouse module
-modprobe psmouse >/dev/null 2>&1
 echo -n "${WHITE}"
 if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
 	echo -n "${NORMAL}"
 else
 	echo " ${RED}Please check.${NORMAL}"
 fi
+
 update_progress 60
+
+# load psmouse module
+modprobe psmouse >/dev/null 2>&1
 
 # activate PC Speaker
 modprobe pcspkr >/dev/null 2>&1
 
-# Load fuse module
-modprobe fuse >/dev/null 2>&1
-
 # activate input driver for char event devices
 modprobe evdev >/dev/null 2>&1
 
-# dwl520e1 detection
-rm -f /etc/modprobe.d/dwl520e1
-if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
-	/usr/sbin/dwl520e1_fw_load >/dev/null 2>&1
-	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1' > /etc/modprobe.d/dwl520e1
+# Read in what hwsetup has found
+[ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
+
+###############################################################################
+# mouse autoconfiguration
+###############################################################################
+# Workaround for new mouse detection
+if [ -f "$HWSETUP_MOUSE" ]; then
+	. "$HWSETUP_MOUSE"
+	if [ "$MOUSETYPE" = "ps2" ]; then
+		ln -sf /dev/psaux /dev/mouse
+		perl -pi -e "s|/dev/input/mice|/dev/psaux|" "$HWSETUP_MOUSE" "$HWSETUP_MAIN"
+		. "$HWSETUP_MOUSE"
+		. "$HWSETUP_MAIN"
+	fi
+fi
+       
+# Mouse
+if [ -n "$MOUSE_DEVICE" ]; then
+	echo " ${GREEN}Mouse is ${YELLOW}${MOUSE_FULLNAME}${GREEN} at ${MAGENTA}${MOUSE_DEVICE}${NORMAL}"
 fi
 
-# ipw3945 detection
-if [ -e /sys/bus/pci/drivers/ipw3945/*/cmd ]; then
-	start_service ipw3945d >/dev/null
-fi
-
+###############################################################################
+# sound autoconfiguration
+###############################################################################
 # Handle special options for ALSA sound drivers
-rm -f /etc/modprobe.d/alsa-special
 SYS=$(cut -f2 -d: /sys/devices/pci*/{,*/}*/modalias 2>/dev/null)
 ALSA_SPECIAL=""
 for sysid in $SYS; do
@@ -1044,31 +1055,13 @@ for sysid in $SYS; do
 			;;
 	esac
 done
+
 if [ -n "$ALSA_SPECIAL" ]; then
 	echo options $ALSA_SPECIAL > /etc/modprobe.d/alsa-special
 	if [ -d /sys/module/${ALSA_SPECIAL%% *} ]; then
 		rmmod ${ALSA_SPECIAL%% *}
 		modprobe $ALSA_SPECIAL
 	fi
-fi
-
-# Read in what hwsetup has found
-[ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
-
-# Workaround for new mouse detection
-if [ -f "$HWSETUP_MOUSE" ]; then
-	. "$HWSETUP_MOUSE"
-	if [ "$MOUSETYPE" = "ps2" ]; then
-		ln -sf /dev/psaux /dev/mouse
-		perl -pi -e "s|/dev/input/mice|/dev/psaux|" "$HWSETUP_MOUSE" "$HWSETUP_MAIN"
-		. "$HWSETUP_MOUSE"
-		. "$HWSETUP_MAIN"
-	fi
-fi
-       
-# Mouse
-if [ -n "$MOUSE_DEVICE" ]; then
-	echo " ${GREEN}Mouse is ${YELLOW}${MOUSE_FULLNAME}${GREEN} at ${MAGENTA}${MOUSE_DEVICE}${NORMAL}"
 fi
 
 # Soundcard
@@ -1087,7 +1080,6 @@ VOL=$((VOL))
 [ $VOL -lt 0 -o $VOL -gt 100 ] && VOL=50
 
 # Fast ALSA detection
-
 if [[ "$SOUND_DRIVER" = snd-* ]]; then
 	echo alias snd-card-0 $SOUND_DRIVER > /etc/modprobe.d/sound
 	echo options $SOUND_DRIVER index=0 >> /etc/modprobe.d/sound
@@ -1095,7 +1087,32 @@ if [[ "$SOUND_DRIVER" = snd-* ]]; then
 	aumix -m 0 -v $VOL -w $VOL -c $VOL >/dev/null 2>&1 # set pcm & master & cd to $VOL, micro to 0
 fi
 
+###############################################################################
+# misc. hardware detections/workarounds
+###############################################################################
+# dwl520e1 detection
+if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
+	/usr/sbin/dwl520e1_fw_load >/dev/null 2>&1
+	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1' > /etc/modprobe.d/dwl520e1
+fi
+
+# ipw3945 detection
+if [ -e /sys/bus/pci/drivers/ipw3945/*/cmd ]; then
+	start_service ipw3945d >/dev/null
+fi
+
+# soft modem detection
+if ! checkbootparam "nomodem"; then
+	if lspci|grep Intel|grep -q "AC'97 Modem Controller"; then
+		if start_service sl-modem-daemon >/dev/null; then
+			grep -q ^sl-modem-daemon "$HWSETUP_SERVICES" >/dev/null || echo sl-modem-daemon >> "$HWSETUP_SERVICES"
+		fi
+	fi
+fi
+
+###############################################################################
 # Check for blind option or brltty
+###############################################################################
 BLIND=""
 checkbootparam "blind" && BLIND="yes"
 BRLTTY="$(getbootparam brltty 2>/dev/null)"
@@ -1131,6 +1148,25 @@ if [ -n "$BLIND" -o -n "$BRLTTY" ]; then
 	fi
 fi
 
+###############################################################################
+# setup console-data (before interactive setup stage)
+###############################################################################
+echo "${BLUE}Writing default settings for ${CYAN}console-data${NORMAL}"
+set_debconf "locales locales/default_environment_locale select $LANG \
+console-data console-data/keymap/policy select Select keymap from arch list \
+console-data console-data/keymap/family select $CD_FAMILY \
+console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
+console-data console-data/keymap/full select $CD_FULL"
+
+# Check if we are in interactive startup mode
+INTERACTIVE=""
+stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
+
+###############################################################################
+# INTERACTIVE II
+###############################################################################
 if [ -n "$INTERACTIVE" ]; then
 	# Interactive configuration
 	echo "${BLUE}Entering interactive configuration second stage.${NORMAL}"
@@ -1159,11 +1195,16 @@ fi
 
 update_progress 80
 
-# KNOPPIX automatic XFree86 Setup
+###############################################################################
+# automatic X Setup
+###############################################################################
 if ! checkbootparam "nomkxf86config"; then
 	[ -x /usr/sbin/mkxf86config ] && /usr/sbin/mkxf86config
 fi
 
+###############################################################################
+# INTERACTIVE III
+###############################################################################
 # Read in changes
 [ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
 
@@ -1202,6 +1243,9 @@ fi
 
 RUNLEVEL="$(runlevel)"
 
+###############################################################################
+# partition detection and autoconfiguration
+###############################################################################
 # Add cdrom devices to /etc/fstab
 for c in $(ls -d /dev/cdrom* 2>/dev/null); do
 	m=${c#/dev}
@@ -1257,6 +1301,9 @@ if checkbootparam "nodma"; then
 	done
 fi
 
+###############################################################################
+# create fstab and populate /media
+###############################################################################
 # Start creating /etc/fstab with HD partitions and USB SCSI devices now
 if checkbootparam "nofstab"; then
 	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
@@ -1317,8 +1364,9 @@ EOT
 fi
 update_progress 90
 
-# New: Interactively create swapfiles on DOS partitions
-# (if necessary and possible)
+###############################################################################
+# interactively create swapfiles on DOS partitions (if necessary and possible)
+###############################################################################
 FREEMEM="$(awk 'BEGIN{m=0};/MemFree|Cached|SwapFree/{m+=$2};END{print m}' /proc/meminfo)"
 
 if [ "$FREEMEM" -lt 80000 -a -x /usr/bin/kdeinit -a -x /usr/sbin/mkdosswapfile ]; then
@@ -1334,7 +1382,9 @@ if [ "$FREEMEM" -lt 80000 -a -x /usr/bin/kdeinit -a -x /usr/sbin/mkdosswapfile ]
 		/usr/sbin/mkdosswapfile </dev/console >/dev/console 2>&1 
 fi
 
+###############################################################################
 # Fat-Client-Version: DHCP Broadcast for IP address
+###############################################################################
 if checkbootparam "nodhcp"; then
 	echo " ${BLUE}Skipping DHCP broadcast/network detection as requested on boot commandline.${NORMAL}"
 else
@@ -1349,20 +1399,9 @@ else
 	done
 fi
 
-if [ -r "${FLL_WALLPAPER}" ]; then
-	# Set $BACKGROUND according to distro defaults
-	BACKGROUND="${FLL_WALLPAPER}"
-else
-	# Search for custom background image for KDE/GNOME/X
-	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
-		for j in png jpg gif; do
-			BACKGROUND="$i.$j"
-			[ -e "$BACKGROUND" ] && break 2
-		done
-	done
-fi
-echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
-
+###############################################################################
+# utility functions for perstent config/home handling below
+###############################################################################
 findfile()
 {
 	FOUND=""
@@ -1425,6 +1464,9 @@ getfilepath()
 	[ -z "$filepath" ] && filepath="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\)\\///)"
 }
 
+###############################################################################
+#	cdrom config script
+###############################################################################
 # Move up with other cheats code later
 checkbootparam noconfigall && NOCONFIGCD="Y" && NOCONFIGHOME="Y" && NOCONFIGCHEAT="Y"
 checkbootparam noconfigcd && NOCONFIGCD="Y"
@@ -1443,6 +1485,9 @@ if [ -z "$NOCONFIGCD" ]; then
 	fi
 fi
 
+###############################################################################
+#	persistent /home
+###############################################################################
 # Check for persistent homedir option and eventually mount /home from there,
 # or use a loopback file.
 HOMEDIR="$(getbootparam home)"
@@ -1523,6 +1568,27 @@ EOT
 	fi
 fi
 
+###############################################################################
+#	persistent configuration
+###############################################################################
+# Check if we want the config floppy
+MYCONF=""
+case "$CMDLINE" in
+	*\ myconf*|*\ floppyconf*|*\ custom*|*\ config*)
+		MYCONF="yes"
+		;;
+esac
+
+if [ -n "$MYCONF" ]; then
+	# Check for given config directory
+	MYCONFDIR="$(getbootparam 'myconfig')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'myconf')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconfig')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconf')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'custom')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
+fi
+
 if [ -z "$NOCONFIGCHEAT" ]; then
 	# Check for configuration floppy add-on if not running from HD
 	if [ -n "$MYCONF" ]; then
@@ -1592,53 +1658,66 @@ if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.${FLL_DISTRO_NAME}.sh ]; t
 	echo "0" > /proc/sys/kernel/printk	
 fi
 
-# modem detection
-if ! checkbootparam "nomodem"; then
-	if lspci|grep Intel|grep -q "AC'97 Modem Controller"; then
-		if start_service sl-modem-daemon >/dev/null; then
-			grep -q ^sl-modem-daemon "$HWSETUP_SERVICES" >/dev/null || echo sl-modem-daemon >> "$HWSETUP_SERVICES"
+###############################################################################
+# power management
+###############################################################################
+if [ -d /proc/acpi ]; then
+	# ACPI
+	if checkbootparam "noacpi"; then
+		echo " ${BLUE}Skipping ACPI Bios detection as requested on boot commandline.${NORMAL}"
+	else
+		fuser -k /proc/acpi/event >/dev/null 2>&1
+		echo " ${GREEN}ACPI Bios found, activating ${YELLOW}acpid${GREEN}.${NORMAL}"
+		start_service acpid >/dev/null
+	fi
+else
+	# APM
+	if checkbootparam "noapm"; then
+		echo " ${BLUE}Skipping APM Bios detection as requested on boot commandline.${NORMAL}"
+	else
+		if modprobe apm power_off=1 >/dev/null 2>&1; then
+				echo " ${GREEN}APM Bios found, activating ${YELLOW}apmd${GREEN}.${NORMAL}"
+				start_service apmd >/dev/null
 		fi
 	fi
 fi
 
-echo "${BLUE}Writing default settings for ${CYAN}console-data${NORMAL}"
-set_debconf "locales locales/default_environment_locale select $LANG \
-console-data console-data/keymap/policy select Select keymap from arch list \
-console-data console-data/keymap/family select $CD_FAMILY \
-console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
-console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
-console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
-console-data console-data/keymap/full select $CD_FULL"
-
 # powernow detection
-if ! checkbootparam "nopowernow"; then
-	POWERNOW=""
-	grep -iq "Mobile AMD Athlon(tm) XP" /proc/cpuinfo && POWERNOW="powernow-k7"
-	grep -iq "AMD Athlon(tm) 64 Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
-	grep -iq "AMD Athlon(tm) 64 X2 Dual Core Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
-	grep -iq "AMD Sempron(tm) Processor" /proc/cpuinfo && POWERNOW="powernow-k8"
-	grep -iq "AMD Turion(tm) 64" /proc/cpuinfo && POWERNOW="powernow-k8"
-	grep -iq "Intel(R) Pentium(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
-	#grep -iq "Intel(R) Celeron(R) M processor" /proc/cpuinfo && POWERNOW="speedstep-centrino"
-	grep -qi [ETLU][1-9][0-9][05]0 /proc/cpuinfo && POWERNOW="speedstep-centrino"
-	grep -qi "Core" /proc/cpuinfo && POWERNOW="speedstep-centrino"
-	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && POWERNOW="speedstep-ich"
-	grep -iq "VIA Nehemiah" /proc/cpuinfo && POWERNOW="longhaul"
-	if [ "$POWERNOW" ]; then
-		echo " ${GREEN}Enable ${YELLOW}CPU Frequency Management${GREEN}.${NORMAL}"
-		modprobe $POWERNOW >/dev/null 2>&1
+if ! checkbootparam "nocpufreq" || ! checkbootparam "nopowernow"; then
+	CPUFREQ=""
+	grep -iq "Mobile AMD Athlon(tm) XP" /proc/cpuinfo && CPUFREQ="powernow-k7"
+	grep -iq "AMD Athlon(tm) 64 Processor" /proc/cpuinfo && CPUFREQ="powernow-k8"
+	grep -iq "AMD Athlon(tm) 64 X2 Dual Core Processor" /proc/cpuinfo && CPUFREQ="powernow-k8"
+	grep -iq "AMD Sempron(tm) Processor" /proc/cpuinfo && CPUFREQ="powernow-k8"
+	grep -iq "AMD Turion(tm) 64" /proc/cpuinfo && CPUFREQ="powernow-k8"
+	grep -iq "Intel(R) Pentium(R) M processor" /proc/cpuinfo && CPUFREQ="speedstep-centrino"
+	#grep -iq "Intel(R) Celeron(R) M processor" /proc/cpuinfo && CPUFREQ="speedstep-centrino"
+	grep -qi [ETLU][1-9][0-9][05]0 /proc/cpuinfo && CPUFREQ="speedstep-centrino"
+	grep -qi "Core" /proc/cpuinfo && CPUFREQ="speedstep-centrino"
+	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && CPUFREQ="speedstep-ich"
+	grep -iq "VIA Nehemiah" /proc/cpuinfo && CPUFREQ="longhaul"
+	if [ "$CPUFREQ" ]; then
+		echo -n " ${GREEN}Enable ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
+		modprobe $CPUFREQ >/dev/null 2>&1
 		
 		# start power management, powersaved is given preference
 		if start_service powersaved >/dev/null; then
+			echo " ${YELLOW}powersaved${NORMAL}"
 			grep -q ^powersaved "$HWSETUP_SERVICES" 2>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
 		elif start_service powernowd >/dev/null; then
+			echo " ${YELLOW}powernowd${NORMAL}"
 			grep -q ^powernowd "$HWSETUP_SERVICES" 2>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
+		else
+			echo " ${RED}Failed!${NORMAL}"
 		fi
 	fi
 else
-	echo "${BLUE}Skipping CPU Frequency detection as requested on boot commandline.${NORMAL}"
+	echo "${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}"
 fi
 
+###############################################################################
+# hotkeys and keyboards
+###############################################################################
 # MS MM keyboard add-on
 # fix
 setkeycodes e001 126 >/dev/null 2>&1
@@ -1660,18 +1739,20 @@ setkeycodes e058 88 >/dev/null 2>&1
 # enable hotkeys
 start_service hotkey-setup >/dev/null
 
+###############################################################################
+# services
+###############################################################################
+# enable dbus & hald
+start_service dbus >/dev/null
+
 update_progress 100
 
 if checkbootparam "splash"; then
 	sleep 1
-	[ -p "$SPLASHY_PROGRESS_PIPE" -a -x /etc/init.d/splash.sh ] && /etc/init.d/splash.sh stop
 	[ -p /etc/splashy/splashy.fifo ] && (echo exit > /etc/splashy/splashy.fifo) &
+	rm -f /etc/splashy/splashy.fifo
 	sleep 1
 fi
-
-# delete named pipe
-rm -f "$SPLASHY_PROGRESS_PIPE"
-rm -f /etc/splashy/splashy.fifo
 
 echo "6" > /proc/sys/kernel/printk
 
