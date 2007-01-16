@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.60) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Jan 2007 13:05:08 +0100
+
 initscripts-sidux-live (0.3.59) unstable; urgency=low
 
   * Use consistent whitspace in live-autoconfig when redirecting output.
