@@ -180,7 +180,6 @@ case "$LANGUAGE" in
 	de-utf8|de)
 		# German version UTF-8
 		#LANGUAGE="de_DE:de"
-		#COUNTRY="de_DE"
 		LANG="de_DE.UTF-8"
 		KEYTABLE="de-latin1-nodeadkeys"
 		KDEKEYBOARDS="de,us"
@@ -190,7 +189,6 @@ case "$LANGUAGE" in
 	au-utf8|au)
 		## Australian version
 		#LANGUAGE="en_AU:en"
-		#COUNTRY="au"
 		LANG="en_AU.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us"
@@ -200,7 +198,6 @@ case "$LANGUAGE" in
 	be-utf8|be)
 		## Belgian version
 		#LANGUAGE="be_BY:be"
-		#COUNTRY="be"
 		LANG="be_BY.UTF-8"
 		KEYTABLE="be2-latin1"
 		KDEKEYBOARDS="be,fr,us"
@@ -210,7 +207,6 @@ case "$LANGUAGE" in
 	bg-utf8|be)
 		## Bulgarian version
 		#LANGUAGE="bg_BG:bg"
-		#COUNTRY="bg"
 		LANG="bg_BG.UTF-8"
 		KEYTABLE="bg"
 		KDEKEYBOARDS="bg,us"
@@ -220,7 +216,6 @@ case "$LANGUAGE" in
 	br-utf8|be)
 		## Brazilian Version
 		#LANGUAGE="pt_BR:pt"
-		#COUNTRY="br"
 		LANG="pt_BR.UTF-8"
 		KEYTABLE="br-abnt2"
 		KDEKEYBOARDS="br,us"
@@ -230,7 +225,6 @@ case "$LANGUAGE" in
 	ch-utf8|ch)
 		## Swiss version (basically de with some modifications)
 		#LANGUAGE="de_CH:de"
-		#COUNTRY="ch"
 		LANG="de_CH.UTF-8"
 		KEYTABLE="sg-latin1"
 		KDEKEYBOARDS="de_CH,de,fr,us"
@@ -239,7 +233,6 @@ case "$LANGUAGE" in
 		;;
 	cn-utf8|cn)
 		## Simplified Chinese version
-		#COUNTRY="zh_CN:cn"
 		LANG="zh_CN.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us"
@@ -249,7 +242,6 @@ case "$LANGUAGE" in
 	cs-utf8|cz-utf8|cs|cz)
 		## Czech version
 		#LANGUAGE="cs_CZ:cs"
-		#COUNTRY="cs"
 		LANG="cs_CZ.UTF-8"
 		KEYTABLE="cz-lat2"
 		KDEKEYBOARDS="cs,us"
@@ -258,7 +250,6 @@ case "$LANGUAGE" in
 		;;
 	dk-utf8|da-utf8|dk|da)
 		## Dansk version
-		#COUNTRY="dk"
 		LANG="da_DK.UTF-8"
 		KEYTABLE="dk"
 		KDEKEYBOARDS="dk,us"
@@ -268,7 +259,6 @@ case "$LANGUAGE" in
 	el-utf8|el)
 		## Greek version
 		#LANGUAGE="el_GR:el"
-		#COUNTRY="gr"
 		LANG="el_GR.UTF-8"
 		KEYTABLE="gr"
 		KDEKEYBOARDS="gr,us"
@@ -278,7 +268,6 @@ case "$LANGUAGE" in
 	es-utf8|es)
 		## Spanish version
 		#LANGUAGE="es_ES:es"
-		#COUNTRY="es"
 		LANG="es_ES.UTF-8"
 		KEYTABLE="es"
 		KDEKEYBOARDS="es,us"
@@ -288,7 +277,6 @@ case "$LANGUAGE" in
 	fi-utf8|fi)
 		## Finnish version, though we may not have the kde-i18n files
 		#LANGUAGE="fi_FI:fi"
-		#COUNTRY="fi"
 		LANG="fi_FI.UTF-8"
 		KEYTABLE="fi-latin1"
 		KDEKEYBOARDS="fi,us"
@@ -298,7 +286,6 @@ case "$LANGUAGE" in
 	fr-utf8|fr)
 		## French version
 		#LANGUAGE="fr_FR"
-		#COUNTRY="fr"
 		LANG="fr_FR.UTF-8"
 		KEYTABLE="fr"
 		KDEKEYBOARDS="fr,us"
@@ -307,7 +294,6 @@ case "$LANGUAGE" in
 		;;
 	ga-utf8|ga)
 		## Irish Gaeilge version
-		#COUNTRY="ie"
 		LANG="ga_IE.UTF-8"
 		KEYTABLE="uk"
 		KDEKYBOARDS="il"
@@ -317,7 +303,6 @@ case "$LANGUAGE" in
 	he-utf8|il-utf8|he|il)
 		## Hebrew version
 		#LANGUAGE="he_IL:he"
-		#COUNTRY="il"
 		LANG="he_IL.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="il,us"
@@ -327,7 +312,6 @@ case "$LANGUAGE" in
 	ie-utf8|ie)
 		## Irish (English) version
 		#LANGUAGE="en_IE:en"
-		#COUNTRY="ie"
 		LANG="en_IE.UTF-8"
 		KEYTABLE="uk"
 		KDEKEYBOARDS="ie,gb,us"
@@ -337,7 +321,6 @@ case "$LANGUAGE" in
 	it-utf8|it)
 		## Italian version
 		#LANGUAGE="it_IT"
-		#COUNTRY="it"
 		LANG="it_IT.UTF-8"
 		KEYTABLE="it"
 		KDEKEYBOARDS="it,us"
@@ -347,7 +330,6 @@ case "$LANGUAGE" in
 	ja-utf8|ja)
 		## (limited) Japanese version
 		#LANGUAGE="ja_JP:ja"
-		#COUNTRY="jp"
 		LANG="ja_JP.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="jp,us"
@@ -357,7 +339,6 @@ case "$LANGUAGE" in
 	nl-utf8|nl)
 		## Dutch version
 		#LANGUAGE="nl_NL:nl"
-		#COUNTRY="nl"
 		LANG="nl_NL.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="nl,us"
@@ -367,7 +348,6 @@ case "$LANGUAGE" in
 	pl-utf8|pl)
 		## Polish version
 		#LANGUAGE="pl_PL:pl"
-		#COUNTRY="pl"
 		LANG="pl_PL.UTF-8"
 		KEYTABLE="pl"
 		KDEKEYBOARDS="pl,us"
@@ -377,7 +357,6 @@ case "$LANGUAGE" in
 	pt-utf8|pl)
 		## Portuguese version
 		#LANGUAGE="pt_PT:pt"
-		#COUNTRY="pt"
 		LANG="pt_PT.UTF-8"
 		KEYTABLE="pt-latin1"
 		KDEKEYBOARDS="pt,us"
@@ -387,7 +366,6 @@ case "$LANGUAGE" in
 	ru-utf8|ru)
 		## Russian version
 		#LANGUAGE="ru_RU:ru"
-		#COUNTRY="ru"
 		LANG="ru_RU.UTF-8"
 		KEYTABLE="ru"
 		KDEKEYBOARDS="ru,us"
@@ -397,7 +375,6 @@ case "$LANGUAGE" in
 	sk-utf8|sk)
 		## Slovak version (guessed)
 		#LANGUAGE="sk_SK:sk"
-		#COUNTRY="sk"
 		LANG="sk_SK.UTF-8"
 		KEYTABLE="sk-qwerty"
 		KDEKEYBOARDS="sk,us"
@@ -407,7 +384,6 @@ case "$LANGUAGE" in
 	sl-utf8|sl)
 		## Slovenian keyboard
 		#LANGUAGE="sl_SI:sl"
-		#COUNTRY="si"
 		LANG="sl_SI.UTF-8"
 		KEYTABLE="slovene"
 		KDEKEYBOARDS="si,us"
@@ -418,7 +394,6 @@ case "$LANGUAGE" in
 	tr-utf8|tr)
 		## Turkish version (guessed)
 		#LANGUAGE="tr_TR"
-		#COUNTRY="tr"
 		LANG="tr_TR.UTF-8"
 		KEYTABLE="tr_q-latin5"
 		KDEKEYBOARDS="tr,us"
@@ -428,7 +403,6 @@ case "$LANGUAGE" in
 	tw-utf8|tw)
 		## Traditional Chinese version (thanks to Chung-Yen Chang)
 		#LANGUAGE="zh_TW:zh"
-		#COUNTRY="tw"
 		LANG="zh_TW.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us"
@@ -438,7 +412,6 @@ case "$LANGUAGE" in
 	uk-utf8|uk)
 		## British version UTF-8
 		#LANGUAGE="en_GB:en"
-		#COUNTRY="uk"
 		LANG="en_GB.UTF-8"
 		KEYTABLE="uk"
 		KDEKEYBOARDS="gb,us"
@@ -448,7 +421,6 @@ case "$LANGUAGE" in
 	us-utf8|us)
 		# American version UTF-8
 		#LANGUAGE="en_US:en"
-		#COUNTRY="us"
 		LANG="en_US.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us,ca"
@@ -458,7 +430,6 @@ case "$LANGUAGE" in
 	*)
 		# American version UTF-8
 		#LANGUAGE="en_US:en"
-		#COUNTRY="us"
 		LANG="en_US.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us,ca"
