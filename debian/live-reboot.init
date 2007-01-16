@@ -91,16 +91,8 @@ if [ -n "$NETMOUNTS" ]; then
 fi
 
 # Shutdown network
-NETDEVICES="$(awk -F: '/eth.:/{print $1}' /proc/net/dev 2> /dev/null)"
-if [ -n "$NETDEVICES" ]; then
-	pidof pump 2>&1 > /dev/null && { pump -k ; sleep 2; }
-	echo -n "${BLUE}Shutting down network device${NORMAL}"
-	for n in $NETDEVICES; do
-		echo -n " ${MAGENTA}$n${NORMAL}"
-		ifconfig "$n" down
-	done
-	echo ""
-fi
+echo "${BLUE}Shutting down network devices...${NORMAL}"
+/etc/init.d/networking stop >/dev/null
 
 # read cmdline params
 NOEJECT=""
