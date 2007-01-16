@@ -832,13 +832,10 @@ echo " ${GREEN}Enabling ${YELLOW}udev${GREEN}.${NORMAL}"
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
 
-if ! pidof udevd >&-; then
-	start_service udev S
-	start_service udev-mtab S
-fi
-
-# mount special filesystems under /dev
+# start udev and mount special filesystems under /dev
+start_service udev S
 start_service mountdevsubfs.sh
+start_service udev-mtab S
 
 # put the console in Unicode mode
 unicode_start 2>/dev/null
