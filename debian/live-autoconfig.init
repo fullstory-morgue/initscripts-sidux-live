@@ -804,11 +804,6 @@ else
 	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
 fi
 
-unicode_start 2>/dev/null
-
-# No kernel messages while probing modules
-echo "0" > /proc/sys/kernel/printk
-
 # CD Checker
 if checkbootparam "testcd" || checkbootparam "testdvd"; then
 	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
@@ -834,8 +829,8 @@ update_progress 10
 ###############################################################################
 echo " ${GREEN}Enabling ${YELLOW}udev${GREEN}.${NORMAL}"
 
-# load capability LSM (needed for hal)
-modprobe capability >/dev/null 2>&1
+# No kernel messages while probing modules
+echo "0" > /proc/sys/kernel/printk
 
 if ! pidof udevd >&-; then
 	start_service udev S
@@ -844,6 +839,9 @@ fi
 
 # mount special filesystems under /dev
 start_service mountdevsubfs.sh
+
+# put the console in Unicode mode
+unicode_start 2>/dev/null
 
 ###############################################################################
 # usbcore workaround
@@ -958,9 +956,6 @@ update_progress 60
 # activate PC Speaker
 modprobe pcspkr >/dev/null 2>&1
 
-# Load fuse module
-modprobe fuse >/dev/null 2>&1
-
 # activate input driver for char event devices
 modprobe evdev >/dev/null 2>&1
 
@@ -1071,6 +1066,15 @@ if [ -x /usr/sbin/detect-fc ]; then
 		open -c 10 /usr/sbin/detect-fc
 	fi
 fi
+
+###############################################################################
+# load required modules
+###############################################################################
+# Load fuse module
+modprobe fuse >/dev/null 2>&1
+
+# load capability LSM (needed for hal)
+modprobe capability >/dev/null 2>&1
 
 ###############################################################################
 # Check for blind option or brltty
