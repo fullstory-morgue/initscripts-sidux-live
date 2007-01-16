@@ -139,9 +139,15 @@ start_service()
 ### EOF utility functions
 
 ###############################################################################
-#	 mount critical virtual filesystems
+#	 mount critical virtual filesystems, mount / rw
 ###############################################################################
 start_service mountkernfs.sh
+
+# / must be read-write in any case, starting from here
+mount -o remount,rw / 2>/dev/null
+
+# No kernel messages while probing modules
+echo "0" > /proc/sys/kernel/printk
 
 # Read in boot parameters from /proc/cmdline
 [ -z "$CMDLINE" ] && CMDLINE="$(< /proc/cmdline)"
@@ -834,15 +840,8 @@ update_progress()
 }
 
 ###############################################################################
-# main
-###############################################################################
-# / must be read-write in any case, starting from here
-mount -o remount,rw / 2>/dev/null
-
-# No kernel messages while probing modules
-echo "0" > /proc/sys/kernel/printk
-
 # CD Checker
+###############################################################################
 if checkbootparam "testcd" || checkbootparam "testdvd"; then
 	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
 	echo " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}"
