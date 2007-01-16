@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.62) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.62) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Improve detect-fc code, move it to where are hardware workarounds live.
   * Depend on ifplugd.
   * Use ifplugstatus to detect network link rather than unconditionally
