@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.60) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.60) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Revert major shuffle around of hwsetup code.
   * Fix powernowd -> powersaved typo in echo to hwsetup config file.
   * Really try to avoid the usbcore workaround where possible.
