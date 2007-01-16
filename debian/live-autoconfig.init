@@ -59,6 +59,14 @@ CYAN="[1;36m"
 # BOLD WHITE: Hint
 WHITE="[1;37m"
 
+# get rid of these as soon as possible
+SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
+HWSETUP_MAIN="/etc/sysconfig/knoppix"
+HWSETUP_MOUSE="/etc/sysconfig/mouse"
+HWSETUP_SERVICES="/etc/sysconfig/services"
+HWSETUP_DESKTOP="/etc/sysconfig/desktop"
+touch "$HWSETUP_SERVICES"
+
 ###############################################################################
 # utility Functions
 ###############################################################################
@@ -129,18 +137,34 @@ start_service()
 ### EOF utility functions
 
 ###############################################################################
-#  mount critical virtual filesystems, mount / rw
+#  mount critical virtual filesystems
 ###############################################################################
 start_service mountkernfs.sh
 
-# / must be read-write in any case, starting from here
-mount -o remount,rw / 2>/dev/null
+# Read in boot parameters
+[ -z "$CMDLINE" ] && CMDLINE=" $(< /proc/cmdline)"
 
-# No kernel messages while probing modules
-echo "0" > /proc/sys/kernel/printk
+# Check if we are in interactive startup mode
+INTERACTIVE=""
+stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
 
-# Read in boot parameters from /proc/cmdline
-[ -z "$CMDLINE" ] && CMDLINE="$(< /proc/cmdline)"
+# Check if we want the config floppy
+MYCONF=""
+case "$CMDLINE" in
+	*\ myconf*|*\ floppyconf*|*\ custom*|*\ config*)
+		MYCONF="yes"
+		;;
+esac
+
+if [ -n "$MYCONF" ]; then
+	# Check for given config directory
+	MYCONFDIR="$(getbootparam 'myconfig')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'myconf')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconfig')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconf')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'custom')"
+	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
+fi
 
 ###############################################################################
 # localization
@@ -446,26 +470,6 @@ esac
 export LANG
 
 ###############################################################################
-# CD Checker
-###############################################################################
-if checkbootparam "testcd" || checkbootparam "testdvd"; then
-	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
-	echo " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}"
-	echo -n "${RED}"
-	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG="$LANG" md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
-	if [ "$?" = "0" ]; then
-		echo " ${GREEN}Everything looks OK${NORMAL}"
-	else
-		echo "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***"
-		egrep -v '(^md5sum:|OK$)' /tmp/md5sum.log
-		echo "${RED} *** DATA ON YOUR CD MEDIUM IS POSSIBLY INCOMPLETE OR DAMAGED, ***${NORMAL}"
-		echo "${RED} *** OR YOUR COMPUTER HAS BAD RAM.                             ***${NORMAL}"
-		echo -n "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
-		read a
-	fi
-fi
-
-###############################################################################
 # update locale settings
 ###############################################################################
 # ensure that /etc/default/locale is an ordinary file and not a symlink
@@ -763,42 +767,6 @@ CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
 
 /usr/sbin/install-keymap "$KEYTABLE" &
 
-# Set KDE i18n Keyboard
-if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
-	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
-			/etc/default/distro
-else
-	echo "" >> /etc/default/distro
-	echo "# kde i18n settings" >> /etc/default/distro
-	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
-fi
-
-###############################################################################
-# hwsetup
-###############################################################################
-# get rid of these as soon as possible
-HWSETUP_MAIN="/etc/sysconfig/knoppix"
-HWSETUP_MOUSE="/etc/sysconfig/mouse"
-HWSETUP_SERVICES="/etc/sysconfig/services"
-HWSETUP_DESKTOP="/etc/sysconfig/desktop"
-touch "$HWSETUP_SERVICES"
-
-# Delete obsolete links and files before starting autoconfig
-if ! checkbootparam "nohwsetup"; then
-	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
-		2>/dev/null
-fi
-
-# override dpi setting
-CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
-
-# Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
-
-# disable 915resolution hack
-checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
-
 # Also read desired desktop, if any
 DESKTOP="$(getbootparam desktop 2>/dev/null)"
 # Allow only supported windowmanagers
@@ -810,27 +778,7 @@ case "$DESKTOP" in
 		;;
 esac
 
-# Desired desktop
-echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
-
-# set wallpaper
-if [ -r "${FLL_WALLPAPER}" ]; then
-	# Set $BACKGROUND according to distro defaults
-	BACKGROUND="${FLL_WALLPAPER}"
-else
-	# Search for custom background image for KDE/GNOME/X
-	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
-		for j in png jpg gif; do
-			BACKGROUND="$i.$j"
-			[ -e "$BACKGROUND" ] && break 2
-		done
-	done
-fi
-echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
-
-###############################################################################
 # enable splash if possible
-###############################################################################
 SPLASH=$(getbootparam "splash" 2>/dev/null)
 [ -z "$SPLASH" ] && checkbootparam "splash" && SPLASH=on
 [ "$SPLASH" = "off" ] && SPLASH=""
@@ -851,6 +799,61 @@ update_progress()
 	fi
 }
 
+# / must be read-write in any case, starting from here
+mount -o remount,rw / 2>/dev/null
+
+# Delete obsolete links and files before starting autoconfig
+if ! checkbootparam "nohwsetup"; then
+	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
+		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
+		2>/dev/null
+fi
+
+# override dpi setting
+CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
+
+# Set KDE i18n Keyboard
+if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
+	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
+			/etc/default/distro
+else
+	echo "" >> /etc/default/distro
+	echo "# kde i18n settings" >> /etc/default/distro
+	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
+fi
+
+# Desired desktop
+echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
+
+unicode_start 2>/dev/null
+
+# Write DPI setting if specified
+[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
+
+# disable 915resolution hack
+checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
+
+# No kernel messages while probing modules
+echo "0" > /proc/sys/kernel/printk
+
+# CD Checker
+if checkbootparam "testcd" || checkbootparam "testdvd"; then
+	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
+	echo " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}"
+	echo -n "${RED}"
+	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG="$LANG" md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
+	if [ "$?" = "0" ]; then
+		echo " ${GREEN}Everything looks OK${NORMAL}"
+	else
+		echo "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***"
+		egrep -v '(^md5sum:|OK$)' /tmp/md5sum.log
+		echo "${RED} *** DATA ON YOUR CD MEDIUM IS POSSIBLY INCOMPLETE OR DAMAGED, ***${NORMAL}"
+		echo "${RED} *** OR YOUR COMPUTER HAS BAD RAM.                             ***${NORMAL}"
+		echo -n "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
+		read a
+	fi
+fi
+
 update_progress 10
 
 ###############################################################################
@@ -868,9 +871,6 @@ fi
 
 # mount special filesystems under /dev
 start_service mountdevsubfs.sh
-
-# put console in unicode mode
-unicode_start 2>/dev/null
 
 ###############################################################################
 # usbcore workaround
@@ -944,6 +944,7 @@ update_progress 20
 ###############################################################################
 # pcmcia/cardbus autoconfiguration
 ###############################################################################
+# This needs to be done before other modules are being loaded by hwsetup
 if checkbootparam "nopcmcia"; then
 	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
 else
@@ -952,8 +953,8 @@ else
 	# Try Cardbus or normal PCMCIA socket drivers
 	modprobe yenta_socket >/dev/null 2>&1 || \
 			modprobe i82365 >/dev/null 2>&1 || \
-			modprobe tcic >/dev/null 2>&1 
-	
+			modprobe tcic >/dev/null 2>&1
+
 	if [ "$?" = "0" ]; then
 		if start_service pcmciautils >/dev/null; then
 			echo " ${GREEN}PCMCIA started.${NORMAL}"
@@ -963,67 +964,35 @@ else
 fi
 
 update_progress 40
-
-###############################################################################
-# hwsetup-ng
-###############################################################################
+# Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
 NOSERIAL=""
-if checkbootparam noserial >/dev/null 2>&1; then
-	NOSERIAL="yes"
-	HWSETUP_NOSERIAL="-m"
-fi
-
+checkbootparam noserial >/dev/null 2>&1 && NOSERIAL="yes"
+[ -n "$NOSERIAL" ] && HWSETUP_NOSERIAL="-m"
 # load serial module
 modprobe 8250 >/dev/null 2>&1
 
 # load psmouse module
 modprobe psmouse >/dev/null 2>&1
-
-# load fuse module
-modprobe fuse >/dev/null 2>&1
-
 echo -n "${WHITE}"
 if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
 	echo -n "${NORMAL}"
 else
 	echo " ${RED}Please check.${NORMAL}"
 fi
-
 update_progress 60
 
 # activate PC Speaker
 modprobe pcspkr >/dev/null 2>&1
 
+# Load fuse module
+modprobe fuse >/dev/null 2>&1
+
 # activate input driver for char event devices
 modprobe evdev >/dev/null 2>&1
 
-# Read in what hwsetup has found
-[ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
-
-###############################################################################
-# mouse autoconfiguration
-###############################################################################
-# Workaround for new mouse detection
-if [ -f "$HWSETUP_MOUSE" ]; then
-	. "$HWSETUP_MOUSE"
-	if [ "$MOUSETYPE" = "ps2" ]; then
-		ln -sf /dev/psaux /dev/mouse
-		perl -pi -e "s|/dev/input/mice|/dev/psaux|" "$HWSETUP_MOUSE" "$HWSETUP_MAIN"
-		. "$HWSETUP_MOUSE"
-		. "$HWSETUP_MAIN"
-	fi
-fi
-       
-# Mouse
-if [ -n "$MOUSE_DEVICE" ]; then
-	echo " ${GREEN}Mouse is ${YELLOW}${MOUSE_FULLNAME}${GREEN} at ${MAGENTA}${MOUSE_DEVICE}${NORMAL}"
-fi
-
-###############################################################################
-# sound autoconfiguration
-###############################################################################
 # Handle special options for ALSA sound drivers
+rm -f /etc/modprobe.d/alsa-special
 SYS=$(cut -f2 -d: /sys/devices/pci*/{,*/}*/modalias 2>/dev/null)
 ALSA_SPECIAL=""
 for sysid in $SYS; do
@@ -1046,13 +1015,31 @@ for sysid in $SYS; do
 			;;
 	esac
 done
-
 if [ -n "$ALSA_SPECIAL" ]; then
 	echo options $ALSA_SPECIAL > /etc/modprobe.d/alsa-special
 	if [ -d /sys/module/${ALSA_SPECIAL%% *} ]; then
 		rmmod ${ALSA_SPECIAL%% *}
 		modprobe $ALSA_SPECIAL
 	fi
+fi
+
+# Read in what hwsetup has found
+[ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
+
+# Workaround for new mouse detection
+if [ -f "$HWSETUP_MOUSE" ]; then
+	. "$HWSETUP_MOUSE"
+	if [ "$MOUSETYPE" = "ps2" ]; then
+		ln -sf /dev/psaux /dev/mouse
+		perl -pi -e "s|/dev/input/mice|/dev/psaux|" "$HWSETUP_MOUSE" "$HWSETUP_MAIN"
+		. "$HWSETUP_MOUSE"
+		. "$HWSETUP_MAIN"
+	fi
+fi
+       
+# Mouse
+if [ -n "$MOUSE_DEVICE" ]; then
+	echo " ${GREEN}Mouse is ${YELLOW}${MOUSE_FULLNAME}${GREEN} at ${MAGENTA}${MOUSE_DEVICE}${NORMAL}"
 fi
 
 # Soundcard
@@ -1151,10 +1138,6 @@ console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_V
 console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
 console-data console-data/keymap/full select $CD_FULL"
 
-# Check if we are in interactive startup mode
-INTERACTIVE=""
-stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
-
 ###############################################################################
 # INTERACTIVE II
 ###############################################################################
@@ -1193,12 +1176,12 @@ if ! checkbootparam "nomkxf86config"; then
 	[ -x /usr/sbin/mkxf86config ] && /usr/sbin/mkxf86config
 fi
 
-###############################################################################
-# INTERACTIVE III
-###############################################################################
 # Read in changes
 [ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
 
+###############################################################################
+# INTERACTIVE III
+###############################################################################
 if [ -n "$INTERACTIVE" ]; then
 	echo -n "${CYAN}Do you want to (re)configure your graphics (X11) subsystem?${NORMAL} [Y/n] "
 	read a
@@ -1390,6 +1373,20 @@ else
 	done
 fi
 
+if [ -r "${FLL_WALLPAPER}" ]; then
+	# Set $BACKGROUND according to distro defaults
+	BACKGROUND="${FLL_WALLPAPER}"
+else
+	# Search for custom background image for KDE/GNOME/X
+	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
+		for j in png jpg gif; do
+			BACKGROUND="$i.$j"
+			[ -e "$BACKGROUND" ] && break 2
+		done
+	done
+fi
+echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
+
 ###############################################################################
 # utility functions for perstent config/home handling below
 ###############################################################################
@@ -1562,24 +1559,6 @@ fi
 ###############################################################################
 #	persistent configuration
 ###############################################################################
-# Check if we want the config floppy
-MYCONF=""
-case "$CMDLINE" in
-	*\ myconf*|*\ floppyconf*|*\ custom*|*\ config*)
-		MYCONF="yes"
-		;;
-esac
-
-if [ -n "$MYCONF" ]; then
-	# Check for given config directory
-	MYCONFDIR="$(getbootparam 'myconfig')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'myconf')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconfig')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconf')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'custom')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
-fi
-
 if [ -z "$NOCONFIGCHEAT" ]; then
 	# Check for configuration floppy add-on if not running from HD
 	if [ -n "$MYCONF" ]; then
@@ -1706,9 +1685,6 @@ else
 	echo "${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}"
 fi
 
-###############################################################################
-# hotkeys and keyboards
-###############################################################################
 # MS MM keyboard add-on
 # fix
 setkeycodes e001 126 >/dev/null 2>&1
@@ -1727,12 +1703,12 @@ setkeycodes e023 68 >/dev/null 2>&1
 setkeycodes e057 87 >/dev/null 2>&1
 setkeycodes e058 88 >/dev/null 2>&1
 
-# enable hotkeys
-start_service hotkey-setup >/dev/null
-
 ###############################################################################
 # services
 ###############################################################################
+# enable hotkeys
+start_service hotkey-setup >/dev/null
+
 # enable dbus & hald
 start_service dbus >/dev/null
 
