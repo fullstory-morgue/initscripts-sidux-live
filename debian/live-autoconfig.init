@@ -839,9 +839,6 @@ update_progress()
 # / must be read-write in any case, starting from here
 mount -o remount,rw / 2>/dev/null
 
-# put console in unicode mode
-unicode_start 2>/dev/null
-
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
 
@@ -883,6 +880,9 @@ fi
 
 # mount special filesystems under /dev
 start_service mountdevsubfs.sh
+
+# put console in unicode mode
+unicode_start 2>/dev/null
 
 ###############################################################################
 # usbcore workaround
