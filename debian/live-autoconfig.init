@@ -1377,7 +1377,7 @@ else
 		done
 		
 		if [ -n "$CONNETDEVS" ]; then
-			echo " ${GREEN}DHCP broadcasting for IP on connected network devices:${NORMAL} ${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
+			echo " ${GREEN}DHCP broadcasting for IP on connected network devices:${NORMAL}${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
 			( ifup -a >/dev/null 2>&1 ) &
 		fi
 	fi
