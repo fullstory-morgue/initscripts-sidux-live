@@ -1338,7 +1338,7 @@ else
 	if [ -n "$NETDEVICES" ]; then
 		CONNETDEVS=""
 		for DEVICE in $NETDEVICES; do
-			ifplugstatus --quiet "$DEVICE"
+			ifplugstatus --auto --quiet "$DEVICE"
 			if [ "$?" = "2" ]; then
 				# link beat detected
 				CONNETDEVS="$CONNETDEVS $DEVICE"
