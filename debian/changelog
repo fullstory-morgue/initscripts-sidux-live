@@ -1,7 +1,6 @@
-initscripts-sidux-live (0.3.63) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.63) unstable; urgency=low
 
   [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
   * add Kel to uploaders.
   * strip obsolete COUNTRY variable.
 
