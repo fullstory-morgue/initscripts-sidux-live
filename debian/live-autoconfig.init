@@ -1090,6 +1090,17 @@ if ! checkbootparam "nomodem"; then
 	fi
 fi
 
+# Start FC detection on vt10
+NOFC=""
+if [ -x /usr/sbin/detect-fc ]; then
+	checkbootparam "nofc" && NOFC="yes"
+	[ -e /etc/drdsl/modules.inc ] && NOFC="yes"
+	if [ -z "$NOFC" ]; then
+		echo " ${GREEN}Starting ${YELLOW}FC${GREEN} detection on ${YELLOW}vt10${GREEN}.${NORMAL}"
+		open -c 10 /usr/sbin/detect-fc
+	fi
+fi
+
 ###############################################################################
 # Check for blind option or brltty
 ###############################################################################
@@ -1202,19 +1213,6 @@ if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
 	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
 	# Something went wrong ?
 	[ ! -r /etc/modules.conf ] && ln -sf /${FLL_MOUNTPOINT}/etc/modules.conf /etc/modules.conf
-fi
-
-# Start FC detection on vt10
-NOFC=""
-checkbootparam "nofc" && NOFC="yes"
-[ -e /etc/drdsl/modules.inc ] && NOFC="yes"
-if [ -z "$NOFC" ]; then
-	echo " ${GREEN}Starting ${YELLOW}FC${GREEN} detection on ${YELLOW}vt10${GREEN}.${NORMAL}"
-	if [ -x /usr/sbin/detect-fc ]; then
-		open -c 10 /usr/sbin/detect-fc
-	elif [ -x /usr/local/bin/detect-fc.bash ]; then
-		open -c 10 /usr/local/bin/detect-fc.bash
-	fi
 fi
 
 RUNLEVEL="$(runlevel)"
