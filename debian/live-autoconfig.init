@@ -910,6 +910,9 @@ fi
 ###############################################################################
 # setup localhost
 ###############################################################################
+# set hostname
+start_service hostname.sh >/dev/null || hostname "$FLL_DISTRO_NAME"
+
 # ensure ifup down has an ifstate file to write to
 if start_service ifupdown >/dev/null; then
 	# Bring up loopback interface now
@@ -917,9 +920,6 @@ if start_service ifupdown >/dev/null; then
 else
 	ifconfig lo 127.0.0.1 up
 fi
-
-# set hostname
-start_service hostname.sh >/dev/null || hostname "$FLL_DISTRO_NAME"
 
 # Set clock (Local time is more often used than GMT, so it is default)
 UTC=""
