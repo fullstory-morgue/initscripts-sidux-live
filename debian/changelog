@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.64) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.64) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Really surpress spurious dumpkeycodes errors from hotkey-setup.
   * Echo power management daemon in magneta for consistency.
 
