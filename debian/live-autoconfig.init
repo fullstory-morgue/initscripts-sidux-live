@@ -984,10 +984,13 @@ NOSERIAL=""
 if checkbootparam noserial >/dev/null 2>&1; then
 	NOSERIAL="yes"
 	HWSETUP_NOSERIAL="-m"
-else
-	# load serial module
-	modprobe 8250 >/dev/null 2>&1
 fi
+
+# load serial module
+modprobe 8250 >/dev/null 2>&1
+
+# load psmouse module
+modprobe psmouse >/dev/null 2>&1
 
 echo -n "${WHITE}"
 if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
@@ -997,9 +1000,6 @@ else
 fi
 
 update_progress 60
-
-# load psmouse module
-modprobe psmouse >/dev/null 2>&1
 
 # activate PC Speaker
 modprobe pcspkr >/dev/null 2>&1
@@ -1702,10 +1702,10 @@ if ! checkbootparam "nocpufreq" || ! checkbootparam "nopowernow"; then
 		
 		# start power management, powersaved is given preference
 		if start_service powersaved >/dev/null; then
-			echo " ${YELLOW}powersaved${NORMAL}"
-			grep -q ^powersaved "$HWSETUP_SERVICES" 2>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
+			echo " ${YELLOW}powersaved${GREEN}.${NORMAL}"
+			grep -q ^powersaved "$HWSETUP_SERVICES" 2>/dev/null || echo powersaved >>"$HWSETUP_SERVICES"
 		elif start_service powernowd >/dev/null; then
-			echo " ${YELLOW}powernowd${NORMAL}"
+			echo " ${YELLOW}powernowd${GREEN}.${NORMAL}"
 			grep -q ^powernowd "$HWSETUP_SERVICES" 2>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
 		else
 			echo " ${RED}Failed!${NORMAL}"
