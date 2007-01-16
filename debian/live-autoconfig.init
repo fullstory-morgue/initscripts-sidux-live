@@ -870,9 +870,6 @@ echo " ${GREEN}Enabling ${YELLOW}udev${GREEN}.${NORMAL}"
 # load capability LSM (needed for hal)
 modprobe capability >/dev/null 2>&1
 
-# load fuse module
-modprobe fuse >/dev/null 2>&1
-
 if ! pidof udevd >&-; then
 	start_service udev S
 	start_service udev-mtab S
@@ -991,6 +988,9 @@ modprobe 8250 >/dev/null 2>&1
 
 # load psmouse module
 modprobe psmouse >/dev/null 2>&1
+
+# load fuse module
+modprobe fuse >/dev/null 2>&1
 
 echo -n "${WHITE}"
 if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
