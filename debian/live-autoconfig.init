@@ -39,10 +39,8 @@ esac
 trap "" 2 3 11
 
 ###############################################################################
-#	ANSI COLORS
-###############################################################################
-
 # ANSI COLORS
+###############################################################################
 CRE="
 [K"
 NORMAL="[0;39m"
@@ -61,16 +59,8 @@ CYAN="[1;36m"
 # BOLD WHITE: Hint
 WHITE="[1;37m"
 
-# get rid of these as soon as possible
-SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
-HWSETUP_MAIN="/etc/sysconfig/knoppix"
-HWSETUP_MOUSE="/etc/sysconfig/mouse"
-HWSETUP_SERVICES="/etc/sysconfig/services"
-HWSETUP_DESKTOP="/etc/sysconfig/desktop"
-touch "$HWSETUP_SERVICES"
-
 ###############################################################################
-#	Utility Functions
+# utility Functions
 ###############################################################################
 # Simple shell grep
 stringinfile()
@@ -139,7 +129,7 @@ start_service()
 ### EOF utility functions
 
 ###############################################################################
-#	 mount critical virtual filesystems, mount / rw
+#  mount critical virtual filesystems, mount / rw
 ###############################################################################
 start_service mountkernfs.sh
 
@@ -153,7 +143,7 @@ echo "0" > /proc/sys/kernel/printk
 [ -z "$CMDLINE" ] && CMDLINE="$(< /proc/cmdline)"
 
 ###############################################################################
-#	localization
+# localization
 ###############################################################################
 # Allow language specification via commandline. The default language
 # will be overridden via "lang=de" boot commandline
@@ -484,7 +474,7 @@ rm -f /etc/default/locale
 update-locale "LANG=$LANG"
 
 ###############################################################################
-# fix console-data
+# for console-data
 ###############################################################################
 case $CD_COUNTRY in
 	French)
@@ -786,6 +776,13 @@ fi
 ###############################################################################
 # hwsetup
 ###############################################################################
+# get rid of these as soon as possible
+HWSETUP_MAIN="/etc/sysconfig/knoppix"
+HWSETUP_MOUSE="/etc/sysconfig/mouse"
+HWSETUP_SERVICES="/etc/sysconfig/services"
+HWSETUP_DESKTOP="/etc/sysconfig/desktop"
+touch "$HWSETUP_SERVICES"
+
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
 	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
@@ -839,12 +836,9 @@ SPLASH=$(getbootparam "splash" 2>/dev/null)
 [ "$SPLASH" = "off" ] && SPLASH=""
 
 if [ -n "$SPLASH" ]; then
-	OLDSPLASH=""
-	checkbootparam "oldsplash" && OLDSPLASH="y"
-	rm -f "$SPLASHY_PROGRESS_PIPE"
 	RES=$(fbresolution 2>/dev/null)
 	[ -z "$RES" ] && RES=1024x768
-	if [ "$RES" = "1024x768" -o "$RES" = "800x600" ] && [ -x /sbin/splashy -a -z "$OLDSPLASH" ]; then
+	if [ "$RES" = "1024x768" -o "$RES" = "800x600" ] && [ -x /sbin/splashy ]; then
 		[ -p /etc/splashy/splashy.fifo ] || /sbin/splashy boot
 	fi
 fi
@@ -852,9 +846,7 @@ fi
 update_progress()
 {
 	# be sure we are non-blocking
-	if [ -p "$SPLASHY_PROGRESS_PIPE" ]; then
-		(echo "$1" > "$SPLASHY_PROGRESS_PIPE") &
-	elif [ -p /etc/splashy/splashy.fifo ]; then
+	if [ -p /etc/splashy/splashy.fifo ]; then
 		(echo "progress $1" > /etc/splashy/splashy.fifo) &
 	fi
 }
