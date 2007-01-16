@@ -884,7 +884,7 @@ unicode_start 2>/dev/null
 # usbcore workaround
 ###############################################################################
 # check if usbcore is not already loaded and allow some grace time
-if ! stringinfile "usbcore" /proc/modules || ! stringinfile "/proc/bus/usb" /proc/mounts; then
+if ! stringinfile "usbcore" /proc/modules; then
 	USBCORE_TIMEOUT="$(getbootparam usbwait 2>/dev/null)"
 	[ -z "$USBCORE_TIMEOUT" ] && USBCORE_TIMEOUT=5
 	USBCORE_TIMEOUT=$((USBCORE_TIMEOUT))
@@ -901,18 +901,18 @@ if ! stringinfile "usbcore" /proc/modules || ! stringinfile "/proc/bus/usb" /pro
 		done
 		for z in $(seq $((${#x}+2))); do echo -ne "\b \b"; done
 	done
-	
-	# mount usbfs
+
 	if stringinfile "usbcore" /proc/modules; then
-		if ! stringinfile "/proc/bus/usb" /proc/mounts && \
-			mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null; then
-			echo "${GREEN}Done.${NORMAL}"
-		else
-			echo "${RED}Unable to mount usbfs on /proc/bus/usb.${NORMAL}"
-		fi
+		echo "${GREEN}Done.${NORMAL}"
 	else
 		echo "${RED}Timeout reached.${NORMAL}"
 	fi
+fi
+
+# mount usbfs
+if stringinfile "usbcore" /proc/modules && ! stringinfile "/proc/bus/usb" /proc/mounts; then
+	mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null || \
+		echo "${RED}Unable to mount usbfs on /proc/bus/usb.${NORMAL}"
 fi
 
 ###############################################################################
@@ -1696,7 +1696,7 @@ if ! checkbootparam "nocpufreq" || ! checkbootparam "nopowernow"; then
 	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && CPUFREQ="speedstep-ich"
 	grep -iq "VIA Nehemiah" /proc/cpuinfo && CPUFREQ="longhaul"
 	if [ "$CPUFREQ" ]; then
-		echo -n " ${GREEN}Enable ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
+		echo -n " ${GREEN}Activating ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
 		modprobe $CPUFREQ >/dev/null 2>&1
 		
 		# start power management, powersaved is given preference
