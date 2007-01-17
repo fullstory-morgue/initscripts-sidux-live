@@ -111,16 +111,6 @@ checkbootparam()
 	return "$?"
 }
 
-# Run debconf with errorhandling
-set_debconf()
-{
-	[ -n "$1" ] || return
-	if [ ! -w /SIDUX/var/cache/debconf/config.dat ]; then
-		ps -ef | grep "config.dat" >> /var/log/debconf_error.log
-	fi
-	DEBCONF_DEBUG=developer echo "$1" | /usr/bin/debconf-set-selections
-}
-
 start_service()
 {
 	if [ -x /etc/init.d/$1 ]; then
@@ -875,14 +865,22 @@ fi
 ###############################################################################
 # setup console-data (before interactive setup stage)
 ###############################################################################
+CONFIGDAT=/var/cache/debconf/config.dat
+if [ -L "$CONFIGDAT" ]; then
+	CONFIGDAT=$(readlink $CONFIGDAT)
+fi
+# what process would be accessing debconf database?
+# XXX: mask when we have found out
+fuser -k "$CONFIGDAT"
+
 echo "${BLUE}Writing default settings for ${CYAN}console-data${NORMAL}"
-set_debconf "locales locales/default_environment_locale select $LANG \
+echo "locales locales/default_environment_locale select $LANG \
 console-data console-data/keymap/policy select Select keymap from arch list \
 console-data console-data/keymap/family select $CD_FAMILY \
 console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
 console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
 console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
-console-data console-data/keymap/full select $CD_FULL"
+console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-selections
 
 # put the console in Unicode mode
 unicode_start 2>/dev/null
@@ -1333,12 +1331,19 @@ fi
 if checkbootparam "nodhcp"; then
 	echo " ${BLUE}Skipping DHCP broadcast/network detection as requested on boot commandline.${NORMAL}"
 else
-	NETDEVICES="$(perl -e 'print($_,"\n") for map {s/.*\///; grep( /^(eth|ath|wlan|ra|tr)\d*$/,$_);} </sys/class/net/*>' 2>/dev/null)"
+	NETDEVICES=$(perl -le 'print for map {s/.*\///; grep( !/^(lo|br|sit)\d*/,$_);} </sys/class/net/*>')
 	if [ -n "$NETDEVICES" ]; then
 		CONNETDEVS=""
 		for DEVICE in $NETDEVICES; do
+			# wireless
+			[ -d /sys/class/net/${DEVICE}/wireless ] && continue
+			if [ -f /sys/class/net/${DEVICE}/addr_len ]; then
+				# unwanted: > 6 byte mac length (eg, placeholder interface, eth1394)
+				[ "$(< /sys/class/net/${DEVICE}/addr_len)" -gt 6 ] && continue
+			fi
+			
 			if ifconfig "$DEVICE" up; then
-				sleep 1
+				sleep 2
 				
 				# probe for link beat
 				ifplugstatus --quiet "$DEVICE"
@@ -1356,7 +1361,8 @@ else
 		done
 		
 		if [ -n "$CONNETDEVS" ]; then
-			echo " ${GREEN}Enabling DHCP broadcast for IP on connected ethernet devices:${NORMAL}${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
+			echo -n " ${GREEN}Enabling DHCP broadcast for IP on connected ethernet devices:${NORMAL}"
+			echo "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
 			( ifup -a >/dev/null 2>&1 ) &
 		fi
 	fi
