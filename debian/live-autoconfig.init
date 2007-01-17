@@ -1022,7 +1022,7 @@ if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" ]; then
 	SOUNDCARD="$SOUND_DRIVER"
 	echo -n " ${GREEN}Soundcard is"
 	[ -n "$SOUND_FULLNAME" ] && echo -n " ${YELLOW}$SOUND_FULLNAME${GREEN}"
-	[ -n "$SOUNDCARD" ] && echo -n " (${MAGENTA}$SOUNDCARD${GREEN})"
+	[ -n "$SOUNDCARD" ] && echo -n " ALSA module(${MAGENTA}$SOUNDCARD${GREEN})"
 	echo "${NORMAL}"
 fi
 
