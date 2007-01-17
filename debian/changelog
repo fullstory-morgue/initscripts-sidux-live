@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.65) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.65) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Use --auto option of ifplugd to enable interface before querying it for
     link beat.
   * Start dbus/hald after acpid, but before cpufreq manager.
