@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.70) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.70) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Don't attempt to autoconfigure wireless devices or any network
     interface with greater than 6 byte MAC length.
   * Dissolve set_debconf(), and try to debug occasional debconf problem
