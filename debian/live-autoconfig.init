@@ -1361,7 +1361,7 @@ else
 		done
 		
 		if [ -n "$CONNETDEVS" ]; then
-			echo -n " ${GREEN}Enabling DHCP broadcast for IP on connected ethernet devices:${NORMAL}"
+			echo -n " ${GREEN}Enabling DHCP broadcast on connected ethernet devices:${NORMAL}"
 			echo "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
 			( ifup -a >/dev/null 2>&1 ) &
 		fi
