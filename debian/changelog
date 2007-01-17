@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.67) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 17 Jan 2007 01:26:22 +0100
+
 initscripts-sidux-live (0.3.66) unstable; urgency=low
 
   * Start dbus/hald after acpid, but before cpufreq manager.
