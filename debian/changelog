@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.67) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.67) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Add cpufreq-detect.sh from ubuntu powernowd package (0.97-1ubuntu7).
     - remove Kanotix cpufreq detection
     - only start a power management daemon if a useful module is successfully
