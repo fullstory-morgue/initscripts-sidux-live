@@ -1339,6 +1339,8 @@ else
 		for DEVICE in $NETDEVICES; do
 			if ifconfig "$DEVICE" up; then
 				sleep 1
+				
+				# probe for link beat
 				ifplugstatus --quiet "$DEVICE"
 			
 				# link beat detected ?
