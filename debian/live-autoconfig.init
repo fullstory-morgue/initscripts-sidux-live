@@ -447,6 +447,8 @@ export LANG
 rm -f /etc/default/locale
 # write locale
 update-locale "LANG=$LANG"
+# install keymap
+/usr/sbin/install-keymap "$KEYTABLE" &
 
 ###############################################################################
 # for console-data
@@ -736,8 +738,6 @@ CD_LAYOUT_PATH=$(echo $CD_COUNTRY | tr [A-Z] [a-z] | cut -d'-' -f1)
 CD_FULL_FIX="$(echo $CD_FULL | cut -d'-' -f1)"
 CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
 
-/usr/sbin/install-keymap "$KEYTABLE" &
-
 ###############################################################################
 # enable splash if possible
 ###############################################################################
@@ -837,9 +837,6 @@ start_service udev S
 start_service mountdevsubfs.sh
 start_service udev-mtab S
 
-# put the console in Unicode mode
-unicode_start 2>/dev/null
-
 ###############################################################################
 # usbcore workaround
 ###############################################################################
@@ -874,6 +871,21 @@ if stringinfile "usbcore" /proc/modules && ! stringinfile "/proc/bus/usb" /proc/
 	mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null || \
 		echo "${RED}Unable to mount usbfs on /proc/bus/usb.${NORMAL}"
 fi
+
+###############################################################################
+# setup console-data (before interactive setup stage)
+###############################################################################
+echo "${BLUE}Writing default settings for ${CYAN}console-data${NORMAL}"
+set_debconf "locales locales/default_environment_locale select $LANG \
+console-data console-data/keymap/policy select Select keymap from arch list \
+console-data console-data/keymap/family select $CD_FAMILY \
+console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
+console-data console-data/keymap/full select $CD_FULL"
+
+# put the console in Unicode mode
+unicode_start 2>/dev/null
 
 ###############################################################################
 # setup localhost
@@ -916,12 +928,10 @@ update_progress 20
 if checkbootparam "nopcmcia"; then
 	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
 else
-	modprobe pcmcia_core >/dev/null 2>&1
-
 	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe yenta_socket >/dev/null 2>&1 || \
-			modprobe i82365 >/dev/null 2>&1 || \
-			modprobe tcic >/dev/null 2>&1
+	modprobe yenta_socket	>/dev/null 2>&1 || \
+	modprobe i82365		>/dev/null 2>&1 || \
+	modprobe tcic		>/dev/null 2>&1
 
 	if [ "$?" = "0" ]; then
 		if start_service pcmciautils >/dev/null; then
@@ -1010,9 +1020,9 @@ fi
 # Soundcard
 if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" ]; then
 	SOUNDCARD="$SOUND_DRIVER"
-	echo -n " ${GREEN}Soundcard:"
+	echo -n " ${GREEN}Soundcard is"
 	[ -n "$SOUND_FULLNAME" ] && echo -n " ${YELLOW}$SOUND_FULLNAME${GREEN}"
-	[ -n "$SOUNDCARD" ] && echo -n " driver=${MAGENTA}$SOUNDCARD"
+	[ -n "$SOUNDCARD" ] && echo -n " (${MAGENTA}$SOUNDCARD${GREEN})"
 	echo "${NORMAL}"
 fi
 
@@ -1036,7 +1046,8 @@ fi
 # dwl520e1 detection
 if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
 	/usr/sbin/dwl520e1_fw_load >/dev/null 2>&1
-	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1' > /etc/modprobe.d/dwl520e1
+	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1' > \
+		/etc/modprobe.d/dwl520e1
 fi
 
 # ipw3945 detection
@@ -1110,18 +1121,6 @@ if [ -n "$BLIND" -o -n "$BRLTTY" ]; then
 		sleep 2
 	fi
 fi
-
-###############################################################################
-# setup console-data (before interactive setup stage)
-###############################################################################
-echo "${BLUE}Writing default settings for ${CYAN}console-data${NORMAL}"
-set_debconf "locales locales/default_environment_locale select $LANG \
-console-data console-data/keymap/policy select Select keymap from arch list \
-console-data console-data/keymap/family select $CD_FAMILY \
-console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
-console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
-console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
-console-data console-data/keymap/full select $CD_FULL"
 
 ###############################################################################
 # INTERACTIVE II
@@ -1338,18 +1337,24 @@ else
 	if [ -n "$NETDEVICES" ]; then
 		CONNETDEVS=""
 		for DEVICE in $NETDEVICES; do
-			ifplugstatus --auto --quiet "$DEVICE"
-			if [ "$?" = "2" ]; then
-				# link beat detected
-				CONNETDEVS="$CONNETDEVS $DEVICE"
-				echo "" 			>> /etc/network/interfaces
-				echo "auto $DEVICE" 		>> /etc/network/interfaces
-				echo "iface $DEVICE inet dhcp" 	>> /etc/network/interfaces
+			if ifconfig "$DEVICE" up; then
+				sleep 1
+				ifplugstatus --quiet "$DEVICE"
+			
+				# link beat detected ?
+				if [ "$?" = "2" ]; then
+					CONNETDEVS="$CONNETDEVS $DEVICE"
+					echo "" 			>> /etc/network/interfaces
+					echo "auto $DEVICE" 		>> /etc/network/interfaces
+					echo "iface $DEVICE inet dhcp" 	>> /etc/network/interfaces
+				else
+					ifconfig "$DEVICE" down
+				fi
 			fi
 		done
 		
 		if [ -n "$CONNETDEVS" ]; then
-			echo " ${GREEN}DHCP broadcasting for IP on connected network devices:${NORMAL}${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
+			echo " ${GREEN}Enabling DHCP broadcast for IP on connected ethernet devices:${NORMAL}${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
 			( ifup -a >/dev/null 2>&1 ) &
 		fi
 	fi
@@ -1643,31 +1648,32 @@ start_service dbus >/dev/null
 # powernow detection
 ###############################################################################
 if ! checkbootparam "nocpufreq" || ! checkbootparam "nopowernow"; then
-	CPUFREQ=""
-	grep -iq "Mobile AMD Athlon(tm) XP" /proc/cpuinfo && CPUFREQ="powernow-k7"
-	grep -iq "AMD Athlon(tm) 64 Processor" /proc/cpuinfo && CPUFREQ="powernow-k8"
-	grep -iq "AMD Athlon(tm) 64 X2 Dual Core Processor" /proc/cpuinfo && CPUFREQ="powernow-k8"
-	grep -iq "AMD Sempron(tm) Processor" /proc/cpuinfo && CPUFREQ="powernow-k8"
-	grep -iq "AMD Turion(tm) 64" /proc/cpuinfo && CPUFREQ="powernow-k8"
-	grep -iq "Intel(R) Pentium(R) M processor" /proc/cpuinfo && CPUFREQ="speedstep-centrino"
-	#grep -iq "Intel(R) Celeron(R) M processor" /proc/cpuinfo && CPUFREQ="speedstep-centrino"
-	grep -qi [ETLU][1-9][0-9][05]0 /proc/cpuinfo && CPUFREQ="speedstep-centrino"
-	grep -qi "Core" /proc/cpuinfo && CPUFREQ="speedstep-centrino"
-	grep -iq "Mobile Intel(R) Pentium(R) 4" /proc/cpuinfo && CPUFREQ="speedstep-ich"
-	grep -iq "VIA Nehemiah" /proc/cpuinfo && CPUFREQ="longhaul"
-	if [ "$CPUFREQ" ]; then
-		echo -n " ${GREEN}Activating ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
-		modprobe $CPUFREQ >/dev/null 2>&1
-		
-		# start power management, powersaved is given preference
-		if start_service powersaved >/dev/null; then
-			echo " ${MAGENTA}powersaved${GREEN}.${NORMAL}"
-			grep -q ^powersaved "$HWSETUP_SERVICES" 2>/dev/null || echo powersaved >>"$HWSETUP_SERVICES"
-		elif start_service powernowd >/dev/null; then
-			echo " ${MAGENTA}powernowd${GREEN}.${NORMAL}"
-			grep -q ^powernowd "$HWSETUP_SERVICES" 2>/dev/null || echo powernowd >>"$HWSETUP_SERVICES"
-		else
-			echo " ${RED}Failed!${NORMAL}"
+	CPUFREQ=
+	CPUSERV=
+	# cpufreq detection from ubuntu powernowd, exports `CPUFREQ' on successful detection
+	if [ -f /usr/share/initscripts-sidux-live/cpufreq-detect ]; then
+		. /usr/share/initscripts-sidux-live/cpufreq-detect
+	fi
+	# start power management service
+	if [ -n "$CPUFREQ" ]; then
+		if modprobe "$CPUFREQ" 2>/dev/null; then
+			echo -n " ${GREEN}Activating ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
+			# start power management, powersaved is given preference
+			if start_service powersaved >/dev/null; then
+				CPUSERV=powersaved
+			elif start_service powernowd >/dev/null; then
+				CPUSERV=powernowd
+			else
+				echo " ${RED}Failed!${NORMAL}"
+			fi
+			# announce the service
+			if [ -n "$CPUSERV" ]; then
+				echo " ${MAGENTA}${CPUSERV}${GREEN}.${NORMAL}"
+				# add service to hwsetup service list
+				if ! grep -q ^$CPUSERV "$HWSETUP_SERVICES" 2>/dev/null; then
+					echo $CPUSERV >>"$HWSETUP_SERVICES"
+				fi
+			fi
 		fi
 	fi
 else

@@ -3,13 +3,16 @@
 include /usr/share/cdbs/1/rules/debhelper.mk
 
 install/initscripts-sidux-live::
-	cp 		debian/live-reboot.init debian/live-halt.init
+	cp debian/live-reboot.init debian/live-halt.init
 	dh_installinit	--name=live-autoconfig --no-start \
 			--update-rcd-params="start 00 S ."
 	dh_installinit	--name=live-halt --no-start \
 			--update-rcd-params="start 90 0 ."
 	dh_installinit	--name=live-reboot --no-start \
 			--update-rcd-params="start 90 6 ."
+	# cpufreq-detect.sh
+	install -D -m 0755 cpufreq-detect.sh \
+		debian/initscripts-sidux-live/usr/share/initscripts-sidux-live/cpufreq-detect
 
 clean::
 	rm -f debian/live-halt.init
