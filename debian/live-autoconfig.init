@@ -1644,7 +1644,12 @@ fi
 ###############################################################################
 # enable dbus & hald
 ###############################################################################
-start_service dbus >/dev/null
+echo -n " ${GREEN}Enabling D-Bus interprocess messaging system and Hardware Abstraction Layer:${NORMAL}"
+if start_service dbus >/dev/null; then
+	echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
+else
+	echo " ${RED}Failed!${NORMAL}"
+fi
 
 ###############################################################################
 # powernow detection
