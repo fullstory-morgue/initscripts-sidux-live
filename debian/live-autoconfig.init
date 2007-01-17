@@ -1626,24 +1626,33 @@ fi
 ###############################################################################
 # power management
 ###############################################################################
+PBIOS=
+PSERV=
 if [ -d /proc/acpi ]; then
 	# ACPI
 	if checkbootparam "noacpi"; then
 		echo " ${BLUE}Skipping ACPI Bios detection as requested on boot commandline.${NORMAL}"
 	else
 		fuser -k /proc/acpi/event >/dev/null 2>&1
-		echo " ${GREEN}ACPI Bios found, activating ${YELLOW}acpid${GREEN}.${NORMAL}"
-		start_service acpid >/dev/null
+		PBIOS=ACPI
+		PSERV=acpid
 	fi
 else
 	# APM
 	if checkbootparam "noapm"; then
 		echo " ${BLUE}Skipping APM Bios detection as requested on boot commandline.${NORMAL}"
 	else
-		if modprobe apm power_off=1 >/dev/null 2>&1; then
-				echo " ${GREEN}APM Bios found, activating ${YELLOW}apmd${GREEN}.${NORMAL}"
-				start_service apmd >/dev/null
-		fi
+		PBIOS=APM
+		PSERV=apmd
+	fi
+fi
+
+if [ -n "$PBIOS" ] && [ -n "$PSERV" ]; then
+	echo -n " ${GREEN}${PBIOS} Bios found, activating Power Management:${NORMAL}"
+	if start_service "$PSERV" >/dev/null; then
+		echo " ${MAGENTA}${PSERV}${GREEN}.${NORMAL}"
+	else
+		echo " ${RED}Failed!${NORMAL}"
 	fi
 fi
 
