@@ -1020,7 +1020,7 @@ if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" ]; then
 	SOUNDCARD="$SOUND_DRIVER"
 	echo -n " ${GREEN}Soundcard is"
 	[ -n "$SOUND_FULLNAME" ] && echo -n " ${YELLOW}$SOUND_FULLNAME${GREEN}"
-	[ -n "$SOUNDCARD" ] && echo -n " ALSA module(${MAGENTA}$SOUNDCARD${GREEN})"
+	[ -n "$SOUNDCARD" ] && echo -n ", ALSA module is ${MAGENTA}$SOUNDCARD${GREEN}"
 	echo "${NORMAL}"
 fi
 
@@ -1650,7 +1650,7 @@ fi
 ###############################################################################
 # enable dbus & hald
 ###############################################################################
-echo -n " ${GREEN}Enabling D-Bus interprocess messaging system and Hardware Abstraction Layer:${NORMAL}"
+echo -n " ${GREEN}Enabling D-Bus system and Hardware Abstraction Layer:${NORMAL}"
 if start_service dbus >/dev/null; then
 	echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
 else
