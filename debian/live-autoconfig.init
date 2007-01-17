@@ -1127,12 +1127,6 @@ if [ -n "$INTERACTIVE" ]; then
 	# Interactive configuration
 	echo "${BLUE}Entering interactive configuration second stage.${NORMAL}"
 
-	echo " ${GREEN}Your console keyboard defaults to: ${MAGENTA}${KEYTABLE}"
-	echo -n "${CYAN}Do you want to (re)configure your console keyboard?${NORMAL} [Y/n] "
-	read a
-	[ "$a" != "n" ] && /usr/sbin/kbdconfig
-	# kbdconfig already loads the keyboard if modified.
-
 	echo -n "${CYAN}Do you want to (re)configure your soundcard?${NORMAL} [Y/n] "
 	read a
 	[ "$a" != "n" ] && sndconfig && ( exec aumix -m 0 >/dev/null 2>&1 & )
