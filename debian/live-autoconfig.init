@@ -804,43 +804,12 @@ fi
 ###############################################################################
 mount -o remount,rw / 2>/dev/null
 
-###############################################################################
-# hwsetup
-###############################################################################
-# Delete obsolete links and files before starting autoconfig
-if ! checkbootparam "nohwsetup"; then
-	rm -f "$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" 2>/dev/null
-fi
-
-# Also read desired desktop, if any
-DESKTOP="$(getbootparam desktop 2>/dev/null)"
-# Allow only supported windowmanagers
-case "$DESKTOP" in
-	gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk)
-		;;
-	*)
-		DESKTOP="kde"
-		;;
-esac
-
-# Desired desktop
-echo "DESKTOP=\"$DESKTOP\"" > "$HWSETUP_DESKTOP"
-
-# override dpi setting
-CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
-
-# Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\"" >> "$HWSETUP_MAIN"
-
-# disable 915resolution hack
-checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
-
 splash_progress 10
 
 ###############################################################################
 # begin hardware detection and autoconfiguration
 ###############################################################################
-echo " ${GREEN}Enabling ${YELLOW}udev${GREEN}.${NORMAL}"
+echo " ${GREEN}Enabling ${YELLOW}udev${GREEN} device and hotplug management daemon.${NORMAL}"
 
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
@@ -900,7 +869,7 @@ fi
 # what process would be accessing debconf database?
 fuser -k "$CONFIGDAT"
 
-echo "${BLUE}Writing default settings for ${CYAN}console-data${NORMAL}"
+echo "${BLUE}Writing default settings for ${MAGNETA}console-data${NORMAL}"
 echo "locales locales/default_environment_locale select $LANG \
 console-data console-data/keymap/policy select Select keymap from arch list \
 console-data console-data/keymap/family select $CD_FAMILY \
@@ -963,14 +932,48 @@ else
 	modprobe tcic		>/dev/null 2>&1
 
 	if [ "$?" = "0" ]; then
+		echo " ${GREEN}Starting PCMCIA service:${NORMAL}"
 		if start_service pcmciautils >/dev/null; then
-			echo " ${GREEN}PCMCIA started.${NORMAL}"
 			sleep 4
+			echo " ${MAGNETA}pcmciautils${GREEN}.${NORMAL}"
+		else
+			echo " ${RED}Failed!${NORMAL}"
 		fi
 	fi
 fi
 
 splash_progress 40
+
+###############################################################################
+# hwsetup
+###############################################################################
+# Delete obsolete links and files before starting autoconfig
+if ! checkbootparam "nohwsetup"; then
+	rm -f "$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" 2>/dev/null
+fi
+
+# Also read desired desktop, if any
+DESKTOP="$(getbootparam desktop 2>/dev/null)"
+# Allow only supported windowmanagers
+case "$DESKTOP" in
+	gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk)
+		;;
+	*)
+		DESKTOP="kde"
+		;;
+esac
+
+# Desired desktop
+echo "DESKTOP=\"$DESKTOP\"" > "$HWSETUP_DESKTOP"
+
+# override dpi setting
+CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
+
+# Write DPI setting if specified
+[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\"" >> "$HWSETUP_MAIN"
+
+# disable 915resolution hack
+checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
 
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
@@ -1387,7 +1390,7 @@ else
 		done
 		
 		if [ -n "$CONNETDEVS" ]; then
-			echo -n " ${GREEN}Enabling DHCP broadcast on connected ethernet devices:${NORMAL}"
+			echo -n " ${GREEN}Starting DHCP broadcast on connected ethernet devices:${NORMAL}"
 			echo "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
 			( ifup -a >/dev/null 2>&1 ) &
 		fi
