@@ -800,39 +800,6 @@ fi
 ###############################################################################
 mount -o remount,rw / 2>/dev/null
 
-###############################################################################
-# hwsetup
-###############################################################################
-# Delete obsolete links and files before starting autoconfig
-if ! checkbootparam "nohwsetup"; then
-	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
-		2>/dev/null
-fi
-
-# Also read desired desktop, if any
-DESKTOP="$(getbootparam desktop 2>/dev/null)"
-# Allow only supported windowmanagers
-case "$DESKTOP" in
-	gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk)
-		;;
-	*)
-		DESKTOP="kde"
-		;;
-esac
-
-# Desired desktop
-echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
-
-# override dpi setting
-CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
-
-# Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
-
-# disable 915resolution hack
-checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
-
 splash_progress 10
 
 ###############################################################################
@@ -883,6 +850,8 @@ if stringinfile "usbcore" /proc/modules && ! stringinfile "/proc/bus/usb" /proc/
 		echo "${RED}Unable to mount usbfs on /proc/bus/usb.${NORMAL}"
 fi
 
+splash_progress 20
+
 ###############################################################################
 # setup console-data (before interactive setup stage)
 ###############################################################################
@@ -904,6 +873,7 @@ console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-se
 
 # put the console in Unicode mode
 unicode_start 2>/dev/null
+
 # install keymap
 /usr/sbin/install-keymap "$KEYTABLE" &
 
@@ -936,7 +906,7 @@ if [ -n "$TZ" ]; then
 	echo "$TZ" > /etc/timezone
 fi
 
-splash_progress 20
+splash_progress 30
 
 ###############################################################################
 # pcmcia/cardbus autoconfiguration
@@ -958,7 +928,55 @@ else
 	fi
 fi
 
+###############################################################################
+# hwsetup
+###############################################################################
+# Delete obsolete links and files before starting autoconfig
+if ! checkbootparam "nohwsetup"; then
+	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
+		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
+		2>/dev/null
+fi
+
+# Also read desired desktop, if any
+DESKTOP="$(getbootparam desktop 2>/dev/null)"
+# Allow only supported windowmanagers
+case "$DESKTOP" in
+	gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk)
+		;;
+	*)
+		DESKTOP="kde"
+		;;
+esac
+
+# Desired desktop
+echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
+
+# override dpi setting
+CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
+
+# Write DPI setting if specified
+[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
+
+# disable 915resolution hack
+checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
+
+if [ -r "${FLL_WALLPAPER}" ]; then
+	# Set $BACKGROUND according to distro defaults
+	BACKGROUND="${FLL_WALLPAPER}"
+else
+	# Search for custom background image for KDE/GNOME/X
+	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
+		for j in png jpg gif; do
+			BACKGROUND="$i.$j"
+			[ -e "$BACKGROUND" ] && break 2
+		done
+	done
+fi
+echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
+
 splash_progress 40
+
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
 NOSERIAL=""
@@ -1380,20 +1398,6 @@ else
 		fi
 	fi
 fi
-
-if [ -r "${FLL_WALLPAPER}" ]; then
-	# Set $BACKGROUND according to distro defaults
-	BACKGROUND="${FLL_WALLPAPER}"
-else
-	# Search for custom background image for KDE/GNOME/X
-	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
-		for j in png jpg gif; do
-			BACKGROUND="$i.$j"
-			[ -e "$BACKGROUND" ] && break 2
-		done
-	done
-fi
-echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
 
 ###############################################################################
 # utility functions for perstent config/home handling below
