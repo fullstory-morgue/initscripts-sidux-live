@@ -813,7 +813,6 @@ echo "0" > /proc/sys/kernel/printk
 # start udev and mount special filesystems under /dev
 start_service udev S
 start_service mountdevsubfs.sh
-start_service udev-mtab S
 
 ###############################################################################
 # usbcore workaround
@@ -850,11 +849,15 @@ if stringinfile "usbcore" /proc/modules && ! stringinfile "/proc/bus/usb" /proc/
 		echo "${RED}Unable to mount usbfs on /proc/bus/usb.${NORMAL}"
 fi
 
-splash_progress 20
-
 ###############################################################################
 # setup console-data (before interactive setup stage)
 ###############################################################################
+# install keymap
+/usr/sbin/install-keymap "$KEYTABLE"
+
+# try this, it takes care of unicode start
+start_service keymap.sh
+
 CONFIGDAT=/var/cache/debconf/config.dat
 if [ -L "$CONFIGDAT" ]; then
 	CONFIGDAT=$(readlink $CONFIGDAT)
@@ -871,11 +874,13 @@ console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_V
 console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
 console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-selections
 
-# put the console in Unicode mode
-unicode_start 2>/dev/null
+###############################################################################
+# update mtab
+###############################################################################
+start_service mtab.sh
+start_service udev-mtab S
 
-# install keymap
-/usr/sbin/install-keymap "$KEYTABLE" &
+splash_progress 20
 
 ###############################################################################
 # setup localhost
