@@ -869,7 +869,7 @@ fi
 # what process would be accessing debconf database?
 fuser -k "$CONFIGDAT"
 
-echo "${BLUE}Writing default settings for ${MAGNETA}console-data${NORMAL}"
+echo "${BLUE}Writing default settings for ${MAGENTA}console-data${NORMAL}"
 echo "locales locales/default_environment_locale select $LANG \
 console-data console-data/keymap/policy select Select keymap from arch list \
 console-data console-data/keymap/family select $CD_FAMILY \
@@ -932,10 +932,10 @@ else
 	modprobe tcic		>/dev/null 2>&1
 
 	if [ "$?" = "0" ]; then
-		echo " ${GREEN}Starting PCMCIA service:${NORMAL}"
+		echo -n " ${GREEN}Starting PCMCIA service:${NORMAL}"
 		if start_service pcmciautils >/dev/null; then
 			sleep 4
-			echo " ${MAGNETA}pcmciautils${GREEN}.${NORMAL}"
+			echo " ${MAGENTA}pcmciautils${GREEN}.${NORMAL}"
 		else
 			echo " ${RED}Failed!${NORMAL}"
 		fi
