@@ -193,11 +193,14 @@ fi
 ###############################################################################
 HOSTNAME="$(getbootparam 'hostname' 2>/dev/null)"
 if [ -n "$HOSTNAME" ]; then
-	rm -f /etc/hostname
+	rm -f /etc/hostname /etc/mailname
 	echo "$HOSTNAME" > /etc/hostname
+	echo "$HOSTNAME" > /etc/mailname
+	# update /etc/hosts
+	sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"$HOSTNAME"'/' /etc/hosts
 fi
 
-start_service hostname.sh >/dev/null || hostname "$FLL_DISTRO_NAME"
+start_service hostname.sh
 
 ###############################################################################
 # localization

@@ -9,7 +9,7 @@ initscripts-sidux-live (0.3.72) UNRELEASED; urgency=low
     function area.
   * Start CD Checker as early as possible, use LANG=C.
   * Set hostname earlier in boot process.
-  * Attempt to add hostname= cheatcode (untested).
+  * Add hostname= cheatcode.
   * Change LANGUAGE fallback to "en".
   * Do i18n keyboard hack immediately after determining KDEKEYBOARDS.
   * Delay install-keymap until *after* unicode_start has been called. See
@@ -19,7 +19,7 @@ initscripts-sidux-live (0.3.72) UNRELEASED; urgency=low
   * Add myself to copyright holders.
   * Fix some comments.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 18 Jan 2007 18:46:42 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 18 Jan 2007 19:32:23 +1000
 
 initscripts-sidux-live (0.3.71) unstable; urgency=low
 
