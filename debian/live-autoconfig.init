@@ -1207,7 +1207,7 @@ if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
 	esac
 	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
 	# Something went wrong ?
-	[ ! -r /etc/modules.conf ] && ln -sf /${FLL_MOUNTPOINT}/etc/modules.conf /etc/modules.conf
+	[ ! -r /etc/modules.conf ] && ln -sf ${FLL_MOUNTPOINT}/etc/modules.conf /etc/modules.conf
 fi
 
 RUNLEVEL="$(runlevel)"
