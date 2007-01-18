@@ -60,7 +60,6 @@ CYAN="[1;36m"
 WHITE="[1;37m"
 
 # get rid of these as soon as possible
-SPLASHY_PROGRESS_PIPE="/etc/sysconfig/progress"
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
 HWSETUP_SERVICES="/etc/sysconfig/services"
@@ -124,6 +123,14 @@ start_service()
 
 	return 1
 }
+
+splash_progress()
+{
+	# be sure we are non-blocking
+	if [ -p /etc/splashy/splashy.fifo ]; then
+		(echo "progress $1" > /etc/splashy/splashy.fifo) &
+	fi
+}
 ### EOF utility functions
 
 ###############################################################################
@@ -134,11 +141,35 @@ start_service mountkernfs.sh
 # Read in boot parameters
 [ -z "$CMDLINE" ] && CMDLINE=" $(< /proc/cmdline)"
 
+###############################################################################
+# CD Checker
+###############################################################################
+if checkbootparam "testcd" || checkbootparam "testdvd"; then
+	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
+	echo " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}"
+	echo -n "${RED}"
+	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG=C md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
+	if [ "$?" = "0" ]; then
+		echo " ${GREEN}Everything looks OK${NORMAL}"
+	else
+		echo "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***"
+		egrep -v '(^md5sum:|OK$)' /tmp/md5sum.log
+		echo "${RED} *** DATA ON YOUR CD MEDIUM IS POSSIBLY INCOMPLETE OR DAMAGED, ***${NORMAL}"
+		echo "${RED} *** OR YOUR COMPUTER HAS BAD RAM.                             ***${NORMAL}"
+		echo -n "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
+		read a
+	fi
+fi
+
+###############################################################################
 # Check if we are in interactive startup mode
+###############################################################################
 INTERACTIVE=""
 stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
 
+###############################################################################
 # Check if we want the config floppy
+###############################################################################
 MYCONF=""
 case "$CMDLINE" in
 	*\ myconf*|*\ floppyconf*|*\ custom*|*\ config*)
@@ -157,12 +188,23 @@ if [ -n "$MYCONF" ]; then
 fi
 
 ###############################################################################
+# set hostname
+###############################################################################
+HOSTNAME="$(getbootparam 'hostname' 2>/dev/null)"
+if [ -n "$HOSTNAME" ]; then
+	rm -f /etc/hostname
+	echo "$HOSTNAME" > /etc/hostname
+fi
+
+start_service hostname.sh >/dev/null || hostname "$FLL_DISTRO_NAME"
+
+###############################################################################
 # localization
 ###############################################################################
 # Allow language specification via commandline. The default language
 # will be overridden via "lang=de" boot commandline
 LANGUAGE="$(getbootparam lang 2>/dev/null)"
-[ -n "$LANGUAGE" ] || LANGUAGE="de"
+[ -n "$LANGUAGE" ] || LANGUAGE="en"
 
 # The default language/keyboard to use. This CANNOT be autoprobed.
 # Most of these variables will be used to generate the KDE defaults
@@ -437,8 +479,18 @@ export LANG
 rm -f /etc/default/locale
 # write locale
 update-locale "LANG=$LANG"
-# install keymap
-/usr/sbin/install-keymap "$KEYTABLE" &
+
+###############################################################################
+# Set KDE i18n Keyboard
+###############################################################################
+if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
+	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
+			/etc/default/distro
+else
+	echo "" 										>> /etc/default/distro
+	echo "# kde i18n settings"						>> /etc/default/distro
+	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" 	>> /etc/default/distro
+fi
 
 ###############################################################################
 # for console-data
@@ -743,17 +795,14 @@ if [ -n "$SPLASH" ]; then
 	fi
 fi
 
-update_progress()
-{
-	# be sure we are non-blocking
-	if [ -p /etc/splashy/splashy.fifo ]; then
-		(echo "progress $1" > /etc/splashy/splashy.fifo) &
-	fi
-}
-
+###############################################################################
 # / must be read-write in any case, starting from here
+###############################################################################
 mount -o remount,rw / 2>/dev/null
 
+###############################################################################
+# hwsetup
+###############################################################################
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
 	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
@@ -784,35 +833,7 @@ CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 # disable 915resolution hack
 checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
 
-# Set KDE i18n Keyboard
-if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
-	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
-			/etc/default/distro
-else
-	echo "" >> /etc/default/distro
-	echo "# kde i18n settings" >> /etc/default/distro
-	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" >> /etc/default/distro
-fi
-
-# CD Checker
-if checkbootparam "testcd" || checkbootparam "testdvd"; then
-	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
-	echo " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}"
-	echo -n "${RED}"
-	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG="$LANG" md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
-	if [ "$?" = "0" ]; then
-		echo " ${GREEN}Everything looks OK${NORMAL}"
-	else
-		echo "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***"
-		egrep -v '(^md5sum:|OK$)' /tmp/md5sum.log
-		echo "${RED} *** DATA ON YOUR CD MEDIUM IS POSSIBLY INCOMPLETE OR DAMAGED, ***${NORMAL}"
-		echo "${RED} *** OR YOUR COMPUTER HAS BAD RAM.                             ***${NORMAL}"
-		echo -n "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
-		read a
-	fi
-fi
-
-update_progress 10
+splash_progress 10
 
 ###############################################################################
 # begin hardware detection and autoconfiguration
@@ -870,7 +891,6 @@ if [ -L "$CONFIGDAT" ]; then
 	CONFIGDAT=$(readlink $CONFIGDAT)
 fi
 # what process would be accessing debconf database?
-# XXX: mask when we have found out
 fuser -k "$CONFIGDAT"
 
 echo "${BLUE}Writing default settings for ${CYAN}console-data${NORMAL}"
@@ -884,13 +904,12 @@ console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-se
 
 # put the console in Unicode mode
 unicode_start 2>/dev/null
+# install keymap
+/usr/sbin/install-keymap "$KEYTABLE" &
 
 ###############################################################################
 # setup localhost
 ###############################################################################
-# set hostname
-start_service hostname.sh >/dev/null || hostname "$FLL_DISTRO_NAME"
-
 # ensure ifup down has an ifstate file to write to
 if start_service ifupdown >/dev/null; then
 	# Bring up loopback interface now
@@ -917,7 +936,7 @@ if [ -n "$TZ" ]; then
 	echo "$TZ" > /etc/timezone
 fi
 
-update_progress 20
+splash_progress 20
 
 ###############################################################################
 # pcmcia/cardbus autoconfiguration
@@ -939,7 +958,7 @@ else
 	fi
 fi
 
-update_progress 40
+splash_progress 40
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
 NOSERIAL=""
@@ -956,7 +975,7 @@ if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
 else
 	echo " ${RED}Please check.${NORMAL}"
 fi
-update_progress 60
+splash_progress 60
 
 # activate PC Speaker
 modprobe pcspkr >/dev/null 2>&1
@@ -1143,7 +1162,7 @@ if [ -n "$INTERACTIVE" ]; then
 	[ "$a" != "n" ] && mouseconfig
 fi
 
-update_progress 80
+splash_progress 80
 
 ###############################################################################
 # automatic X Setup
@@ -1299,7 +1318,7 @@ if [ -n "$partitions" ]; then
 $(cat /etc/fstab)
 EOT
 fi
-update_progress 90
+splash_progress 90
 
 ###############################################################################
 # interactively create swapfiles on DOS partitions (if necessary and possible)
@@ -1717,7 +1736,7 @@ setkeycodes e058 88 >/dev/null 2>&1
 # enable hotkeys
 start_service hotkey-setup >/dev/null 2>&1
 
-update_progress 100
+splash_progress 100
 
 if checkbootparam "splash"; then
 	sleep 1
