@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.74) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.74) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Disable suspend via powersaved, and thus kpowersave. That would cut an
     unsuspecting user's live-cd experience short.
   * Modify test for $PSERV, apmd is not installable along with powersaved, so
