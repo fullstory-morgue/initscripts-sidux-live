@@ -920,6 +920,25 @@ fi
 splash_progress 30
 
 ###############################################################################
+# laptop?
+###############################################################################
+LAPTOP=
+if [ -x /usr/sbin/laptop-detect ]; then
+	if laptop-detect >/dev/null 2>&1; then
+		LAPTOP=1
+	fi
+fi
+
+# enable any laptop specific tasks
+if [ -n "$LAPTOP" ]; then
+	if [ -r /etc/default/kde-services-sidux ]; then
+		# kde-services-sidux should start anything useful for a laptop
+		echo "KDE_SERVICES_LAPTOP=\"true\"" >> /etc/default/kde-services-sidux
+	fi
+fi
+
+
+###############################################################################
 # pcmcia/cardbus autoconfiguration
 ###############################################################################
 # This needs to be done before other modules are being loaded by hwsetup
