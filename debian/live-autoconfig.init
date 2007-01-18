@@ -1676,7 +1676,7 @@ else
 	fi
 fi
 
-if [ -n "$PBIOS" ] && [ -n "$PSERV" ]; then
+if [ -n "$PBIOS" ] && [ -x /etc/init.d/"$PSERV" ]; then
 	echo -n " ${GREEN}${PBIOS} Bios found, activating Power Management:${NORMAL}"
 	if start_service "$PSERV" >/dev/null; then
 		echo " ${MAGENTA}${PSERV}${GREEN}.${NORMAL}"
