@@ -869,7 +869,7 @@ fi
 # what process would be accessing debconf database?
 fuser -k "$CONFIGDAT"
 
-echo "${BLUE}Writing default settings for ${MAGENTA}console-data${NORMAL}"
+echo "${BLUE}Writing default settings for ${MAGENTA}console-data${BLUE}.${NORMAL}"
 echo "locales locales/default_environment_locale select $LANG \
 console-data console-data/keymap/policy select Select keymap from arch list \
 console-data console-data/keymap/family select $CD_FAMILY \
