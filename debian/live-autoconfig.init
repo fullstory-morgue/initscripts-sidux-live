@@ -949,7 +949,7 @@ splash_progress 40
 ###############################################################################
 # Delete obsolete links and files before starting autoconfig
 if ! checkbootparam "nohwsetup"; then
-	rm -f "$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" 2>/dev/null
+	rm -f "$HWSETUP_MAIN" 2>/dev/null
 fi
 
 # Also read desired desktop, if any
