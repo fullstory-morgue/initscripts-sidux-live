@@ -1743,7 +1743,7 @@ if [ -x /usr/sbin/laptop-detect ]; then
 	if laptop-detect 2>/dev/null; then
 		# acpi-support
 		if pidof acpid >/dev/null && start_service acpi-support >/dev/null 2>&1; then
-			echo -n " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}"
+			echo " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}"
 		fi
 		# always start kpowersave
 		if grep -q ^KDE_SERVICES_LAPTOP /etc/default/kde-services-sidux 2>/dev/null; then
