@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.76) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 18 Jan 2007 23:48:09 +0100
+
 initscripts-sidux-live (0.3.75) unstable; urgency=low
 
   * Fix printout of acpi-support start.
