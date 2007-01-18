@@ -932,12 +932,9 @@ else
 	modprobe tcic		>/dev/null 2>&1
 
 	if [ "$?" = "0" ]; then
-		echo -n " ${GREEN}Starting PCMCIA service:${NORMAL}"
 		if start_service pcmciautils >/dev/null; then
+			echo -n " ${GREEN}Starting PCMCIA service: ${MAGENTA}pcmciautils${GREEN}${NORMAL}"
 			sleep 4
-			echo " ${MAGENTA}pcmciautils${GREEN}.${NORMAL}"
-		else
-			echo " ${RED}Failed!${NORMAL}"
 		fi
 	fi
 fi
