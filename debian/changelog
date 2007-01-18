@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.74) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 18 Jan 2007 16:20:58 +0100
+
 initscripts-sidux-live (0.3.73) unstable; urgency=low
 
   * Fix MAGNETA => MAGENTA typo
