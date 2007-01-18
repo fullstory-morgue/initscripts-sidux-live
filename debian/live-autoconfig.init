@@ -221,7 +221,7 @@ case "$LANGUAGE" in
 		KDEKEYBOARDS="de,us"
 		TZ="Europe/Berlin"
 		CD_COUNTRY="German"
-	;;
+		;;
 	au-utf8|au)
 		## Australian version
 		#LANGUAGE="en_AU:en"
