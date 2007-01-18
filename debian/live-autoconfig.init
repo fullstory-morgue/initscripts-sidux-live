@@ -3,6 +3,7 @@
 # (C) Klaus Knopper <knopper@knopper.net> 2004
 # (C) 2003-2006 Joerg Schirottke <master@kanotix.com>
 # (C) 2005-2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+# (C) 2007 Kel Modderman <kel@otaku42.de>
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 export PATH
@@ -800,6 +801,37 @@ fi
 ###############################################################################
 mount -o remount,rw / 2>/dev/null
 
+###############################################################################
+# hwsetup
+###############################################################################
+# Delete obsolete links and files before starting autoconfig
+if ! checkbootparam "nohwsetup"; then
+	rm -f "$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" 2>/dev/null
+fi
+
+# Also read desired desktop, if any
+DESKTOP="$(getbootparam desktop 2>/dev/null)"
+# Allow only supported windowmanagers
+case "$DESKTOP" in
+	gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk)
+		;;
+	*)
+		DESKTOP="kde"
+		;;
+esac
+
+# Desired desktop
+echo "DESKTOP=\"$DESKTOP\"" > "$HWSETUP_DESKTOP"
+
+# override dpi setting
+CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
+
+# Write DPI setting if specified
+[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\"" >> "$HWSETUP_MAIN"
+
+# disable 915resolution hack
+checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
+
 splash_progress 10
 
 ###############################################################################
@@ -883,7 +915,7 @@ start_service udev-mtab S
 splash_progress 20
 
 ###############################################################################
-# setup localhost
+# ensure ifupdown is in working state, ifup lo
 ###############################################################################
 # ensure ifup down has an ifstate file to write to
 if start_service ifupdown >/dev/null; then
@@ -893,7 +925,9 @@ else
 	ifconfig lo 127.0.0.1 up
 fi
 
-# Set clock (Local time is more often used than GMT, so it is default)
+###############################################################################
+#  Set clock (Local time is more often used than GMT, so it is default)
+###############################################################################
 UTC=""
 checkbootparam utc >/dev/null 2>&1 && UTC="-u"
 checkbootparam gmt >/dev/null 2>&1 && UTC="-u"
@@ -932,53 +966,6 @@ else
 		fi
 	fi
 fi
-
-###############################################################################
-# hwsetup
-###############################################################################
-# Delete obsolete links and files before starting autoconfig
-if ! checkbootparam "nohwsetup"; then
-	rm -f	/dev/cdrom* /dev/cdwriter* /dev/dvdwriter* /dev/mouse* /dev/modem* /dev/scanner* \
-		"$HWSETUP_I18N" "$HWSETUP_KEYBOARD" "$HWSETUP_MAIN" \
-		2>/dev/null
-fi
-
-# Also read desired desktop, if any
-DESKTOP="$(getbootparam desktop 2>/dev/null)"
-# Allow only supported windowmanagers
-case "$DESKTOP" in
-	gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk)
-		;;
-	*)
-		DESKTOP="kde"
-		;;
-esac
-
-# Desired desktop
-echo "DESKTOP=\"$DESKTOP\""            > "$HWSETUP_DESKTOP"
-
-# override dpi setting
-CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
-
-# Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\""  >> "$HWSETUP_MAIN"
-
-# disable 915resolution hack
-checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
-
-if [ -r "${FLL_WALLPAPER}" ]; then
-	# Set $BACKGROUND according to distro defaults
-	BACKGROUND="${FLL_WALLPAPER}"
-else
-	# Search for custom background image for KDE/GNOME/X
-	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
-		for j in png jpg gif; do
-			BACKGROUND="$i.$j"
-			[ -e "$BACKGROUND" ] && break 2
-		done
-	done
-fi
-echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
 
 splash_progress 40
 
@@ -1403,6 +1390,23 @@ else
 		fi
 	fi
 fi
+
+###############################################################################
+# desktop wallpaper (why is this here?)
+###############################################################################
+if [ -r "${FLL_WALLPAPER}" ]; then
+	# Set $BACKGROUND according to distro defaults
+	BACKGROUND="${FLL_WALLPAPER}"
+else
+	# Search for custom background image for KDE/GNOME/X
+	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
+		for j in png jpg gif; do
+			BACKGROUND="$i.$j"
+			[ -e "$BACKGROUND" ] && break 2
+		done
+	done
+fi
+echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
 
 ###############################################################################
 # utility functions for perstent config/home handling below
