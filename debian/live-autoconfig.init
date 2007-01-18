@@ -491,8 +491,8 @@ if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
 	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
 			/etc/default/distro
 else
-	echo "" 										>> /etc/default/distro
-	echo "# kde i18n settings"						>> /etc/default/distro
+	echo "" 					>> /etc/default/distro
+	echo "# kde i18n settings"			>> /etc/default/distro
 	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" 	>> /etc/default/distro
 fi
 
@@ -1734,18 +1734,15 @@ fi
 ###############################################################################
 # laptop?
 ###############################################################################
-LAPTOP=
 if [ -x /usr/sbin/laptop-detect ]; then
 	if laptop-detect 2>/dev/null; then
-		LAPTOP=1
-	fi
-fi
-
-# enable any laptop specific tasks
-if [ -n "$LAPTOP" ]; then
-	if [ -r /etc/default/kde-services-sidux ]; then
-		# kde-services-sidux should start anything useful for a laptop
-		echo "KDE_SERVICES_LAPTOP=\"true\"" >> /etc/default/kde-services-sidux
+		if grep -q ^KDE_SERVICES_LAPTOP /etc/default/kde-services-sidux 2>/dev/null; then
+			# kde-services-sidux should start anything useful for a laptop
+			sed -i 's/^KDE_SERVICES_LAPTOP=.*/KDE_SERVICES_LAPTOP="true"/' \
+				/etc/default/kde-services-sidux
+		else
+			echo "KDE_SERVICES_LAPTOP=\"true\"" >> /etc/default/kde-services-sidux
+		fi
 	fi
 fi
 
