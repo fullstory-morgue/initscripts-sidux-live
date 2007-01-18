@@ -952,7 +952,7 @@ else
 
 	if [ "$?" = "0" ]; then
 		if start_service pcmciautils >/dev/null; then
-			echo -n " ${GREEN}Starting PCMCIA service: ${MAGENTA}pcmciautils${GREEN}${NORMAL}"
+			echo " ${GREEN}Starting PCMCIA service: ${MAGENTA}pcmciautils${GREEN}.${NORMAL}"
 			sleep 4
 		fi
 	fi
