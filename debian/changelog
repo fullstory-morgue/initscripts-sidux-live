@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.73) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.73) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Fix MAGNETA => MAGENTA typo
   * Don't echo newline when announcing start of pcmciautils.
   * Hide lack of real pcmcia detection (don't announce failed).
