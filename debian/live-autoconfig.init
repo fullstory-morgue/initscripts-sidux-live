@@ -1709,14 +1709,14 @@ if ! checkbootparam "nocpufreq" || ! checkbootparam "nopowernow"; then
 	if [ -n "$CPUFREQ" ]; then
 		if modprobe "$CPUFREQ" 2>/dev/null; then
 			echo -n " ${GREEN}Activating ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
+			# hack to disable suspend, it currently does not mix with live-mode
+			# kpowersave exposes this problem to unsuspecting users
+			if [ -w /etc/powersave/sleep ]; then
+				sed -i 's/^\(DISABLE_USER_SUSPEND2.*\)=.*$/\1="yes"/' /etc/powersave/sleep
+			fi
 			# start power management, powersaved is given preference
 			if start_service powersaved >/dev/null; then
 				CPUSERV=powersaved
-				# hack to disable suspend, it currently does not mix with live-mode
-				# kpowersave exposes this problem to unsuspecting users
-				if [ -w /etc/powersave/sleep ]; then
-					sed -i 's/^\(DISABLE_USER_SUSPEND2.*\)=.*$/\1="yes"/' /etc/powersave/sleep
-				fi
 			elif start_service powernowd >/dev/null; then
 				CPUSERV=powernowd
 			else
