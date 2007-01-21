@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.77) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.77) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Change pretty colours notifying user of /etc/fstab creation.
   * Remove brutal debconf/config.dat debug code.
   * Prettify output when setting up console keymap, print KEYTABLE.
