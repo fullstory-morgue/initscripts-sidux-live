@@ -1277,13 +1277,13 @@ fi
 if checkbootparam "nofstab"; then
 	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
 else
-	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}... "
+	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${MAGENTA}/etc/fstab${BLUE}..."
 	[ -d /${FLL_MOUNTPOINT} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r >/dev/null 2>&1
 	if [ -e /var/run/rebuildfstab.pid ]; then
 		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
 		sleep 8
 	fi
-	echo "${GREEN}Done.${NORMAL}"
+	echo "${BLUE}Done.${NORMAL}"
 fi
 
 if [ -n "$partitions" ]; then
