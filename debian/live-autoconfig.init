@@ -856,20 +856,14 @@ fi
 ###############################################################################
 # setup console-data (before interactive setup stage)
 ###############################################################################
+echo -n "${BLUE}Configuring console for a ${YELLOW}${KEYTABLE} keymap${BLUE}...${NORMAL}"
+
 # install keymap
 /usr/sbin/install-keymap "$KEYTABLE"
 
 # try this, it takes care of unicode start
 start_service keymap.sh
 
-CONFIGDAT=/var/cache/debconf/config.dat
-if [ -L "$CONFIGDAT" ]; then
-	CONFIGDAT=$(readlink $CONFIGDAT)
-fi
-# what process would be accessing debconf database?
-fuser -k "$CONFIGDAT"
-
-echo "${BLUE}Writing default settings for ${MAGENTA}console-data${BLUE}.${NORMAL}"
 echo "locales locales/default_environment_locale select $LANG \
 console-data console-data/keymap/policy select Select keymap from arch list \
 console-data console-data/keymap/family select $CD_FAMILY \
@@ -877,6 +871,8 @@ console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
 console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
 console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
 console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-selections
+
+echo "${BLUE}Done.${NORMAL}"
 
 ###############################################################################
 # update mtab
@@ -1277,7 +1273,7 @@ fi
 if checkbootparam "nofstab"; then
 	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
 else
-	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${MAGENTA}/etc/fstab${BLUE}..."
+	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}..."
 	[ -d /${FLL_MOUNTPOINT} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r >/dev/null 2>&1
 	if [ -e /var/run/rebuildfstab.pid ]; then
 		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
