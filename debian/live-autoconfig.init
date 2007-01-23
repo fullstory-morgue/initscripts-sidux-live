@@ -817,9 +817,8 @@ echo " ${GREEN}Enabling ${YELLOW}udev${GREEN} device and hotplug management daem
 # No kernel messages while probing modules
 echo "0" > /proc/sys/kernel/printk
 
-# start udev and mount special filesystems under /dev
+# start udev
 start_service udev S
-start_service mountdevsubfs.sh
 
 ###############################################################################
 # usbcore workaround
@@ -850,11 +849,10 @@ if ! stringinfile "usbcore" /proc/modules; then
 	fi
 fi
 
-# mount usbfs
-if stringinfile "usbcore" /proc/modules && ! stringinfile "/proc/bus/usb" /proc/mounts; then
-	mount -o devmode=0666 -t usbfs /proc/bus/usb /proc/bus/usb 2>/dev/null || \
-		echo "${RED}Unable to mount usbfs on /proc/bus/usb.${NORMAL}"
-fi
+# mount special filesystems under /dev
+start_service mountdevsubfs.sh
+
+splash_progress 20
 
 ###############################################################################
 # setup console-data (before interactive setup stage)
@@ -877,13 +875,13 @@ console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-se
 
 echo "${BLUE}Done.${NORMAL}"
 
+splash_progress 30
+
 ###############################################################################
 # update mtab
 ###############################################################################
 start_service mtab.sh
 start_service udev-mtab S
-
-splash_progress 20
 
 ###############################################################################
 # ensure ifupdown is in working state, ifup lo
@@ -914,28 +912,6 @@ if [ -n "$TZ" ]; then
 	cp "/usr/share/zoneinfo/$TZ" /etc/localtime
 	rm -f /etc/timezone
 	echo "$TZ" > /etc/timezone
-fi
-
-splash_progress 30
-
-###############################################################################
-# pcmcia/cardbus autoconfiguration
-###############################################################################
-# This needs to be done before other modules are being loaded by hwsetup
-if checkbootparam "nopcmcia"; then
-	echo " ${BLUE}Skipping PCMCIA detection as requested on boot commandline.${NORMAL}"
-else
-	# Try Cardbus or normal PCMCIA socket drivers
-	modprobe yenta_socket	>/dev/null 2>&1 || \
-	modprobe i82365		>/dev/null 2>&1 || \
-	modprobe tcic		>/dev/null 2>&1
-
-	if [ "$?" = "0" ]; then
-		if start_service pcmciautils >/dev/null; then
-			echo " ${GREEN}Starting PCMCIA service: ${MAGENTA}pcmciautils${GREEN}.${NORMAL}"
-			sleep 4
-		fi
-	fi
 fi
 
 splash_progress 40
