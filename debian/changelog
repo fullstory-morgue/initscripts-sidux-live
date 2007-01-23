@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.79) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.79) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Remove bogus cardbus detection, starting pcmciautils achieved nothing at
     all.
   * Call mountdevsubfs.sh after usbcore workaround so that usbfs is handled by
