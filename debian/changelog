@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.79) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Jan 2007 11:25:37 +0100
+
 initscripts-sidux-live (0.3.78) unstable; urgency=low
 
   * chown $FLL_LIVE_USER:$FLL_LIVE_USER /home/$FLL_LIVE_USER.
