@@ -1670,6 +1670,11 @@ else
 	echo " ${RED}Failed!${NORMAL}"
 fi
 
+IS_LAPTOP=
+if laptop-detect 2>/dev/null; then
+	IS_LAPTOP=true
+fi
+
 ###############################################################################
 # powernow detection
 ###############################################################################
@@ -1679,7 +1684,13 @@ if ! checkbootparam "nocpufreq" || ! checkbootparam "nopowernow"; then
 	# cpufreq detection from ubuntu powernowd, exports `CPUFREQ' on successful detection
 	if [ -f /usr/share/initscripts-sidux-live/cpufreq-detect ]; then
 		. /usr/share/initscripts-sidux-live/cpufreq-detect
+		
+		# fallback to acpi-cpufreq if this is really a laptop
+		if [ -z "$CPUFREQ" ] && [ -n "$IS_LAPTOP" ]; then
+			modprobe acpi-cpufreq 2>/dev/null && CPUFREQ=acpi-cpufreq
+		fi
 	fi
+
 	# start power management service
 	if [ -n "$CPUFREQ" ]; then
 		if modprobe "$CPUFREQ" 2>/dev/null; then
@@ -1714,20 +1725,18 @@ fi
 ###############################################################################
 # laptop?
 ###############################################################################
-if [ -x /usr/sbin/laptop-detect ]; then
-	if laptop-detect 2>/dev/null; then
-		# acpi-support
-		if pidof acpid >/dev/null && start_service acpi-support >/dev/null 2>&1; then
-			echo " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}"
-		fi
-		# always start kpowersave
-		if grep -q ^KDE_SERVICES_LAPTOP /etc/default/kde-services-sidux 2>/dev/null; then
-			# kde-services-sidux should start anything useful for a laptop
-			sed -i 's/^KDE_SERVICES_LAPTOP=.*/KDE_SERVICES_LAPTOP="true"/' \
-				/etc/default/kde-services-sidux
-		else
-			echo "KDE_SERVICES_LAPTOP=\"true\"" >> /etc/default/kde-services-sidux
-		fi
+if [ -n "$IS_LAPTOP" ]; then
+	# acpi-support
+	if pidof acpid >/dev/null && start_service acpi-support >/dev/null 2>&1; then
+		echo " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}"
+	fi
+	# always start kpowersave
+	if grep -q ^KDE_SERVICES_LAPTOP /etc/default/kde-services-sidux 2>/dev/null; then
+		# kde-services-sidux should start anything useful for a laptop
+		sed -i 's/^KDE_SERVICES_LAPTOP=.*/KDE_SERVICES_LAPTOP="true"/' \
+			/etc/default/kde-services-sidux
+	else
+		echo "KDE_SERVICES_LAPTOP=\"true\"" >> /etc/default/kde-services-sidux
 	fi
 fi
 
