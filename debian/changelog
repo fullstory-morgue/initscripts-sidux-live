@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.80) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.80) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Rework cpufreq routine, really try acpi-cpufreq when the detected cpufreq
     module fails to be loaded.
 
