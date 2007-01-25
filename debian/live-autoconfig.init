@@ -66,9 +66,7 @@ WHITE="[1;37m"
 # get rid of these as soon as possible
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
-HWSETUP_SERVICES="/etc/sysconfig/services"
 HWSETUP_DESKTOP="/etc/sysconfig/desktop"
-touch "$HWSETUP_SERVICES"
 
 ###############################################################################
 # utility Functions
@@ -1062,10 +1060,8 @@ fi
 
 # soft modem detection
 if ! checkbootparam "nomodem"; then
-	if lspci|grep Intel|grep -q "AC'97 Modem Controller"; then
-		if start_service sl-modem-daemon >/dev/null; then
-			grep -q ^sl-modem-daemon "$HWSETUP_SERVICES" >/dev/null || echo sl-modem-daemon >> "$HWSETUP_SERVICES"
-		fi
+	if lspci | grep Intel | grep -q "AC'97 Modem Controller"; then
+		start_service sl-modem-daemon >/dev/null
 	fi
 fi
 
@@ -1723,10 +1719,6 @@ if ! checkbootparam "nocpufreq"; then
 		# announce the service
 		if [ -n "$CPUSERV" ]; then
 			echo " ${MAGENTA}${CPUSERV}${GREEN}.${NORMAL}"
-			# add service to hwsetup service list
-			if ! grep -q ^$CPUSERV "$HWSETUP_SERVICES" 2>/dev/null; then
-				echo $CPUSERV >>"$HWSETUP_SERVICES"
-			fi
 		fi
 	fi
 else
