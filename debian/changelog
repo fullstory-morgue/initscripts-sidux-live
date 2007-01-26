@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.82) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.82) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Delay start of acpi-support until after all other stuff.
   * Add bluetooth detection, depend on hwinfo.
   * Remove impossible Recommends: stuff from non-free.
