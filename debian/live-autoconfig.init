@@ -1358,7 +1358,7 @@ else
 		done
 		
 		if [ -n "$CONNETDEVS" ]; then
-			echo -n " ${GREEN}Starting DHCP broadcast on connected ethernet devices:${NORMAL}"
+			echo -n " ${GREEN}Starting ${YELLOW}DHCP${GREEN} broadcast on ethernet devices:${NORMAL}"
 			echo "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
 			( ifup -a >/dev/null 2>&1 ) &
 		fi
@@ -1726,6 +1726,16 @@ if ! checkbootparam "nocpufreq"; then
 	fi
 else
 	echo "${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}"
+fi
+
+###############################################################################
+# bluetooth
+###############################################################################
+if [ -x /etc/init.d/bluetooth ]; then
+	BLUETOOTH="$(hwinfo --bluetooth | awk '/Hardware Class:/{ print $NF }' 2>/dev/null)"
+	if [ "$BLUETOOTH" = bluetooth ] && start_service bluetooth >/dev/null 2>&1; then
+		echo " ${GREEN}Starting services for ${YELLOW}bluetooth${GREEN} support.${NORMAL}"
+	fi
 fi
 
 ###############################################################################

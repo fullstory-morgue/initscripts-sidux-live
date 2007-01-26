@@ -8,9 +8,9 @@ Standards-Version: 3.7.2
 
 Package: initscripts-sidux-live
 Architecture: all
-Depends: debconf-utils, distro-defaults, rebuildfstab, udev, eject, pcmciautils, hwsetup-ng, ifplugd, laptop-detect
+Depends: debconf-utils, distro-defaults, rebuildfstab, udev, eject, pcmciautils, hwsetup-ng, ifplugd, laptop-detect, hwinfo
 Recommends: xorgconfig-sidux, tzdata
-Suggests: avm-firmware, drdsl, ltmodem-common, unionfs-utils, hotkey-setup
+Suggests: unionfs-utils, hotkey-setup
 Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix, eject-live, pcmcia-cs, usleep-kanotix, initscripts-kanotix-live
 Description: sidux initscripts for live CDs
  Live specific initscripts for hardware detection and shutdown functions 
