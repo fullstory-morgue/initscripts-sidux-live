@@ -1732,7 +1732,7 @@ fi
 # bluetooth
 ###############################################################################
 if [ -x /etc/init.d/bluetooth ]; then
-	BLUETOOTH="$(hwinfo --bluetooth | awk '/Hardware Class:/{ print $NF }' 2>/dev/null)"
+	BLUETOOTH="$(hwinfo --bluetooth | awk '/Hardware Class:/{ print $NF; exit }' 2>/dev/null)"
 	if [ "$BLUETOOTH" = bluetooth ] && start_service bluetooth >/dev/null 2>&1; then
 		echo " ${GREEN}Starting services for ${YELLOW}bluetooth${GREEN} support.${NORMAL}"
 	fi
