@@ -241,7 +241,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Brussels"
 		CD_COUNTRY="Belgian"
 		;;
-	bg-utf8|be)
+	bg-utf8|bg)
 		## Bulgarian version
 		#LANGUAGE="bg_BG:bg"
 		LANG="bg_BG.UTF-8"
@@ -250,7 +250,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Sofia"
 		CD_COUNTRY="Bulgarian"
 		;;
-	br-utf8|be)
+	br-utf8|br)
 		## Brazilian Version
 		#LANGUAGE="pt_BR:pt"
 		LANG="pt_BR.UTF-8"
