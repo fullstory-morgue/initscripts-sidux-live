@@ -1338,7 +1338,7 @@ else
 				if [ "$?" = "2" ]; then
 					CONNETDEVS="$CONNETDEVS $DEVICE"
 					echo ""				>> /etc/network/interfaces
-					echo "auto $DEVICE"		>> /etc/network/interfaces
+					echo "allow-hotplug $DEVICE"	>> /etc/network/interfaces
 					echo "iface $DEVICE inet dhcp"	>> /etc/network/interfaces
 				else
 					ifconfig "$DEVICE" down
