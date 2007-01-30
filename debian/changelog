@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.85) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 30 Jan 2007 15:56:40 +0100
+
 initscripts-sidux-live (0.3.84) unstable; urgency=low
 
   * Allow networking initscript to take care of ifup -a and the loopback
