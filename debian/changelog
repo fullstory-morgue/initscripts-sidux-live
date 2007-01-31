@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.86) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 31 Jan 2007 02:51:58 +0100
+
 initscripts-sidux-live (0.3.85) unstable; urgency=low
 
   * Add nodbus cheatcode, slight modification to some formatting of printed
