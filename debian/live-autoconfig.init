@@ -1623,7 +1623,7 @@ PSERV=
 if [ -d /proc/acpi ]; then
 	# ACPI
 	if checkbootparam "noacpi"; then
-		echo " ${BLUE}Skipping ACPI Bios detection as requested on boot commandline.${NORMAL}"
+		echo " ${BLUE}Skipping ACPI bios detection as requested on boot commandline.${NORMAL}"
 	else
 		fuser -k /proc/acpi/event >/dev/null 2>&1
 		PBIOS=ACPI
@@ -1632,7 +1632,7 @@ if [ -d /proc/acpi ]; then
 else
 	# APM
 	if checkbootparam "noapm"; then
-		echo " ${BLUE}Skipping APM Bios detection as requested on boot commandline.${NORMAL}"
+		echo " ${BLUE}Skipping APM bios detection as requested on boot commandline.${NORMAL}"
 	else
 		PBIOS=APM
 		PSERV=apmd
@@ -1640,7 +1640,7 @@ else
 fi
 
 if [ -n "$PBIOS" ] && [ -x /etc/init.d/"$PSERV" ]; then
-	echo -n " ${GREEN}${PBIOS} Bios found, activating Power Management:${NORMAL}"
+	echo -n " ${GREEN}${PBIOS} bios found, activating power management:${NORMAL}"
 	if start_service "$PSERV" >/dev/null; then
 		echo " ${MAGENTA}${PSERV}${GREEN}.${NORMAL}"
 	else
@@ -1651,12 +1651,14 @@ fi
 ###############################################################################
 # enable dbus & hald
 ###############################################################################
-echo -n " ${GREEN}Enabling D-Bus system and Hardware Abstraction Layer:${NORMAL}"
-if start_service dbus >/dev/null; then
-	echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
-	start_service /etc/init.d/avahi-daemon >/dev/null
-else
-	echo " ${RED}Failed!${NORMAL}"
+if ! checkbootparam "nodbus"; then
+	echo -n " ${GREEN}Enabling D-Bus and Hardware Abstraction Layer:${NORMAL}"
+	if start_service dbus >/dev/null; then
+		echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
+		start_service /etc/init.d/avahi-daemon >/dev/null
+	else
+		echo " ${RED}Failed!${NORMAL}"
+	fi
 fi
 
 ###############################################################################

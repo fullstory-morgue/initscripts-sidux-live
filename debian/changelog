@@ -1,8 +1,13 @@
 initscripts-sidux-live (0.3.85) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 30 Jan 2007 15:56:40 +0100
+  [ Kel Modderman ]
+  * Add nodbus cheatcode, slight modification to some formatting of printed
+    text.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 31 Jan 2007 11:12:39 +1000
 
 initscripts-sidux-live (0.3.84) unstable; urgency=low
 
