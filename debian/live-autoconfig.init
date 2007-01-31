@@ -1651,7 +1651,7 @@ fi
 ###############################################################################
 # enable dbus & hald
 ###############################################################################
-if ! checkbootparam "nodbus"; then
+if [ -x /etc/init.d/dbus ] && ! checkbootparam "nodbus"; then
 	echo -n " ${GREEN}Enabling D-Bus and Hardware Abstraction Layer:${NORMAL}"
 	if start_service dbus >/dev/null; then
 		echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
