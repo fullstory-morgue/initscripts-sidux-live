@@ -1451,11 +1451,11 @@ checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
 if [ -z "$NOCONFIGCD" ]; then
 	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/${FLL_DISTRO_NAME}.sh)
 	MYCONFIG="$(ls -1 /cdrom/${FLL_IMAGE_DIR}/ | grep -i "^${FLL_DISTRO_NAME}\\.sh$" 2>/dev/null)"
-	if [ -n "$MYCONFIG" -a -f "$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
+	if [ -n "$MYCONFIG" -a -f "/cdrom/${FLL_IMAGE_DIR}/$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
 		echo ""
 		echo " ${GREEN}${FLL_DISTRO_NAME} Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
 		echo "6" > /proc/sys/kernel/printk
-		. "$MYCONFIG" /cdrom/${FLL_IMAGE_DIR} || true
+		. /cdrom/${FLL_IMAGE_DIR}/${MYCONFIG} || true
 		echo "0" > /proc/sys/kernel/printk
 	fi
 fi
