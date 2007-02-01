@@ -1701,11 +1701,18 @@ if ! checkbootparam "nocpufreq"; then
 	# start power management service
 	if [ -n "$CPUFREQ" ]; then
 		echo -n " ${GREEN}Activating ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
+		
 		# hack to disable suspend, it currently does not mix with live-mode
 		# kpowersave exposes this problem to unsuspecting users
 		if [ -w /etc/powersave/sleep ]; then
 			sed -i 's/^\(DISABLE_USER_SUSPEND2.*\)=.*$/\1="yes"/' /etc/powersave/sleep
 		fi
+
+		# preseed powersaved with the correct cpufreq module name (avoid re-detection)
+		if [ -w /etc/powersave/cpufreq ]; then
+			sed -i 's/^\(CPUFREQD_MODULE\)=.*$/\1="'"$CPUFREQ"'"/' /etc/powersave/cpufreq
+		fi
+
 		# start power management, powersaved is given preference
 		if start_service powersaved >/dev/null; then
 			CPUSERV=powersaved
@@ -1714,6 +1721,7 @@ if ! checkbootparam "nocpufreq"; then
 		else
 			echo " ${RED}Failed!${NORMAL}"
 		fi
+
 		# announce the service
 		if [ -n "$CPUSERV" ]; then
 			echo " ${MAGENTA}${CPUSERV}${GREEN}.${NORMAL}"
