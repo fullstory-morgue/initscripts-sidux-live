@@ -1,8 +1,8 @@
-initscripts-sidux-live (0.3.88) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.88) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * typo in lang= cheatcode case.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  2 Feb 2007 03:48:11 +0100
+ -- Bernard Gray aka cleary <bernard.gray@gmail.com>  Fri,  2 Feb 2007 07:27:33 +0100
 
 initscripts-sidux-live (0.3.87) unstable; urgency=low
 
