@@ -391,7 +391,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Warsaw"
 		CD_COUNTRY="Polish"
 		;;
-	pt-utf8|pl)
+	pt-utf8|pt)
 		## Portuguese version
 		#LANGUAGE="pt_PT:pt"
 		LANG="pt_PT.UTF-8"
