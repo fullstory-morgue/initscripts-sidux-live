@@ -1,7 +1,4 @@
-initscripts-sidux-live (0.3.87) UNRELEASED; urgency=low
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+initscripts-sidux-live (0.3.87) unstable; urgency=low
 
   [ Niall Walsh ]
   * Fix up cd based config (thanks konfuzius)
