@@ -1,8 +1,13 @@
 initscripts-sidux-live (0.3.89) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  2 Feb 2007 17:52:20 +0100
+  [ Kel Modderman ]
+  * Consolidate new bluetooth and cpufreq detection with cheatcodes to disable
+    them and messages to indicate that they were specifically unwanted.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon,  5 Feb 2007 20:12:05 +1000
 
 initscripts-sidux-live (0.3.88) unstable; urgency=low
 

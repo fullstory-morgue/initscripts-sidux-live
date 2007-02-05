@@ -1651,13 +1651,17 @@ fi
 ###############################################################################
 # enable dbus & hald
 ###############################################################################
-if [ -x /etc/init.d/dbus ] && ! checkbootparam "nodbus"; then
-	echo -n " ${GREEN}Enabling D-Bus and Hardware Abstraction Layer:${NORMAL}"
-	if start_service dbus >/dev/null; then
-		echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
-		start_service /etc/init.d/avahi-daemon >/dev/null
+if [ -x /etc/init.d/dbus ]; then
+	if checkbootparam "nodbus"; then
+		echo " ${BLUE}Not starting D-Bus/HAL as requested on boot commandline.${NORMAL}"
 	else
-		echo " ${RED}Failed!${NORMAL}"
+		echo -n " ${GREEN}Enabling D-Bus and Hardware Abstraction Layer:${NORMAL}"
+		if start_service dbus >/dev/null; then
+			echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
+			start_service /etc/init.d/avahi-daemon >/dev/null
+		else
+			echo " ${RED}Failed!${NORMAL}"
+		fi
 	fi
 fi
 
@@ -1672,7 +1676,9 @@ fi
 ###############################################################################
 # cpufreq detection
 ###############################################################################
-if ! checkbootparam "nocpufreq"; then
+if checkbootparam "nocpufreq"; then
+	echo " ${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}"
+else
 	CPUFREQ=
 	CPUSERV=
 
@@ -1727,17 +1733,19 @@ if ! checkbootparam "nocpufreq"; then
 			echo " ${MAGENTA}${CPUSERV}${GREEN}.${NORMAL}"
 		fi
 	fi
-else
-	echo "${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}"
 fi
 
 ###############################################################################
 # bluetooth
 ###############################################################################
 if [ -x /etc/init.d/bluetooth ]; then
-	BLUETOOTH="$(hwinfo --bluetooth | awk '/Hardware Class:/{ print $NF; exit }' 2>/dev/null)"
-	if [ "$BLUETOOTH" = bluetooth ] && start_service bluetooth >/dev/null 2>&1; then
-		echo " ${GREEN}Starting services for ${YELLOW}bluetooth${GREEN} support.${NORMAL}"
+	if checkbootparam "nobluetooth"; then
+		echo " ${BLUE}Skipping bluetooth detection as requested on boot commandline.${NORMAL}"
+	else
+		BLUETOOTH="$(hwinfo --bluetooth | awk '/Hardware Class:/{ print $NF; exit }' 2>/dev/null)"
+		if [ "$BLUETOOTH" = bluetooth ] && start_service bluetooth >/dev/null 2>&1; then
+			echo " ${GREEN}Starting services for ${YELLOW}bluetooth${GREEN} support.${NORMAL}"
+		fi
 	fi
 fi
 
