@@ -347,13 +347,13 @@ case "$LANGUAGE" in
 		CD_COUNTRY="Hebrew"
 		;;
 	hr-utf8|hr)
-        ## Croatian version 
-        #LANGUAGE=hr_HR:hr" 
-        LANG="hr_HR.UTF-8" 
-        KEYTABLE="hr" 
-        KDEKEYBOARDS="hr,us" 
-        TZ="Europe/Zagreb" 
-        CD_COUNTRY="Croatian"
+		## Croatian version 
+		#LANGUAGE=hr_HR:hr" 
+		LANG="hr_HR.UTF-8" 
+		KEYTABLE="hr" 
+		KDEKEYBOARDS="hr,us" 
+		TZ="Europe/Zagreb" 
+		CD_COUNTRY="Croatian"
 		;;
 	ie-utf8|ie)
 		## Irish (English) version
