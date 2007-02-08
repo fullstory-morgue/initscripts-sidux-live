@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.92) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu,  8 Feb 2007 19:46:28 +0100
+
 initscripts-sidux-live (0.3.91) unstable; urgency=low
 
   * Keyboard Layout fixed for xorg 
