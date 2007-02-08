@@ -1,6 +1,5 @@
-initscripts-sidux-live (0.3.90) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.90) unstable; urgency=low
 
-  * NOT RELEASED YET
   * Croatian language
   * shit vim settings
 
