@@ -1181,7 +1181,9 @@ fi
 
 RUNLEVEL="$(runlevel)"
 
-sed -i s/\([[:space:]]Option[[:space:]]\"XkbLayout\"\).*/\1\t\"$KEYTABLE\"/ /etc/X11/xorg.conf >/dev/null 2>&1
+# Apply Language Settings for xorg and KDE
+sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${KEYTABLE}\"|" /etc/X11/xorg.conf >/dev/null 2>&1
+sed -i "s|\"LayoutList=\".*$|\"LayoutList=${KDEKEYBOARDS}\"|" /etc/skel/.kde/share/config/kxkbrc >/dev/null 2>&1
 
 ###############################################################################
 # partition detection and autoconfiguration
