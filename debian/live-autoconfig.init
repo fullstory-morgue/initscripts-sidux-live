@@ -220,6 +220,7 @@ case "$LANGUAGE" in
 		LANG="de_DE.UTF-8"
 		KEYTABLE="de-latin1-nodeadkeys"
 		KDEKEYBOARDS="de,us"
+		XKBLAYOUT="de"
 		TZ="Europe/Berlin"
 		CD_COUNTRY="German"
 		;;
@@ -229,6 +230,7 @@ case "$LANGUAGE" in
 		LANG="en_AU.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us"
+		XKBLAYOUT="us"
 		TZ="Australia/Sydney"
 		CD_COUNTRY="us_american"
 		;;
@@ -238,6 +240,7 @@ case "$LANGUAGE" in
 		LANG="be_BY.UTF-8"
 		KEYTABLE="be2-latin1"
 		KDEKEYBOARDS="be,fr,us"
+		XKBLAYOUT="be"
 		TZ="Europe/Brussels"
 		CD_COUNTRY="Belgian"
 		;;
@@ -247,6 +250,7 @@ case "$LANGUAGE" in
 		LANG="bg_BG.UTF-8"
 		KEYTABLE="bg"
 		KDEKEYBOARDS="bg,us"
+		XKBLAYOUT="bg"
 		TZ="Europe/Sofia"
 		CD_COUNTRY="Bulgarian"
 		;;
@@ -256,6 +260,7 @@ case "$LANGUAGE" in
 		LANG="pt_BR.UTF-8"
 		KEYTABLE="br-abnt2"
 		KDEKEYBOARDS="br,us"
+		XKBLAYOUT="br"
 		TZ="America/Sao_Paulo"
 		CD_COUNTRY="Brazilian"
 		;;
@@ -265,6 +270,7 @@ case "$LANGUAGE" in
 		LANG="de_CH.UTF-8"
 		KEYTABLE="sg-latin1"
 		KDEKEYBOARDS="de_CH,de,fr,us"
+		XKBLAYOUT="de"
 		TZ="Europe/Zurich"
 		CD_COUNTRY="Swiss-de"
 		;;
@@ -273,6 +279,7 @@ case "$LANGUAGE" in
 		LANG="zh_CN.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us"
+		XKBLAYOUT="us"
 		TZ="Asia/Shanghai"
 		CD_COUNTRY=""
 		;;
@@ -282,6 +289,7 @@ case "$LANGUAGE" in
 		LANG="cs_CZ.UTF-8"
 		KEYTABLE="cz-lat2"
 		KDEKEYBOARDS="cs,us"
+		XKBLAYOUT="cs"
 		TZ="Europe/Prague"
 		CD_COUNTRY="Czech-qwerty"
 		;;
@@ -290,6 +298,7 @@ case "$LANGUAGE" in
 		LANG="da_DK.UTF-8"
 		KEYTABLE="dk"
 		KDEKEYBOARDS="dk,us"
+		XKBLAYOUT="dk"
 		TZ="Europe/Copenhagen"
 		CD_COUNTRY="Danish"
 		;;
@@ -299,6 +308,7 @@ case "$LANGUAGE" in
 		LANG="el_GR.UTF-8"
 		KEYTABLE="gr"
 		KDEKEYBOARDS="gr,us"
+		XKBLAYOUT="gr"
 		TZ="Europe/Athens"
 		CD_COUNTRY="Greek"
 		;;
@@ -308,6 +318,7 @@ case "$LANGUAGE" in
 		LANG="es_ES.UTF-8"
 		KEYTABLE="es"
 		KDEKEYBOARDS="es,us"
+		XKBLAYOUT="es"
 		TZ="Europe/Madrid"
 		CD_COUNTRY="Spanish"
 		;;
@@ -317,6 +328,7 @@ case "$LANGUAGE" in
 		LANG="fi_FI.UTF-8"
 		KEYTABLE="fi-latin1"
 		KDEKEYBOARDS="fi,us"
+		XKBLAYOUT="fi"
 		TZ="Europe/Helsinki"
 		CD_COUNTRY="Swedish"
 		;;
@@ -326,6 +338,7 @@ case "$LANGUAGE" in
 		LANG="fr_FR.UTF-8"
 		KEYTABLE="fr"
 		KDEKEYBOARDS="fr,us"
+		XKBLAYOUT="fr"
 		TZ="Europe/Paris"
 		CD_COUNTRY="French"
 		;;
@@ -334,6 +347,7 @@ case "$LANGUAGE" in
 		LANG="ga_IE.UTF-8"
 		KEYTABLE="uk"
 		KDEKYBOARDS="il"
+		XKBLAYOUT="il"
 		TZ="Europe/Dublin"
 		CD_COUNTRY="British"
 		;;
@@ -343,6 +357,7 @@ case "$LANGUAGE" in
 		LANG="he_IL.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="il,us"
+		XKBLAYOUT="il"
 		TZ="Asia/Jerusalem"
 		CD_COUNTRY="Hebrew"
 		;;
@@ -351,7 +366,8 @@ case "$LANGUAGE" in
 		#LANGUAGE=hr_HR:hr" 
 		LANG="hr_HR.UTF-8" 
 		KEYTABLE="hr" 
-		KDEKEYBOARDS="hr,us" 
+		KDEKEYBOARDS="hr,us"
+		XKBLAYOUT="hr" 
 		TZ="Europe/Zagreb" 
 		CD_COUNTRY="Croatian"
 		;;
@@ -361,6 +377,7 @@ case "$LANGUAGE" in
 		LANG="en_IE.UTF-8"
 		KEYTABLE="uk"
 		KDEKEYBOARDS="ie,gb,us"
+		XKBLAYOUT="ie"
 		TZ="Europe/Dublin"
 		CD_COUNTRY="British"
 		;;
@@ -370,6 +387,7 @@ case "$LANGUAGE" in
 		LANG="it_IT.UTF-8"
 		KEYTABLE="it"
 		KDEKEYBOARDS="it,us"
+		XKBLAYOUT="it"
 		TZ="Europe/Rome"
 		CD_COUNTRY="Italian"
 		;;
@@ -379,6 +397,7 @@ case "$LANGUAGE" in
 		LANG="ja_JP.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="jp,us"
+		XKBLAYOUT="jp"
 		TZ="Asia/Tokyo"
 		CD_COUNTRY="Japanese"
 		;;
@@ -388,6 +407,7 @@ case "$LANGUAGE" in
 		LANG="nl_NL.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="nl,us"
+		XKBLAYOUT="nl"
 		TZ="Europe/Amsterdam"
 		CD_COUNTRY="Dutch"
 		;;
@@ -397,6 +417,7 @@ case "$LANGUAGE" in
 		LANG="pl_PL.UTF-8"
 		KEYTABLE="pl"
 		KDEKEYBOARDS="pl,us"
+		XKBLAYOUT="pl"
 		TZ="Europe/Warsaw"
 		CD_COUNTRY="Polish"
 		;;
@@ -406,6 +427,7 @@ case "$LANGUAGE" in
 		LANG="pt_PT.UTF-8"
 		KEYTABLE="pt-latin1"
 		KDEKEYBOARDS="pt,us"
+		XKBLAYOUT="pt"
 		TZ="Europe/Lisbon"
 		CD_COUNTRY="Portugese"
 		;;
@@ -415,6 +437,7 @@ case "$LANGUAGE" in
 		LANG="ru_RU.UTF-8"
 		KEYTABLE="ru"
 		KDEKEYBOARDS="ru,us"
+		XKBLAYOUT="ru"
 		TZ="Europe/Moscow"
 		CD_COUNTRY="Russian"
 		;;
@@ -424,6 +447,7 @@ case "$LANGUAGE" in
 		LANG="sk_SK.UTF-8"
 		KEYTABLE="sk-qwerty"
 		KDEKEYBOARDS="sk,us"
+		XKBLAYOUT="sk"
 		TZ="Europe/Bratislava"
 		CD_COUNTRY="Slovak-qwerty"
 		;;
@@ -433,6 +457,7 @@ case "$LANGUAGE" in
 		LANG="sl_SI.UTF-8"
 		KEYTABLE="slovene"
 		KDEKEYBOARDS="si,us"
+		XKBLAYOUT="si"
 		TZ="Europe/Ljubljana"
 		#CONSOLEFONT="iso02g"
 		CD_COUNTRY="Slovene"
@@ -443,6 +468,7 @@ case "$LANGUAGE" in
 		LANG="tr_TR.UTF-8"
 		KEYTABLE="tr_q-latin5"
 		KDEKEYBOARDS="tr,us"
+		XKBLAYOUT="tr"
 		TZ="Europe/Istanbul"
 		CD_COUNTRY="Turkish"
 		;;
@@ -452,6 +478,7 @@ case "$LANGUAGE" in
 		LANG="zh_TW.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us"
+		XKBLAYOUT="us"
 		TZ="Asia/Taipei"
 		CD_COUNTRY=""
 		;;
@@ -461,6 +488,7 @@ case "$LANGUAGE" in
 		LANG="en_GB.UTF-8"
 		KEYTABLE="uk"
 		KDEKEYBOARDS="gb,us"
+		XKBLAYOUT="gb"
 		TZ="Europe/London"
 		CD_COUNTRY="British"
 		;;
@@ -470,6 +498,7 @@ case "$LANGUAGE" in
 		LANG="en_US.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us,ca"
+		XKBLAYOUT="us"
 		TZ="America/New_York"
 		CD_COUNTRY="us_american"
 		;;
@@ -479,6 +508,7 @@ case "$LANGUAGE" in
 		LANG="en_US.UTF-8"
 		KEYTABLE="us"
 		KDEKEYBOARDS="us,ca"
+		XKBLAYOUT="us"
 		TZ="Europe/London"
 		CD_COUNTRY="us_american"
 		;;
@@ -1182,7 +1212,7 @@ fi
 RUNLEVEL="$(runlevel)"
 
 # Apply Language Settings for xorg and KDE
-sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${KEYTABLE}\"|" /etc/X11/xorg.conf >/dev/null 2>&1
+sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf >/dev/null 2>&1
 sed -i "s|^LayoutList.*$|LayoutList=${KDEKEYBOARDS}|" /etc/skel/.kde/share/config/kxkbrc >/dev/null 2>&1
 
 ###############################################################################
