@@ -934,8 +934,10 @@ if checkbootparam tz >/dev/null 2>&1; then
 	TZ="$(getbootparam tz 2>/dev/null)"
 fi
 
-if [ -n "$TZ" ] && [ -f "/usr/share/zoneinfo/$TZ" ]; then
-	rm -f /etc/localtime /etc/timezone
+[ -n "$TZ" ] || TZ="UTC"
+
+if [ -f "/usr/share/zoneinfo/$TZ" ]; then
+	# /etc/localtime is excluded at build time
 	cp "/usr/share/zoneinfo/$TZ" /etc/localtime
 	echo "$TZ" > /etc/timezone
 fi
