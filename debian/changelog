@@ -9,8 +9,12 @@ initscripts-sidux-live (0.3.92) UNRELEASED; urgency=low
     - default to localtime, make that default persist
     - no longer export TZ, cleanup shell variable usage
   * Don't clobber our calculated TZ variable.
+  * Consistent use of null redirection in live-reboot.
+  * Allow wpa-ifupdown to take down interfaces under wpa_supplicant's control
+    before clobbering process with killall.
+  * Redirect output of networking to null.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 12 Feb 2007 18:45:01 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 12 Feb 2007 19:53:13 +1000
 
 initscripts-sidux-live (0.3.91) unstable; urgency=low
 

@@ -64,10 +64,15 @@ mysleep()
 # Disable kernel messages
 echo "0" > /proc/sys/kernel/printk
 
+# handle wpa_supplicant gracefully
+if [ -x /etc/init.d/wpa-ifupdown ]; then
+	/etc/init.d/wpa-ifupdown stop >/dev/null 2>&1
+fi
+
 # poweroff pcmcia devices
-if lsmod | grep -q pcmcia_core 2>&1 > /dev/null; then
+if lsmod | grep -q pcmcia_core >/dev/null 2>&1; then
 	echo -n "${BLUE}Shutting down PCMCIA devices...${NORMAL}"
-	pccardctl eject 2>&1 > /dev/null
+	pccardctl eject >/dev/null 2>&1
 	sleep 2
 	echo ""
 fi
@@ -84,21 +89,21 @@ echo -n "${RED}Sent all processes the KILL signal...${NORMAL}"
 mysleep "$RED"
 
 # Unmount network filesystems first before shutting down network
-NETMOUNTS="$(awk '{if($1~/:/){print $2}}' /proc/mounts 2> /dev/null)"
+NETMOUNTS="$(awk '{if($1~/:/){print $2}}' /proc/mounts 2>/dev/null)"
 if [ -n "$NETMOUNTS" ]; then
 	echo "${BLUE}Unmounting network filesystems.${NORMAL}"
-	umount -t nfs -arvf 2> /dev/null
+	umount -t nfs -arvf 2>/dev/null
 fi
 
 # Shutdown network
 echo "${BLUE}Shutting down network devices...${NORMAL}"
-/etc/init.d/networking stop >/dev/null
+/etc/init.d/networking stop >/dev/null 2>&1
 
 # read cmdline params
 NOEJECT=""
 NOPROMPT=""
 read CMDLINE <<EOT
-$(cat /proc/cmdline 2> /dev/null)
+$(cat /proc/cmdline 2>/dev/null)
 EOT
 case "$CMDLINE" in *noeject*)  NOEJECT="yes";  ;; esac
 case "$CMDLINE" in *noprompt*) NOPROMPT="yes"; ;; esac
@@ -107,7 +112,7 @@ CDROM="$(awk '/ \/cdrom /{print $1;exit 0;}' /proc/mounts)"
 
 # This uses standard sysvinit
 FINALCMD="/etc/live-hack/$command"
-rm -rf /etc/live-hack 2>&1 > /dev/null
+rm -rf /etc/live-hack >/dev/null 2>&1
 mkdir -p /etc/live-hack
 [ -x "/etc/live-hack/$command" ]  || cp -p "/sbin/$command" /etc/live-hack/
 [ -x /usr/bin/eject ]             && cp -p /usr/bin/eject /etc/live-hack/eject
@@ -116,29 +121,29 @@ LD_LINUX=ld-linux.so.2
 [ -x "/etc/live-hack/$LD_LINUX" ] || cp -p "/lib/$LD_LINUX" /etc/live-hack/
 
 # Turn off swap, then unmount file systems.
-swapoff -a 2>&1 > /dev/null
+swapoff -a >/dev/null 2>&1
 
 echo "${BLUE}Unmounting file systems.${NORMAL}"
 
 cd /
 
 # Umount everything but root
-umount -arvf 2> /dev/null
+umount -arvf 2>/dev/null
 if [ "$?" != "0" ] ; then
 	# Free loopback devices if necessary, so we can unmount the host media
-	for i in /dev/loop*; do losetup -d "$i" 2> /dev/null; done
+	for i in /dev/loop*; do losetup -d "$i" 2>/dev/null; done
 	# And retry
-	umount -arf 2> /dev/null
+	umount -arf 2>/dev/null
 fi
 
 # Remove remaining unused modules
-rmmod -a 2>&1 > /dev/null
+rmmod -a >/dev/null 2>&1
 
 echo "$message" > /dev/console
 
 # eject CD-ROM, noprompt implies noeject (backward compatibility)
 if [ -z "$NOPROMPT" ]; then
-	[ -n "$CDROM" -a -z "$NOEJECT" ] && "/etc/live-hack/$LD_LINUX" /etc/live-hack/eject -m -p "$CDROM" 2>&1 >/dev/null
+	[ -n "$CDROM" -a -z "$NOEJECT" ] && "/etc/live-hack/$LD_LINUX" /etc/live-hack/eject -m -p "$CDROM" >/dev/null 2>&1
 	echo "${CYAN}Please remove CD, close cdrom drive and hit return.${NORMAL}"
 	read
 fi
