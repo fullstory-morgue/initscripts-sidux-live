@@ -924,19 +924,18 @@ start_service udev-mtab S
 #  Set clock (Local time is more often used than GMT, so it is default)
 ###############################################################################
 UTC=""
-checkbootparam utc >/dev/null 2>&1 && UTC="-u"
-checkbootparam gmt >/dev/null 2>&1 && UTC="-u"
+if checkbootparam utc >/dev/null 2>&1 || checkbootparam gmt >/dev/null 2>&1; then
+	[ -w /etc/default/rcS ] && sed -i 's/^UTC=.*/UTC=yes/' /etc/default/rcS
+else
+	[ -w /etc/default/rcS ] && sed -i 's/^UTC=.*/UTC=no/' /etc/default/rcS
+fi
 
-# hwclock uses the TZ variable
-KTZ="$(getbootparam tz 2>/dev/null)"
-[ -f "/usr/share/zoneinfo/$KTZ" ] && [ -n "$KTZ" ] && TZ="$KTZ"
-export TZ
-hwclock $UTC -s
+start_service hwclock.sh >/dev/null
 
-if [ -n "$TZ" ]; then
-	rm -f /etc/localtime
+TZ="$(getbootparam tz 2>/dev/null)"
+if [ -n "$TZ" ] && [ -f "/usr/share/zoneinfo/$TZ" ]; then
+	rm -f /etc/localtime /etc/timezone
 	cp "/usr/share/zoneinfo/$TZ" /etc/localtime
-	rm -f /etc/timezone
 	echo "$TZ" > /etc/timezone
 fi
 
