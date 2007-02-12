@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.92) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.92) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Cleanup hwclock/timezone stuff
     - use /etc/init.d/hwclock.sh
     - default to localtime, make that default persist
