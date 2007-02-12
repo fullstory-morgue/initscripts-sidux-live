@@ -923,21 +923,24 @@ start_service udev-mtab S
 ###############################################################################
 #  Set clock (Local time is more often used than GMT, so it is default)
 ###############################################################################
-UTC=""
 if checkbootparam utc >/dev/null 2>&1 || checkbootparam gmt >/dev/null 2>&1; then
 	[ -w /etc/default/rcS ] && sed -i 's/^UTC=.*/UTC=yes/' /etc/default/rcS
+	TZ="UTC"
 else
 	[ -w /etc/default/rcS ] && sed -i 's/^UTC=.*/UTC=no/' /etc/default/rcS
 fi
 
-start_service hwclock.sh >/dev/null
+if checkbootparam tz >/dev/null 2>&1; then
+	TZ="$(getbootparam tz 2>/dev/null)"
+fi
 
-TZ="$(getbootparam tz 2>/dev/null)"
 if [ -n "$TZ" ] && [ -f "/usr/share/zoneinfo/$TZ" ]; then
 	rm -f /etc/localtime /etc/timezone
 	cp "/usr/share/zoneinfo/$TZ" /etc/localtime
 	echo "$TZ" > /etc/timezone
 fi
+
+start_service hwclock.sh >/dev/null
 
 splash_progress 40
 
