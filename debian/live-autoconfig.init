@@ -1113,7 +1113,7 @@ fi
 ###############################################################################
 # Load fuse module
 if [ -x /etc/init.d/fuse-utils ]; then
-	start_service /etc/init.d/fuse-utils >/dev/null
+	start_service fuse-utils >/dev/null
 else
 	modprobe fuse >/dev/null 2>&1
 fi
