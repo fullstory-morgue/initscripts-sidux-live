@@ -1112,7 +1112,11 @@ fi
 # load required modules
 ###############################################################################
 # Load fuse module
-modprobe fuse >/dev/null 2>&1
+if [ -x /etc/init.d/fuse-utils ]; then
+	start_service /etc/init.d/fuse-utils >/dev/null
+else
+	modprobe fuse >/dev/null 2>&1
+fi
 
 # load capability LSM (needed for hal)
 modprobe capability >/dev/null 2>&1
