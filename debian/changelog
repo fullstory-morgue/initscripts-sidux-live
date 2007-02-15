@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.3.93) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.93) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Use fuse-utils initscript to prepare fuse related stuff.
 
  -- Kel Modderman <kel@otaku42.de>  Wed, 14 Feb 2007 22:33:33 +1000
