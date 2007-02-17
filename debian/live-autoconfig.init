@@ -1428,15 +1428,23 @@ echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
 ###############################################################################
 # utility functions for perstent config/home handling below
 ###############################################################################
+# checks a location for a file case insensitve (e.g. checkifile /mnt foo.sh)
+checkifile()
+{
+	CHECKIFILE=$(find $1 -nowarn -maxdepth 1 -type f -iname "$2" 2>/dev/null)
+	[ -z "$CHECKIFILE" ] && return 1
+	return 0
+}
+
 findfile()
 {
 	FOUND=""
 	# search all partitions for a file in the root directory
 	for i in /media/[sh]d[a-z] /media/[sh]d[a-z][1-9] /media/[sh]d[a-z][1-9]?*; do
 		# See if it's already mounted
-		[ -f "$i/$1" ] &&  { echo "$i/$1"; return 0; }
+		checkifile $i $1 &&  { echo "$i/$1"; return 0; }
 		if [ -d "$i" ] && mount -r "$i" 2>/dev/null; then
-			[ -f "$i/$1" ] && FOUND="$i/$1"
+			checkifile $i $1 && FOUND="$i/$1"
 			umount -l "$i" 2>/dev/null
 			[ -n "$FOUND" ] && { echo "$FOUND"; return 0; }
 		fi
@@ -1501,7 +1509,7 @@ checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
 
 if [ -z "$NOCONFIGCD" ]; then
 	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/${FLL_DISTRO_NAME}.sh)
-	MYCONFIG="$(ls -1 /cdrom/${FLL_IMAGE_DIR}/ | grep -i "^${FLL_DISTRO_NAME}\\.sh$" 2>/dev/null)"
+	MYCONFIG="$(checkifile /cdrom/${FLL_IMAGE_DIR}/ "${FLL_DISTRO_NAME}.sh")"
 	if [ -n "$MYCONFIG" -a -f "/cdrom/${FLL_IMAGE_DIR}/$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
 		echo ""
 		echo " ${GREEN}${FLL_DISTRO_NAME} Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
@@ -1552,7 +1560,7 @@ fi
 
 if [ -n "$MYHOMEDIR" ]; then
 	if trymount "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"; then
-		[ -f "$MYHOMEMOUNTPOINT/$FLL_PERSISTENT_HOME" ] && MYHOMEDIR="$MYHOMEMOUNTPOINT/$FLL_PERSISTENT_HOME"
+		MYHOMEFILE=$(checkifile $MYHOMEMOUNTPOINT/ $FLL_PERSISTENT_HOME) && MYHOMEDIR="$MYHOMEFILE"
 		while read device mountpoint fs relax; do
 			case "$mountpoint" in
 				*$MYHOMEMOUNTPOINT*)
@@ -1640,8 +1648,7 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 		if [ -z "$FOUND_CONFIG" ]; then
 			echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for ${FLL_DISTRO_NAME} configuration files...${NORMAL}"
 			if trymount "$MYCONFDEVICE" "$MYCONFMOUNTPOINT"; then
-				MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Nn][Oo][Pp][Pp][Ii][Xx].[Ss][Hh] 2>/dev/null)"
-				[ -z "$MYCONFIG" ] && MYCONFIG="$(ls -1d $MYCONFDIR/[Kk][Aa][Nn][Oo][Tt][Ii][Xx].[Ss][Hh] 2>/dev/null)"
+				MYCONFIG="$(checkifile $MYCONFDIR/ "${FLL_DISTRO_NAME}.sh")"
 				if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
 					echo ""
 					FOUND_CONFIG="yes"
@@ -1658,12 +1665,14 @@ if [ -z "$NOCONFIGCHEAT" ]; then
 fi
 
 # ${FLL_DISTRO_NAME}.sh
-if [ -z "$NOCONFIGHOME" -a -f /home/${FLL_LIVE_USER}/.${FLL_DISTRO_NAME}.sh ]; then
-	MYCONFIG="$(ls -1d /home/${FLL_LIVE_USER}/.${FLL_DISTRO_NAME}.sh 2>/dev/null)"
-	echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
-	echo "6" > /proc/sys/kernel/printk
-	. "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
-	echo "0" > /proc/sys/kernel/printk	
+if [ -z "$NOCONFIGHOME" ]; then
+	MYCONFIG="$(checkifile /home/${FLL_LIVE_USER}/ .${FLL_DISTRO_NAME}.sh)"
+	if [ -n "$MYCONFIG" ]; then
+		echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
+		echo "6" > /proc/sys/kernel/printk
+		. "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
+		echo "0" > /proc/sys/kernel/printk
+	fi
 fi
 
 ###############################################################################

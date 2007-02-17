@@ -1,8 +1,14 @@
 initscripts-sidux-live (0.3.94) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 15 Feb 2007 21:28:18 +0100
+  [ Niall Walsh ]
+  * Update handling of config and home files to clean it up and search case
+    insensitively for auto/scan/find (finally remember to go back and replace the
+    [kK][nN] test)
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Sat, 17 Feb 2007 17:25:54 +0000
 
 initscripts-sidux-live (0.3.93) unstable; urgency=low
 
