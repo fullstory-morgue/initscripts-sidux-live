@@ -346,8 +346,8 @@ case "$LANGUAGE" in
 		## Irish Gaeilge version
 		LANG="ga_IE.UTF-8"
 		KEYTABLE="uk"
-		KDEKYBOARDS="il"
-		XKBLAYOUT="il"
+		KDEKYBOARDS="ie"
+		XKBLAYOUT="ie"
 		TZ="Europe/Dublin"
 		CD_COUNTRY="British"
 		;;
