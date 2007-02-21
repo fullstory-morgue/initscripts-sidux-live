@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.3.95) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 21 Feb 2007 02:30:44 +0100
+
 initscripts-sidux-live (0.3.94) unstable; urgency=low
 
   * Update handling of config and home files to clean it up and search case
