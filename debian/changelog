@@ -1,12 +1,8 @@
-initscripts-sidux-live (0.3.94) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.94) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * Update handling of config and home files to clean it up and search case
-    insensitively for auto/scan/find (finally remember to go back and replace the
-    [kK][nN] test)
+    insensitively for auto/scan/find (finally remember to go back and replace
+    the [kK][nN] test)
   * Fix kde and X keyboards for lang=ga
 
  -- Niall Walsh <niallwalsh@users.berlios.de>  Tue, 20 Feb 2007 04:37:21 +0000
