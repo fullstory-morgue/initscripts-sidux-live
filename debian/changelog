@@ -1,8 +1,9 @@
-initscripts-sidux-live (0.3.95) UNRELEASED; urgency=low
+initscripts-sidux-live (0.3.95) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * fix myconfig bugs once and for all.
+  * /etc/modules.conf is a kernel 2.4 orphan, nuke it.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 21 Feb 2007 02:30:44 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 22 Feb 2007 16:19:50 +0100
 
 initscripts-sidux-live (0.3.94) unstable; urgency=low
 

@@ -2,7 +2,7 @@
 # Basic system configuration and hardware setup
 # (C) Klaus Knopper <knopper@knopper.net> 2004
 # (C) 2003-2006 Joerg Schirottke <master@kanotix.com>
-# (C) 2005-2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+# (C) 2005-2007 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 # (C) 2007 Kel Modderman <kel@otaku42.de>
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
@@ -16,7 +16,6 @@ FLL_IMAGE_DIR="SIDUX"
 FLL_DISTRO_NAME="sidux"
 FLL_MOUNTPOINT="/SIDUX"
 FLL_LIVE_USER="sidux"
-FLL_PERSISTENT_HOME="sidux.img"
 FLL_WALLPAPER="/usr/share/wallpapers/sidux.jpg"
 
 X_CONF="/etc/X11/xorg.conf"
@@ -168,26 +167,6 @@ fi
 ###############################################################################
 INTERACTIVE=""
 stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
-
-###############################################################################
-# Check if we want the config floppy
-###############################################################################
-MYCONF=""
-case "$CMDLINE" in
-	*\ myconf*|*\ floppyconf*|*\ custom*|*\ config*)
-		MYCONF="yes"
-		;;
-esac
-
-if [ -n "$MYCONF" ]; then
-	# Check for given config directory
-	MYCONFDIR="$(getbootparam 'myconfig')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'myconf')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconfig')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'floppyconf')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'custom')"
-	[ -n "$MYCONFDIR" ] || MYCONFDIR="$(getbootparam 'config')"
-fi
 
 ###############################################################################
 # set hostname
@@ -1213,8 +1192,6 @@ if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
 		;;
 	esac
 	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
-	# Something went wrong ?
-	[ ! -r /etc/modules.conf ] && ln -sf ${FLL_MOUNTPOINT}/etc/modules.conf /etc/modules.conf
 fi
 
 RUNLEVEL="$(runlevel)"
@@ -1424,256 +1401,6 @@ else
 	done
 fi
 echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
-
-###############################################################################
-# utility functions for perstent config/home handling below
-###############################################################################
-# checks a location for a file case insensitve (e.g. checkifile /mnt foo.sh)
-checkifile()
-{
-	CHECKIFILE=$(find $1 -nowarn -maxdepth 1 -type f -iname "$2" 2>/dev/null)
-	[ -z "$CHECKIFILE" ] && return 1
-	return 0
-}
-
-findfile()
-{
-	FOUND=""
-	# search all partitions for a file in the root directory
-	for i in /media/[sh]d[a-z] /media/[sh]d[a-z][1-9] /media/[sh]d[a-z][1-9]?*; do
-		# See if it's already mounted
-		checkifile $i $1 &&  { echo "$i/$1"; return 0; }
-		if [ -d "$i" ] && mount -r "$i" 2>/dev/null; then
-			checkifile $i $1 && FOUND="$i/$1"
-			umount -l "$i" 2>/dev/null
-			[ -n "$FOUND" ] && { echo "$FOUND"; return 0; }
-		fi
-	done
-	return 2
-}
-
-# Load aes and cryptoloop
-modprobe aes 2>/dev/null
-modprobe cryptoloop 2>/dev/null
-
-# Try to mount this filesystem read-only, without or with encryption
-trymount()
-{
-	# Check if already mounted
-	case "$(cat /proc/mounts)" in
-		*\ $2\ *)
-			return 0
-			;;
-	esac
-
-	# Apparently, mount-aes DOES autodetect AES loopback files.
-	[ -b "$1" ] && { mount -t auto -o ro "$1" "$2" 2>/dev/null; RC="$?"; }
-
-	# We need to mount crypto-loop files with initial rw support
-	[ -f "$1" ] && { mount -t auto -o loop,rw "$1" "$2" 2>/dev/null; RC="$?"; }
-	# Mount succeeded?
-	[ "$RC" = "0" ] && return 0
-	echo ""
-	echo "${CYAN}Filesystem not autodetected, trying to mount $1 with AES256 encryption${NORMAL}"
-	a="y"
-	while [ "$a" != "n" -a "$a" != "N" ]; do
-		# We need to mount crypto-loop files with initial rw support
-		mount -t auto -o loop,rw,encryption=AES256 "$1" "$2" && return 0
-		echo -n "${RED}Mount failed, retry? [Y/n] ${NORMAL}"
-		read a
-	done
-	return 1
-}
-
-# Unionfs
-getfiledev()
-{
-	filedev="$(echo $MYPARAM | grep ^/media/ | tail -n 1 | sed s/\\/media\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
-	[ -z "$filedev" ] && filedev="$(echo $MYPARAM | grep ^/dev/ | tail -n 1 | sed s/\\/dev\\/\\\([^\\/]\\+\\\).*/\\/dev\\/\\\1/)"
-}
-
-getfilepath()
-{
-	filepath="$(echo $MYPARAM | grep ^/media/ | sed s/\\/media\\/\\\([^\\/]\\+\\\)\\///)"
-	[ -z "$filepath" ] && filepath="$(echo $MYPARAM | grep ^/dev/ | sed s/\\/dev\\/\\\([^\\/]\\+\\\)\\///)"
-}
-
-###############################################################################
-#	cdrom config script
-###############################################################################
-# Move up with other cheats code later
-checkbootparam noconfigall && NOCONFIGCD="Y" && NOCONFIGHOME="Y" && NOCONFIGCHEAT="Y"
-checkbootparam noconfigcd && NOCONFIGCD="Y"
-checkbootparam noconfighome && NOCONFIGHOME="Y"
-checkbootparam noconfigcheat && NOCONFIGCHEAT="Y"
-
-if [ -z "$NOCONFIGCD" ]; then
-	# Check for extra shellscript on CD-Rom (/cdrom/${FLL_IMAGE_DIR}/${FLL_DISTRO_NAME}.sh)
-	MYCONFIG="$(checkifile /cdrom/${FLL_IMAGE_DIR}/ "${FLL_DISTRO_NAME}.sh")"
-	if [ -n "$MYCONFIG" -a -f "/cdrom/${FLL_IMAGE_DIR}/$MYCONFIG" -a -z "$NOCONFIGCD" ]; then
-		echo ""
-		echo " ${GREEN}${FLL_DISTRO_NAME} Configuration file found on CD, executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
-		echo "6" > /proc/sys/kernel/printk
-		. /cdrom/${FLL_IMAGE_DIR}/${MYCONFIG} || true
-		echo "0" > /proc/sys/kernel/printk
-	fi
-fi
-
-###############################################################################
-#	persistent /home
-###############################################################################
-# Check for persistent homedir option and eventually mount /home from there,
-# or use a loopback file.
-HOMEDIR="$(getbootparam home)"
-MYHOMEDEVICE=""
-MYHOMEMOUNTPOINT=""
-MYHOMEDIR=""
-if [ -n "$HOMEDIR" ]; then
-	case "$HOMEDIR" in
-		/dev/*)
-			MYHOMEDEVICE="${HOMEDIR##/dev/}"
-			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT=$(grep $MYHOMEDEVICE /proc/mounts | cut -d' ' -f2)
-			[ -z "$MYHOMEMOUNTPOINT" ] && MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
-			MYHOMEDIR="/media/${HOMEDIR##/dev/}"
-			;;
-		/media/*)
-			MYHOMEDEVICE="${HOMEDIR##/media/}"
-			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT=$(grep $MYHOMEDEVICE /proc/mounts | cut -d' ' -f2)
-			[ -z "$MYHOMEMOUNTPOINT" ] && MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
-			MYHOMEDIR="$HOMEDIR"
-			;;
-		[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-			MYHOMEDIR="$(findfile $FLL_PERSISTENT_HOME)"
-			MYHOMEDEVICE="${MYHOMEDIR##/media/}"
-			MYHOMEDEVICE="/dev/${MYHOMEDEVICE%%/*}"
-			MYHOMEMOUNTPOINT=$(grep $MYHOMEDEVICE /proc/mounts | cut -d' ' -f2)
-			[ -z "$MYHOMEMOUNTPOINT" ] && MYHOMEMOUNTPOINT="/media/${MYHOMEDEVICE##/dev/}"
-			;;
-		*)
-			echo "${CRE}${RED}Invalid ${CYAN}home=${RED} option '$HOMEDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
-			echo "${CRE}${RED}Option ignored.${NORMAL}"
-			;;
-	esac
-fi
-
-if [ -n "$MYHOMEDIR" ]; then
-	if trymount "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"; then
-		MYHOMEFILE=$(checkifile $MYHOMEMOUNTPOINT/ $FLL_PERSISTENT_HOME) && MYHOMEDIR="$MYHOMEFILE"
-		while read device mountpoint fs relax; do
-			case "$mountpoint" in
-				*$MYHOMEMOUNTPOINT*)
-					case "$fs" in 
-						*[Nn][Tt][Ff][Ss]*)
-							umount "$MYHOMEMOUNTPOINT"; echo " ${RED}ERROR: WON'T MOUNT NTFS FILESYSTEM ON $MYHOMEDEVICE READ/WRITE!"
-							break
-							;;
-						*[Ff][Aa][Tt]*)
-							# Note: This currently won't work with encrypted partitions
-							mount -o remount,rw,uid=${FLL_LIVE_USER},gid=$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4),umask=002,shortname=mixed,quiet "$MYHOMEDEVICE" "$MYHOMEMOUNTPOINT"
-							if [ ! -f "$MYHOMEDIR" ]; then
-								echo " ${RED}WARNING: FAT32 is not a good filesystem option for /home/${FLL_LIVE_USER} (missing socket/symlink support).${NORMAL}"
-								echo " ${RED}WARNING: Better use an ext2 loopback file on this device, and boot with home=$MYHOMEDEVICE/$FLL_PERSISTENT_HOME.${NORMAL}"
-							fi
-						;;
-					esac
-					if mount -o remount,rw "$MYHOMEMOUNTPOINT"; then
-						echo -n " ${GREEN}Mounting ${YELLOW}$MYHOMEDIR${GREEN} as ${YELLOW}/home/${FLL_LIVE_USER}${GREEN}... "
-						if [ -f "$MYHOMEDIR" ]; then
-							# It's a loopback file, mount it over the /home/${FLL_LIVE_USER} directory
-							trymount "$MYHOMEDIR" /home/${FLL_LIVE_USER}
-							RC="$?"
-							[ "$RC" = "0" ] && ERROR="$(mount -o remount,rw /home/${FLL_LIVE_USER} 2>&1)"
-							RC="$?"
-						else
-							# Do a --bind mount
-							ERROR="$(mount --bind "$MYHOMEDIR" /home/${FLL_LIVE_USER} 2>&1)"
-							RC="$?"
-						fi
-						[ "$RC" = "0" ] && echo "${GREEN}/home/${FLL_LIVE_USER} mounted OK.${NORMAL}" || { echo "${RED}FAILED."; echo "$ERROR${NORMAL}"; }
-					fi
-					break
-					;;
-			esac
-		done <<EOT
-$(cat /proc/mounts)
-EOT
-	fi
-fi
-
-###############################################################################
-#	persistent configuration
-###############################################################################
-if [ -z "$NOCONFIGCHEAT" ]; then
-	# Check for configuration floppy add-on if not running from HD
-	if [ -n "$MYCONF" ]; then
-		FOUND_CONFIG=""
-		if [ -n "$MYCONFDIR" ]; then
-			case "$MYCONFDIR" in
-				/dev/*)
-					MYCONFDEVICE="${MYCONFDIR##/dev/}"
-					MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-					MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
-					MYCONFDIR="/media/${MYCONFDIR##/dev/}"
-					;;
-				/media/*)
-					MYCONFDEVICE="${MYCONFDIR##/media/}"
-					MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-					MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
-					;;
-				[Aa][Uu][Tt][Oo]|[Ss][Cc][Aa][Nn]|[Ff][Ii][Nn][Dd])
-					MYCONFDIR="$(findfile ${FLL_DISTRO_NAME}.sh)"
-					if [ -n "$MYCONFDIR" ]; then
-						MYCONFDEVICE="${MYCONFDIR##/media/}"
-						MYCONFDEVICE="/dev/${MYCONFDEVICE%%/*}"
-						MYCONFMOUNTPOINT="/media/${MYCONFDEVICE##/dev/}"
-						MYCONFDIR="${MYCONFMOUNTPOINT}"
-					else
-						FOUND_CONFIG="none"
-					fi
-					;;
-				*)
-					echo "${CRE}${RED}Invalid configdir '$MYCONFDIR' specified (must start with /dev/ or /media/ or 'scan').${NORMAL}"
-					echo "${CRE}${RED}Option ignored.${NORMAL}"
-					FOUND_CONFIG="invalid"
-					;;
-			esac
-		else
-			MYCONFDEVICE="/dev/fd0"
-			MYCONFMOUNTPOINT="/media/floppy0"
-			MYCONFDIR="/media/floppy0"
-		fi
-
-		if [ -z "$FOUND_CONFIG" ]; then
-			echo -n "${CRE}${BLUE}Checking ${MAGENTA}${MYCONFDIR}${BLUE} for ${FLL_DISTRO_NAME} configuration files...${NORMAL}"
-			if trymount "$MYCONFDEVICE" "$MYCONFMOUNTPOINT"; then
-				MYCONFIG="$(checkifile $MYCONFDIR/ "${FLL_DISTRO_NAME}.sh")"
-				if [ -n "$MYCONFIG" -a -f "$MYCONFIG" ]; then
-					echo ""
-					FOUND_CONFIG="yes"
-					echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
-					echo "6" > /proc/sys/kernel/printk
-					. "$MYCONFIG" "$MYCONFDIR" || true
-					echo "0" > /proc/sys/kernel/printk
-				fi
-				umount "$MYCONFMOUNTPOINT" 2>/dev/null
-			fi
-		fi
-		[ -n "$FOUND_CONFIG" ] || echo " ${BLUE}Not present.${NORMAL}"
-	fi
-fi
-
-# ${FLL_DISTRO_NAME}.sh
-if [ -z "$NOCONFIGHOME" ]; then
-	MYCONFIG="$(checkifile /home/${FLL_LIVE_USER}/ .${FLL_DISTRO_NAME}.sh)"
-	if [ -n "$MYCONFIG" ]; then
-		echo " ${GREEN}Found, now executing ${MAGENTA}$MYCONFIG${GREEN}.${NORMAL}"
-		echo "6" > /proc/sys/kernel/printk
-		. "$MYCONFIG" "/home/${FLL_LIVE_USER}" || true
-		echo "0" > /proc/sys/kernel/printk
-	fi
-fi
 
 ###############################################################################
 # power management
