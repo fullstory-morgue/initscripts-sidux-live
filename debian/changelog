@@ -1,3 +1,12 @@
+initscripts-sidux-live (0.4.0) unstable; urgency=low
+
+  * Bump package version number.
+  * Remove legacy splashy code from live-autoconfig.
+  * Preseed locale/console-data/keymap debconf stuff earlier, before
+    perofrming keymap activating steps.
+
+ -- Kel Modderman <kel@otaku42.de>  Fri, 23 Feb 2007 08:17:37 +1000
+
 initscripts-sidux-live (0.3.95) unstable; urgency=low
 
   * fix myconfig bugs once and for all.

@@ -803,27 +803,18 @@ CD_LAYOUT_PATH=$(echo $CD_COUNTRY | tr [A-Z] [a-z] | cut -d'-' -f1)
 CD_FULL_FIX="$(echo $CD_FULL | cut -d'-' -f1)"
 CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
 
-###############################################################################
-# enable splash if possible
-###############################################################################
-SPLASH=$(getbootparam "splash" 2>/dev/null)
-[ -z "$SPLASH" ] && checkbootparam "splash" && SPLASH=on
-[ "$SPLASH" = "off" ] && SPLASH=""
-
-if [ -n "$SPLASH" ]; then
-	RES=$(fbresolution 2>/dev/null)
-	[ -z "$RES" ] && RES=1024x768
-	if [ "$RES" = "1024x768" -o "$RES" = "800x600" ] && [ -x /sbin/splashy ]; then
-		[ -p /etc/splashy/splashy.fifo ] || /sbin/splashy boot
-	fi
-fi
+echo "locales locales/default_environment_locale select $LANG \
+console-data console-data/keymap/policy select Select keymap from arch list \
+console-data console-data/keymap/family select $CD_FAMILY \
+console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
+console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
+console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-selections
 
 ###############################################################################
 # / must be read-write in any case, starting from here
 ###############################################################################
 mount -o remount,rw / 2>/dev/null
-
-splash_progress 10
 
 ###############################################################################
 # begin hardware detection and autoconfiguration
@@ -868,8 +859,6 @@ fi
 # mount special filesystems under /dev
 start_service mountdevsubfs.sh
 
-splash_progress 20
-
 ###############################################################################
 # setup console-data (before interactive setup stage)
 ###############################################################################
@@ -881,17 +870,7 @@ echo -n "${BLUE}Configuring console for a ${YELLOW}${KEYTABLE} keymap${BLUE}...$
 # try this, it takes care of unicode start
 start_service keymap.sh
 
-echo "locales locales/default_environment_locale select $LANG \
-console-data console-data/keymap/policy select Select keymap from arch list \
-console-data console-data/keymap/family select $CD_FAMILY \
-console-data console-data/keymap/$CD_FAMILY/layout select $CD_FULL_FIX \
-console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/variant select $CD_VARIANT \
-console-data console-data/keymap/$CD_FAMILY/$CD_LAYOUT_PATH/$CD_VARIANT_PATH/keymap select $CD_KEYMAP \
-console-data console-data/keymap/full select $CD_FULL" | /usr/bin/debconf-set-selections
-
 echo "${BLUE}Done.${NORMAL}"
-
-splash_progress 30
 
 ###############################################################################
 # update mtab
@@ -922,8 +901,6 @@ if [ -f "/usr/share/zoneinfo/$TZ" ]; then
 fi
 
 start_service hwclock.sh >/dev/null
-
-splash_progress 40
 
 ###############################################################################
 # hwsetup
@@ -972,7 +949,6 @@ if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
 else
 	echo " ${RED}Please check.${NORMAL}"
 fi
-splash_progress 60
 
 # activate PC Speaker
 modprobe pcspkr >/dev/null 2>&1
@@ -1161,8 +1137,6 @@ if [ -n "$INTERACTIVE" ]; then
 	[ "$a" != "n" ] && mouseconfig
 fi
 
-splash_progress 80
-
 ###############################################################################
 # automatic X Setup
 ###############################################################################
@@ -1319,7 +1293,6 @@ if [ -n "$partitions" ]; then
 $(cat /etc/fstab)
 EOT
 fi
-splash_progress 90
 
 ###############################################################################
 # interactively create swapfiles on DOS partitions (if necessary and possible)
@@ -1578,18 +1551,12 @@ if [ -n "$IS_LAPTOP" ]; then
 	fi
 fi
 
-splash_progress 100
-
-if checkbootparam "splash"; then
-	sleep 1
-	[ -p /etc/splashy/splashy.fifo ] && (echo exit > /etc/splashy/splashy.fifo) &
-	rm -f /etc/splashy/splashy.fifo
-	sleep 1
-fi
+###############################################################################
+# re-enable printk's and signals
+###############################################################################
 
 echo "6" > /proc/sys/kernel/printk
 
-# Re-enable signals
 trap 2 3 11
 
 exit 0
