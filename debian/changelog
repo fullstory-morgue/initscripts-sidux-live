@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.4.1) UNRELEASED; urgency=low
+initscripts-sidux-live (0.4.1) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Whitespace and syntactical cleanup of cpufreq-detect.sh. Remove unused
     variable CPU.
 
