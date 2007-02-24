@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.4.2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 25 Feb 2007 00:37:32 +0100
+
 initscripts-sidux-live (0.4.1) unstable; urgency=low
 
   * Whitespace and syntactical cleanup of cpufreq-detect.sh. Remove unused
