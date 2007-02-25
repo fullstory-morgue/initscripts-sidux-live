@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.4.3) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 25 Feb 2007 19:05:25 +0100
+
 initscripts-sidux-live (0.4.2) unstable; urgency=low
 
   * split belgian locales into fr-be and nl-be, thanks to baldyeti for
