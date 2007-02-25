@@ -193,7 +193,7 @@ LANGUAGE="$(getbootparam lang 2>/dev/null)"
 # The default language/keyboard to use. This CANNOT be autoprobed.
 # Most of these variables will be used to generate the KDE defaults
 case "$LANGUAGE" in
-	de-utf8|de)
+	de)
 		# German version UTF-8
 		#LANGUAGE="de_DE:de"
 		LANG="de_DE.UTF-8"
@@ -203,7 +203,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Berlin"
 		CD_COUNTRY="German"
 		;;
-	au-utf8|au)
+	au)
 		## Australian version
 		#LANGUAGE="en_AU:en"
 		LANG="en_AU.UTF-8"
@@ -213,17 +213,7 @@ case "$LANGUAGE" in
 		TZ="Australia/Sydney"
 		CD_COUNTRY="us_american"
 		;;
-	be-utf8|be)
-		## Belgian version
-		#LANGUAGE="be_BY:be"
-		LANG="be_BY.UTF-8"
-		KEYTABLE="be2-latin1"
-		KDEKEYBOARDS="be,fr,us"
-		XKBLAYOUT="be"
-		TZ="Europe/Brussels"
-		CD_COUNTRY="Belgian"
-		;;
-	bg-utf8|bg)
+	bg)
 		## Bulgarian version
 		#LANGUAGE="bg_BG:bg"
 		LANG="bg_BG.UTF-8"
@@ -233,7 +223,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Sofia"
 		CD_COUNTRY="Bulgarian"
 		;;
-	br-utf8|br)
+	br)
 		## Brazilian Version
 		#LANGUAGE="pt_BR:pt"
 		LANG="pt_BR.UTF-8"
@@ -243,7 +233,7 @@ case "$LANGUAGE" in
 		TZ="America/Sao_Paulo"
 		CD_COUNTRY="Brazilian"
 		;;
-	ch-utf8|ch)
+	ch)
 		## Swiss version (basically de with some modifications)
 		#LANGUAGE="de_CH:de"
 		LANG="de_CH.UTF-8"
@@ -253,7 +243,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Zurich"
 		CD_COUNTRY="Swiss-de"
 		;;
-	cn-utf8|cn)
+	cn)
 		## Simplified Chinese version
 		LANG="zh_CN.UTF-8"
 		KEYTABLE="us"
@@ -262,7 +252,7 @@ case "$LANGUAGE" in
 		TZ="Asia/Shanghai"
 		CD_COUNTRY=""
 		;;
-	cs-utf8|cz-utf8|cs|cz)
+	cs|cz)
 		## Czech version
 		#LANGUAGE="cs_CZ:cs"
 		LANG="cs_CZ.UTF-8"
@@ -272,7 +262,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Prague"
 		CD_COUNTRY="Czech-qwerty"
 		;;
-	dk-utf8|da-utf8|dk|da)
+	dk|da)
 		## Dansk version
 		LANG="da_DK.UTF-8"
 		KEYTABLE="dk"
@@ -281,7 +271,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Copenhagen"
 		CD_COUNTRY="Danish"
 		;;
-	el-utf8|el)
+	el)
 		## Greek version
 		#LANGUAGE="el_GR:el"
 		LANG="el_GR.UTF-8"
@@ -291,7 +281,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Athens"
 		CD_COUNTRY="Greek"
 		;;
-	es-utf8|es)
+	es)
 		## Spanish version
 		#LANGUAGE="es_ES:es"
 		LANG="es_ES.UTF-8"
@@ -301,7 +291,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Madrid"
 		CD_COUNTRY="Spanish"
 		;;
-	fi-utf8|fi)
+	fi)
 		## Finnish version, though we may not have the kde-i18n files
 		#LANGUAGE="fi_FI:fi"
 		LANG="fi_FI.UTF-8"
@@ -311,7 +301,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Helsinki"
 		CD_COUNTRY="Swedish"
 		;;
-	fr-utf8|fr)
+	fr)
 		## French version
 		#LANGUAGE="fr_FR"
 		LANG="fr_FR.UTF-8"
@@ -321,7 +311,17 @@ case "$LANGUAGE" in
 		TZ="Europe/Paris"
 		CD_COUNTRY="French"
 		;;
-	ga-utf8|ga)
+	fr-be)
+		## Belgian version
+		#LANGUAGE="fr_BE:fr"
+		LANG="fr_BE.UTF-8"
+		KEYTABLE="be2-latin1"
+		KDEKEYBOARDS="be,fr,us"
+		XKBLAYOUT="be"
+		TZ="Europe/Brussels"
+		CD_COUNTRY="Belgian"
+		;;
+	ga)
 		## Irish Gaeilge version
 		LANG="ga_IE.UTF-8"
 		KEYTABLE="uk"
@@ -330,7 +330,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Dublin"
 		CD_COUNTRY="British"
 		;;
-	he-utf8|il-utf8|he|il)
+	he|il)
 		## Hebrew version
 		#LANGUAGE="he_IL:he"
 		LANG="he_IL.UTF-8"
@@ -340,7 +340,7 @@ case "$LANGUAGE" in
 		TZ="Asia/Jerusalem"
 		CD_COUNTRY="Hebrew"
 		;;
-	hr-utf8|hr)
+	hr)
 		## Croatian version 
 		#LANGUAGE=hr_HR:hr" 
 		LANG="hr_HR.UTF-8" 
@@ -350,7 +350,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Zagreb" 
 		CD_COUNTRY="Croatian"
 		;;
-	ie-utf8|ie)
+	ie)
 		## Irish (English) version
 		#LANGUAGE="en_IE:en"
 		LANG="en_IE.UTF-8"
@@ -360,7 +360,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Dublin"
 		CD_COUNTRY="British"
 		;;
-	it-utf8|it)
+	it)
 		## Italian version
 		#LANGUAGE="it_IT"
 		LANG="it_IT.UTF-8"
@@ -370,7 +370,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Rome"
 		CD_COUNTRY="Italian"
 		;;
-	ja-utf8|ja)
+	ja)
 		## (limited) Japanese version
 		#LANGUAGE="ja_JP:ja"
 		LANG="ja_JP.UTF-8"
@@ -380,7 +380,7 @@ case "$LANGUAGE" in
 		TZ="Asia/Tokyo"
 		CD_COUNTRY="Japanese"
 		;;
-	nl-utf8|nl)
+	nl)
 		## Dutch version
 		#LANGUAGE="nl_NL:nl"
 		LANG="nl_NL.UTF-8"
@@ -390,7 +390,17 @@ case "$LANGUAGE" in
 		TZ="Europe/Amsterdam"
 		CD_COUNTRY="Dutch"
 		;;
-	pl-utf8|pl)
+	nl-be)
+		## Belgian version
+		#LANGUAGE="nl_BE:nl"
+		LANG="nl_BE.UTF-8"
+		KEYTABLE="be2-latin1"
+		KDEKEYBOARDS="be,fr,us"
+		XKBLAYOUT="be"
+		TZ="Europe/Brussels"
+		CD_COUNTRY="Belgian"
+		;;
+	pl)
 		## Polish version
 		#LANGUAGE="pl_PL:pl"
 		LANG="pl_PL.UTF-8"
@@ -400,7 +410,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Warsaw"
 		CD_COUNTRY="Polish"
 		;;
-	pt-utf8|pt)
+	pt)
 		## Portuguese version
 		#LANGUAGE="pt_PT:pt"
 		LANG="pt_PT.UTF-8"
@@ -410,7 +420,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Lisbon"
 		CD_COUNTRY="Portugese"
 		;;
-	ru-utf8|ru)
+	ru)
 		## Russian version
 		#LANGUAGE="ru_RU:ru"
 		LANG="ru_RU.UTF-8"
@@ -420,7 +430,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Moscow"
 		CD_COUNTRY="Russian"
 		;;
-	sk-utf8|sk)
+	sk)
 		## Slovak version (guessed)
 		#LANGUAGE="sk_SK:sk"
 		LANG="sk_SK.UTF-8"
@@ -430,7 +440,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Bratislava"
 		CD_COUNTRY="Slovak-qwerty"
 		;;
-	sl-utf8|sl)
+	sl)
 		## Slovenian keyboard
 		#LANGUAGE="sl_SI:sl"
 		LANG="sl_SI.UTF-8"
@@ -441,7 +451,7 @@ case "$LANGUAGE" in
 		#CONSOLEFONT="iso02g"
 		CD_COUNTRY="Slovene"
 		;;
-	tr-utf8|tr)
+	tr)
 		## Turkish version (guessed)
 		#LANGUAGE="tr_TR"
 		LANG="tr_TR.UTF-8"
@@ -451,7 +461,7 @@ case "$LANGUAGE" in
 		TZ="Europe/Istanbul"
 		CD_COUNTRY="Turkish"
 		;;
-	tw-utf8|tw)
+	tw)
 		## Traditional Chinese version (thanks to Chung-Yen Chang)
 		#LANGUAGE="zh_TW:zh"
 		LANG="zh_TW.UTF-8"
@@ -461,7 +471,7 @@ case "$LANGUAGE" in
 		TZ="Asia/Taipei"
 		CD_COUNTRY=""
 		;;
-	uk-utf8|uk)
+	uk)
 		## British version UTF-8
 		#LANGUAGE="en_GB:en"
 		LANG="en_GB.UTF-8"
@@ -471,7 +481,7 @@ case "$LANGUAGE" in
 		TZ="Europe/London"
 		CD_COUNTRY="British"
 		;;
-	us-utf8|us)
+	us)
 		# American version UTF-8
 		#LANGUAGE="en_US:en"
 		LANG="en_US.UTF-8"
