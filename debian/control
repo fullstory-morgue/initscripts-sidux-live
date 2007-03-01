@@ -11,7 +11,6 @@ Architecture: all
 Depends: debconf-utils, distro-defaults, rebuildfstab, udev, eject, pcmciautils, hwsetup-ng, ifplugd, laptop-detect, hwinfo
 Recommends: xorgconfig-sidux, tzdata
 Suggests: unionfs-utils, hotkey-setup
-Conflicts: hotplug-kanotix, fix-cdrom, mkdesktophdicons-kanotix, eject-live, pcmcia-cs, usleep-kanotix, initscripts-kanotix-live
 Description: sidux initscripts for live CDs
  Live specific initscripts for hardware detection and shutdown functions 
  on sidux.
