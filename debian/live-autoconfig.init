@@ -880,8 +880,6 @@ echo -n "${BLUE}Configuring console for a ${YELLOW}${KEYTABLE} keymap${BLUE}...$
 # try this, it takes care of unicode start
 start_service keymap.sh
 
-echo "${BLUE}Done.${NORMAL}"
-
 ###############################################################################
 # update mtab
 ###############################################################################
@@ -1661,7 +1659,7 @@ if [ -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 	touch -r /etc/skel/.kde/share/config/kdeglobals "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" 2>/dev/null
 
 	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
-	sed 's/^LayoutList=.*$/LayoutList='"$FLL_KDEKEYBOARDS"'/' "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
+	sed -i 's/^LayoutList=.*$/LayoutList='"$FLL_KDEKEYBOARDS"'/' "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
 	touch -r /etc/skel/.kde/share/config/kxkbrc "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc" 2>/dev/null
 
 	# Check for custom splashscreen in /cdrom/KNOPPIX
