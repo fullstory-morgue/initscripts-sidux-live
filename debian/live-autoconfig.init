@@ -1546,13 +1546,6 @@ if [ -n "$IS_LAPTOP" ]; then
 fi
 
 ###############################################################################
-# set up X.org
-###############################################################################
-echo -n "${BLUE}Set up X sockets...${NORMAL}"
-
-start_service x11-common S
-
-###############################################################################
 # configure $HOME
 ###############################################################################
 
@@ -1693,6 +1686,25 @@ fi
 chown -R "$FLL_LIVE_USER":"$FLL_LIVE_USER" "${FLL_LIVE_USER_HOME}"
 
 echo "${BLUE}Done.${NORMAL}"
+
+###############################################################################
+# set up X.org
+###############################################################################
+echo -n "${BLUE}Set up X sockets...${NORMAL}"
+
+start_service x11-common S
+
+if [ -x /usr/bin/kdm ]; then
+	cp --remove-destination "${FLL_MOUNTPOINT}/etc/kde3/kdm/kdmrc" /etc/kde3/kdm/kdmrc
+	sed -i	-e "s/^\#\(AutoReLogin=\).*/\1true/" \
+		-e "s/^\#\(AutoLoginEnable\=\).*/\1true/" \
+		-e "s/^\#\(AutoLoginAgain\=\).*/\1true/" \
+		-e "s/^\#\(AutoLoginDelay\=\).*/\10/" \
+		-e "s/^\#\(AutoLoginUser\=\).*/\1${FLL_LIVE_USER}/" \
+			/etc/kde3/kdm/kdmrc
+	
+	start_service kdm 5
+fi
 
 ###############################################################################
 # re-enable printk's and signals

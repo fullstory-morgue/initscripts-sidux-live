@@ -5,8 +5,11 @@ initscripts-sidux-live (0.5.0) unstable; urgency=low
   * move generic X.org setup from xsession-sidux to initscripts-sidux-live.
   * use generic x11-common.
   * keymap.sh resets the prompt, don't print "Done."
+  * use kdm's auto-login feature to start kdm, to-do:
+    - allow using gdm, wdm and ideally xdm as well.
+    - set wm defaults for the preferred dm.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  9 Mar 2007 19:59:01 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 Mar 2007 00:08:56 +0100
 
 initscripts-sidux-live (0.4.3) unstable; urgency=low
 

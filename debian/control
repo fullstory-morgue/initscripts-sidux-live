@@ -9,7 +9,7 @@ Standards-Version: 3.7.2
 Package: initscripts-sidux-live
 Architecture: all
 Depends: debconf-utils, distro-defaults, rebuildfstab, udev, eject, pcmciautils, hwsetup-ng, ifplugd, laptop-detect, hwinfo, rsync
-Recommends: xorgconfig-sidux, tzdata
+Recommends: xorgconfig-sidux, tzdata, kdm
 Suggests: unionfs-utils, hotkey-setup
 Description: sidux initscripts for live CDs
  Live specific initscripts for hardware detection and shutdown functions 
