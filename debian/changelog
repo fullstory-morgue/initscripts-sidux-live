@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.1) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 Mar 2007 00:12:00 +0100
+
 initscripts-sidux-live (0.5.0) unstable; urgency=low
 
   * populate /home/$FLL_LIVE_USER/ in initscripts-sidux-live instead of
