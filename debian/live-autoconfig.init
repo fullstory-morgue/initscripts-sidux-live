@@ -1552,18 +1552,7 @@ fi
 ###############################################################################
 echo -n "${BLUE}Set up X sockets...${NORMAL}"
 
-SOCKET_DIR="/tmp/.X11-unix"
-ICE_DIR="/tmp/.ICE-unix"
-
-mkdir -p   "$SOCKET_DIR"
-chown 0:0  "$SOCKET_DIR"
-chmod 1777 "$SOCKET_DIR"
-
-mkdir -p   "$ICE_DIR"
-chown 0:0  "$ICE_DIR"
-chmod 1777 "$ICE_DIR"
-
-echo "${BLUE}Done.${NORMAL}"
+start_service x11-common S
 
 ###############################################################################
 # configure $HOME
@@ -1688,7 +1677,7 @@ if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" ]; then
 			"${FLL_LIVE_USER_HOME}/.kde/share" \
 			"${FLL_LIVE_USER_HOME}/.kde/share/config"
 	
-	cat > "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" << EOF
+	cat > "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" <<EOF
 kcminputrc Mouse cursorTheme ''
 kcminputrc Mouse cursorSize ''
 kpersonalizerrc General FirstLogin false

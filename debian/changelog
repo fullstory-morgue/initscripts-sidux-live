@@ -4,8 +4,9 @@ initscripts-sidux-live (0.5.0) unstable; urgency=low
     xsession-sidux.
   * move generic X.org setup from initscripts-sidux-live to
     initscripts-sidux-live.
+  * use generic x11-common.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  9 Mar 2007 18:59:23 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri,  9 Mar 2007 19:27:31 +0100
 
 initscripts-sidux-live (0.4.3) unstable; urgency=low
 
