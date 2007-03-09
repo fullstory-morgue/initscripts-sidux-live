@@ -1369,23 +1369,6 @@ else
 fi
 
 ###############################################################################
-# desktop wallpaper (why is this here?)
-###############################################################################
-if [ -r "${FLL_WALLPAPER}" ]; then
-	# Set $BACKGROUND according to distro defaults
-	BACKGROUND="${FLL_WALLPAPER}"
-else
-	# Search for custom background image for KDE/GNOME/X
-	for i in /cdrom/${FLL_IMAGE_DIR}/background /usr/share/wallpapers/sidux; do
-		for j in png jpg gif; do
-			BACKGROUND="$i.$j"
-			[ -e "$BACKGROUND" ] && break 2
-		done
-	done
-fi
-echo 'BACKGROUND="'"$BACKGROUND"'"' >> "$HWSETUP_MAIN"
-
-###############################################################################
 # power management
 ###############################################################################
 PBIOS=
@@ -1522,23 +1505,26 @@ fi
 ###############################################################################
 # keyboard keycodes
 ###############################################################################
-# MS MM keyboard add-on
 # XXX: are these needed? does hotkey-setup take care of them?
-setkeycodes e001 126 >/dev/null 2>&1
-setkeycodes e059 127 >/dev/null 2>&1
+# XXX: have a try wiithout it --slh
+
+# MS MM keyboard add-on
+#setkeycodes e001 126 >/dev/null 2>&1
+#setkeycodes e059 127 >/dev/null 2>&1
+
 # fn keys
-setkeycodes e03b 59 >/dev/null 2>&1
-setkeycodes e008 60 >/dev/null 2>&1
-setkeycodes e007 61 >/dev/null 2>&1
-setkeycodes e03e 62 >/dev/null 2>&1
-setkeycodes e03f 63 >/dev/null 2>&1
-setkeycodes e040 64 >/dev/null 2>&1
-setkeycodes e041 65 >/dev/null 2>&1
-setkeycodes e042 66 >/dev/null 2>&1
-setkeycodes e043 67 >/dev/null 2>&1
-setkeycodes e023 68 >/dev/null 2>&1
-setkeycodes e057 87 >/dev/null 2>&1
-setkeycodes e058 88 >/dev/null 2>&1
+#setkeycodes e03b 59 >/dev/null 2>&1
+#setkeycodes e008 60 >/dev/null 2>&1
+#setkeycodes e007 61 >/dev/null 2>&1
+#setkeycodes e03e 62 >/dev/null 2>&1
+#setkeycodes e03f 63 >/dev/null 2>&1
+#setkeycodes e040 64 >/dev/null 2>&1
+#setkeycodes e041 65 >/dev/null 2>&1
+#setkeycodes e042 66 >/dev/null 2>&1
+#setkeycodes e043 67 >/dev/null 2>&1
+#setkeycodes e023 68 >/dev/null 2>&1
+#setkeycodes e057 87 >/dev/null 2>&1
+#setkeycodes e058 88 >/dev/null 2>&1
 
 # enable hotkeys
 start_service hotkey-setup >/dev/null 2>&1
@@ -1560,6 +1546,166 @@ if [ -n "$IS_LAPTOP" ]; then
 		echo "KDE_SERVICES_LAPTOP=\"true\"" >> /etc/default/kde-services-sidux
 	fi
 fi
+
+###############################################################################
+# set up X.org
+###############################################################################
+echo -n "${BLUE}Set up X sockets...${NORMAL}"
+
+SOCKET_DIR="/tmp/.X11-unix"
+ICE_DIR="/tmp/.ICE-unix"
+
+mkdir -p   "$SOCKET_DIR"
+chown 0:0  "$SOCKET_DIR"
+chmod 1777 "$SOCKET_DIR"
+
+mkdir -p   "$ICE_DIR"
+chown 0:0  "$ICE_DIR"
+chmod 1777 "$ICE_DIR"
+
+echo "${BLUE}Done.${NORMAL}"
+
+###############################################################################
+# configure $HOME
+###############################################################################
+
+# Copy profiles if not already present
+# modified to pull entire /etc/skel and /usr/share/user-profile/profile folder contents,
+# depending on ramdisk space constraints
+FLL_LIVE_USER_HOME="$(getent passwd $FLL_LIVE_USER | cut -d\: -f 6)"
+
+echo -n "${BLUE}Populate ${YELLOW}${FLL_LIVE_USER_HOME}${BLUE} with user configurations...${NORMAL}"
+
+rsync -Ha --ignore-existing /etc/skel/ "${FLL_LIVE_USER_HOME}/" 2>/dev/null
+rsync -Ha --ignore-existing /usr/share/user-profile/profile/ "${FLL_LIVE_USER_HOME}/" 2>/dev/null
+
+# add aliases for sudo and su
+grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || echo "alias su=\"sudo su\""   >> "${FLL_LIVE_USER_HOME}/.bashrc"
+grep alias\ sux "/home/$FLL_LIVE_USER/.bashrc"  > /dev/null || echo "alias sux=\"sudo sux\"" >> "${FLL_LIVE_USER_HOME}/.bashrc"
+
+# configure kdesu to use sudo for the live user
+if [ -x /usr/bin/kde-config ] && [ ! -r /home/$FLL_LIVE_USER/.kde/share/config/kdesurc ] ; then
+	mkdir -p "/home/${FLL_LIVE_USER}/.kde/share/config/"
+	echo "[super-user-command]"	 > "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
+	echo "super-user-command=sudo"	>> "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
+fi
+
+# Share Mozilla plugins with Firefox (and mv profile)
+if [ -x /usr/bin/iceweasel ]; then
+	MOZPROFILE=$(awk '/Profile/{if (/Profile0/){inprof=1}else{inprof=0}}/Path/{if(inprof){print;}}' ${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini | sed 's/^Path\=//' )
+	NEWMOZPROFILE=$(mawk 'BEGIN{print int(10000000 * rand())}')".default"
+
+	mv "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/${MOZPROFILE}" "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/${NEWMOZPROFILE}" && \
+		sed 's/Path='$MOZPROFILE'/Path='$NEWMOZPROFILE'/' "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini" > "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini.new" && \
+		mv -f "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini.new" "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini"
+	
+	# who knows how it will be called tomorrow...
+	ln -fs iceweasel "${FLL_LIVE_USER_HOME}/.mozilla/firefox"
+fi
+
+if [ -n "$LANGUAGE" ]; then
+	# Set mozilla's preferred language
+	for f in `ls -1 ${FLL_LIVE_USER_HOME}/.mozilla/*/*/prefs.js 2>/dev/null`; do
+		echo 'user_pref("intl.accept_languages", "'"$LANGUAGE"', en");' >>"$f"
+		
+		case "$LANG" in
+			de*|at*|ch*)
+				echo 'user_pref("general.useragent.contentlocale", "AT");' >>"$f"
+				echo 'user_pref("general.useragent.locale", "de-AT");' >>"$f" ;;
+		esac
+		# else leave default language
+	done
+
+	for f in `ls -1 ${FLL_LIVE_USER_HOME}/.mozilla/*/*/chrome/chrome.rdf.${LANGUAGE} 2>/dev/null`; do
+		\mv -f "$f" "${f%%.${LANGUAGE}}"
+	done
+fi
+
+if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
+	# Only regenerate the config and Desktop files if missing
+	mkdir -p	"${FLL_LIVE_USER_HOME}/.kde/share" \
+			"${FLL_LIVE_USER_HOME}/Desktop"
+	
+	rm -f "${FLL_LIVE_USER_HOME}/.kde/Autostart/sorticons.desktop"
+fi
+
+# Check for /index.html (_en), or KNOPPIX/index.html (_en) on this CD
+if [ -e /cdrom/index.html ]; then
+	INDEXFILE="/cdrom/index.html"
+else
+	for i in index ${FLL_IMAGE_DIR}/index; do
+		INDEXFILEDE="/cdrom/${i}.html"
+		INDEXFILEEN="/cdrom/${i}_en.html"
+		[ -e "$INDEXFILEEN" ] && INDEXFILE="$INDEXFILEEN" && [ "$LANGUAGE" != "de" ] && break
+		[ -e "$INDEXFILEDE" ] && INDEXFILE="$INDEXFILEDE" && [ "$LANGUAGE"  = "de" ] && break
+	done
+fi
+
+if [ -e "$INDEXFILE" ]; then
+	cat >> "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" <<EOF
+[Desktop Entry]
+Name=$FLL_CDROM_INDEX
+# Exec=kfmclient openProfile webbrowsing $INDEXFILE
+Exec=konqueror --geometry 950x700+35+20 file:$INDEXFILE
+Type=Application
+Icon=$FLL_CDROM_INDEX_ICON
+Terminal=0
+EOF
+	if ! checkbootparam "nointro"; then
+		mkdir -p $FLL_LIVE_USER_HOME/.kde/Autostart
+		ln "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" "${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"
+	fi
+fi
+
+# Setup language/keyboard
+[ -d "${FLL_LIVE_USER_HOME}/.kde/share/config" ] || mkdir -p "${FLL_LIVE_USER_HOME}/.kde/share/config"
+
+if [ -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
+	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals"
+	
+	sed -i	-e 's/^Charset=.*$/Charset='"$CHARSET"'/' \
+		-e 's/^Country=.*$/Country='"$COUNTRY"'/' \
+		-e 's/^Language=.*$/Language='"$LANGUAGE"'/' \
+			"${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals"
+
+	sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
+	touch -r /etc/skel/.kde/share/config/kdeglobals "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" 2>/dev/null
+
+	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
+	sed 's/^LayoutList=.*$/LayoutList='"$FLL_KDEKEYBOARDS"'/' "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
+	touch -r /etc/skel/.kde/share/config/kxkbrc "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc" 2>/dev/null
+
+	# Check for custom splashscreen in /cdrom/KNOPPIX
+	if [ -d "/cdrom/${FLL_IMAGE_DIR}/ksplash" ]; then
+		[ -d "${FLL_LIVE_USER_HOME}/.kde/share/apps" ] || mkdir -p "${FLL_LIVE_USER_HOME}/.kde/share/apps"
+		ln -s "/cdrom/${FLL_IMAGE_DIR}/ksplash" "${FLL_LIVE_USER_HOME}/.kde/share/apps/"
+	fi
+fi
+
+if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" ]; then
+	# see kstartupconfig source for usage
+	mkdir -m 700 -p	"${FLL_LIVE_USER_HOME}/.kde" \
+			"${FLL_LIVE_USER_HOME}/.kde/share" \
+			"${FLL_LIVE_USER_HOME}/.kde/share/config"
+	
+	cat > "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" << EOF
+kcminputrc Mouse cursorTheme ''
+kcminputrc Mouse cursorSize ''
+kpersonalizerrc General FirstLogin false
+ksplashrc KSplash Theme Default
+kcmrandrrc Display ApplyOnStartup false
+kcmrandrrc [Screen0]
+kcmrandrrc [Screen1]
+kcmrandrrc [Screen2]
+kcmrandrrc [Screen3]
+kcmfonts General forceFontDPI 0
+EOF
+fi
+
+# fix permissions
+chown -R "$FLL_LIVE_USER":"$FLL_LIVE_USER" "${FLL_LIVE_USER_HOME}"
+
+echo "${BLUE}Done.${NORMAL}"
 
 ###############################################################################
 # re-enable printk's and signals
