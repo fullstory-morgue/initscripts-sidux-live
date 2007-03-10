@@ -47,18 +47,25 @@ trap "" 2 3 11
 CRE="
 [K"
 NORMAL="[0;39m"
+
 # RED: Failure or error message
 RED="[1;31m"
+
 # GREEN: Success message
 GREEN="[1;32m"
+
 # YELLOW: Descriptions
 YELLOW="[1;33m"
+
 # BLUE: System messages
 BLUE="[1;34m"
+
 # MAGENTA: Found devices or drivers
 MAGENTA="[1;35m"
+
 # CYAN: Questions
 CYAN="[1;36m"
+
 # BOLD WHITE: Hint
 WHITE="[1;37m"
 
@@ -129,7 +136,7 @@ splash_progress()
 {
 	# be sure we are non-blocking
 	if [ -p /etc/splashy/splashy.fifo ]; then
-		(echo "progress $1" > /etc/splashy/splashy.fifo) &
+		(printf "progress $1\n" > /etc/splashy/splashy.fifo) &
 	fi
 }
 ### EOF utility functions
@@ -146,18 +153,18 @@ start_service mountkernfs.sh
 # CD Checker
 ###############################################################################
 if checkbootparam "testcd" || checkbootparam "testdvd"; then
-	echo " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}"
-	echo " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}"
-	echo -n "${RED}"
+	printf " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}\n"
+	printf " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}\n"
+	printf "${RED}"
 	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG=C md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
 	if [ "$?" = "0" ]; then
-		echo " ${GREEN}Everything looks OK${NORMAL}"
+		printf " ${GREEN}Everything looks OK${NORMAL}\n"
 	else
-		echo "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***"
+		printf "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***\n"
 		egrep -v '(^md5sum:|OK$)' /tmp/md5sum.log
-		echo "${RED} *** DATA ON YOUR CD MEDIUM IS POSSIBLY INCOMPLETE OR DAMAGED, ***${NORMAL}"
-		echo "${RED} *** OR YOUR COMPUTER HAS BAD RAM.                             ***${NORMAL}"
-		echo -n "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
+		printf "${RED} *** DATA ON YOUR CD MEDIUM IS POSSIBLY INCOMPLETE OR DAMAGED, ***${NORMAL}\n"
+		printf "${RED} *** OR YOUR COMPUTER HAS BAD RAM.                             ***${NORMAL}\n"
+		printf "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
 		read a
 	fi
 fi
@@ -174,8 +181,8 @@ stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
 HOSTNAME="$(getbootparam 'hostname' 2>/dev/null)"
 if [ -n "$HOSTNAME" ]; then
 	rm -f /etc/hostname /etc/mailname
-	echo "$HOSTNAME" > /etc/hostname
-	echo "$HOSTNAME" > /etc/mailname
+	printf "$HOSTNAME" > /etc/hostname
+	printf "$HOSTNAME" > /etc/mailname
 	# update /etc/hosts
 	sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"$HOSTNAME"'/' /etc/hosts
 fi
@@ -520,9 +527,8 @@ if grep -q ^KDEKEYBOARDS /etc/default/distro 2>/dev/null; then
 	sed -i -e 's/^FLL_KDEKEYBOARDS=.*$/FLL_KDEKEYBOARDS='"$KDEKEYBOARDS"'/' \
 			/etc/default/distro
 else
-	echo "" 					>> /etc/default/distro
-	echo "# kde i18n settings"			>> /etc/default/distro
-	echo "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"" 	>> /etc/default/distro
+	printf "\n# kde i18n settings\n"		>> /etc/default/distro
+	printf "FLL_KDEKEYBOARDS=\"$KDEKEYBOARDS\"\n" 	>> /etc/default/distro
 fi
 
 ###############################################################################
@@ -809,7 +815,7 @@ case $CD_COUNTRY in
 esac
 
 CD_LAYOUT="$(echo $CD_COUNTRY | cut -d'-' -f1)"
-CD_LAYOUT_PATH=$(echo $CD_COUNTRY | tr [A-Z] [a-z] | cut -d'-' -f1)
+CD_LAYOUT_PATH="$(echo $CD_COUNTRY | tr [A-Z] [a-z] | cut -d'-' -f1)"
 CD_FULL_FIX="$(echo $CD_FULL | cut -d'-' -f1)"
 CD_VARIANT_PATH="$(echo $CD_VARIANT | tr [A-Z] [a-z])"
 
@@ -829,10 +835,10 @@ mount -o remount,rw / 2>/dev/null
 ###############################################################################
 # begin hardware detection and autoconfiguration
 ###############################################################################
-echo " ${GREEN}Enabling ${YELLOW}udev${GREEN} device and hotplug management daemon.${NORMAL}"
+printf " ${GREEN}Enabling ${YELLOW}udev${GREEN} device and hotplug management daemon.${NORMAL}\n"
 
 # No kernel messages while probing modules
-echo "0" > /proc/sys/kernel/printk
+printf "0\n" > /proc/sys/kernel/printk
 
 # start udev
 start_service udev S
@@ -847,22 +853,24 @@ if ! stringinfile "usbcore" /proc/modules; then
 	USBCORE_TIMEOUT=$((USBCORE_TIMEOUT))
 	[ $USBCORE_TIMEOUT -lt 0 -o $USBCORE_TIMEOUT -gt 60 ] && USBCORE_TIMEOUT=5
 
-	echo -n "${BLUE}Waiting for ${YELLOW}usbcore${BLUE}. ${NORMAL}"
+	printf "${BLUE}Waiting for ${YELLOW}usbcore${BLUE}. ${NORMAL}"
 	
 	for x in $(seq ${USBCORE_TIMEOUT}); do
 		stringinfile "usbcore" /proc/modules && break
-		echo -n "${BLUE}$((${USBCORE_TIMEOUT}-${x})) s${NORMAL}"
+		printf "${BLUE}$((${USBCORE_TIMEOUT}-${x})) s${NORMAL}"
 		for y in $(seq 10); do
 			stringinfile "usbcore" /proc/modules && break
 			sleep 0.1
 		done
-		for z in $(seq $((${#x}+2))); do echo -ne "\b \b"; done
+		for z in $(seq $((${#x}+2))); do
+			printf "\b \b"
+		done
 	done
 
 	if stringinfile "usbcore" /proc/modules; then
-		echo "${GREEN}Done.${NORMAL}"
+		printf "${GREEN}Done.${NORMAL}\n"
 	else
-		echo "${RED}Timeout reached.${NORMAL}"
+		printf "${RED}Timeout reached.${NORMAL}\n"
 	fi
 fi
 
@@ -872,7 +880,7 @@ start_service mountdevsubfs.sh
 ###############################################################################
 # setup console-data (before interactive setup stage)
 ###############################################################################
-echo -e "${BLUE}Configuring console for a ${YELLOW}${KEYTABLE} keymap${BLUE}...${NORMAL}\n"
+printf "${BLUE}Configuring console for a ${YELLOW}${KEYTABLE} keymap${BLUE}...${NORMAL}\n"
 
 # install keymap
 /usr/sbin/install-keymap "$KEYTABLE"
@@ -905,7 +913,7 @@ fi
 if [ -f "/usr/share/zoneinfo/$TZ" ]; then
 	# /etc/localtime is excluded at build time
 	cp "/usr/share/zoneinfo/$TZ" /etc/localtime
-	echo "$TZ" > /etc/timezone
+	printf "$TZ" > /etc/timezone
 fi
 
 start_service hwclock.sh >/dev/null
@@ -930,16 +938,16 @@ case "$DESKTOP" in
 esac
 
 # Desired desktop
-echo "DESKTOP=\"$DESKTOP\"" > "$HWSETUP_DESKTOP"
+printf "DESKTOP=\"$DESKTOP\"\n" > "$HWSETUP_DESKTOP"
 
 # override dpi setting
 CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 
 # Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && echo "CUSTOM_DPI=\"$CUSTOM_DPI\"" >> "$HWSETUP_MAIN"
+[ "$CUSTOM_DPI" ] && printf "CUSTOM_DPI=\"$CUSTOM_DPI\"\n" >> "$HWSETUP_MAIN"
 
 # disable 915resolution hack
-checkbootparam "no915res" && echo "NO915RES=\"yes\"" >> "$HWSETUP_MAIN"
+checkbootparam "no915res" && printf "NO915RES=\"yes\"\n" >> "$HWSETUP_MAIN"
 
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
@@ -951,11 +959,11 @@ modprobe 8250 >/dev/null 2>&1
 
 # load psmouse module
 modprobe psmouse >/dev/null 2>&1
-echo -n "${WHITE}"
+printf "${WHITE}"
 if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
-	echo -n "${NORMAL}"
+	printf "${NORMAL}"
 else
-	echo " ${RED}Please check.${NORMAL}"
+	printf " ${RED}Please check.${NORMAL}\n"
 fi
 
 # activate PC Speaker
@@ -989,10 +997,10 @@ for sysid in $SYS; do
 	esac
 done
 if [ -n "$ALSA_SPECIAL" ]; then
-	echo options $ALSA_SPECIAL > /etc/modprobe.d/alsa-special
-	if [ -d /sys/module/${ALSA_SPECIAL%% *} ]; then
-		rmmod ${ALSA_SPECIAL%% *}
-		modprobe $ALSA_SPECIAL
+	printf "options $ALSA_SPECIAL\n" > /etc/modprobe.d/alsa-special
+	if [ -d "/sys/module/${ALSA_SPECIAL%% *}" ]; then
+		rmmod "${ALSA_SPECIAL%% *}"
+		modprobe "$ALSA_SPECIAL"
 	fi
 fi
 
@@ -1012,28 +1020,27 @@ fi
        
 # Mouse
 if [ -n "$MOUSE_DEVICE" ]; then
-	echo " ${GREEN}Mouse is ${YELLOW}${MOUSE_FULLNAME}${GREEN} at ${MAGENTA}${MOUSE_DEVICE}${NORMAL}"
+	printf " ${GREEN}Mouse is ${YELLOW}${MOUSE_FULLNAME}${GREEN} at ${MAGENTA}${MOUSE_DEVICE}${NORMAL}\n"
 fi
 
 # Soundcard
 if [ -n "$SOUND_FULLNAME" -o -n "$SOUND_DRIVER" ]; then
 	SOUNDCARD="$SOUND_DRIVER"
-	echo -n " ${GREEN}Soundcard is"
-	[ -n "$SOUND_FULLNAME" ] && echo -n " ${YELLOW}$SOUND_FULLNAME${GREEN}"
-	[ -n "$SOUNDCARD" ] && echo -n ", ALSA module is ${MAGENTA}$SOUNDCARD${GREEN}"
-	echo "${NORMAL}"
+	printf " ${GREEN}Soundcard is"
+	[ -n "$SOUND_FULLNAME" ] && printf " ${YELLOW}$SOUND_FULLNAME${GREEN}"
+	[ -n "$SOUNDCARD" ] && printf ", ALSA module is ${MAGENTA}$SOUNDCARD${GREEN}"
+	printf "${NORMAL}\n"
 fi
 
 # Get max. sound volume
 VOL="$(getbootparam vol 2>/dev/null)"
 [ -z "$VOL" ] && VOL=50
-VOL=$((VOL))
-[ $VOL -lt 0 -o $VOL -gt 100 ] && VOL=50
+[ "$VOL" -ge 0 ] && [ "$VOL" -le 100 ] && VOL=50
 
 # Fast ALSA detection
-if [[ "$SOUND_DRIVER" = snd-* ]]; then
-	echo alias snd-card-0 $SOUND_DRIVER > /etc/modprobe.d/sound
-	echo options $SOUND_DRIVER index=0 >> /etc/modprobe.d/sound
+if [ "$SOUND_DRIVER" = snd-* ]; then
+	printf "alias snd-card-0 $SOUND_DRIVER\n"  > /etc/modprobe.d/sound
+	printf "options $SOUND_DRIVER index=0\n"  >> /etc/modprobe.d/sound
 	#set_mixers
 	aumix -m 0 -v $VOL -w $VOL -c $VOL >/dev/null 2>&1 # set pcm & master & cd to $VOL, micro to 0
 fi
@@ -1044,7 +1051,7 @@ fi
 # dwl520e1 detection
 if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
 	/usr/sbin/dwl520e1_fw_load >/dev/null 2>&1
-	echo 'install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1' > \
+	printf "install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1\n" > \
 		/etc/modprobe.d/dwl520e1
 fi
 
@@ -1066,7 +1073,7 @@ if [ -x /usr/sbin/detect-fc ]; then
 	checkbootparam "nofc" && NOFC="yes"
 	[ -e /etc/drdsl/modules.inc ] && NOFC="yes"
 	if [ -z "$NOFC" ]; then
-		echo " ${GREEN}Starting ${YELLOW}FC${GREEN} detection on ${YELLOW}vt10${GREEN}.${NORMAL}"
+		printf " ${GREEN}Starting ${YELLOW}FC${GREEN} detection on ${YELLOW}vt10${GREEN}.${NORMAL}\n"
 		open -c 10 /usr/sbin/detect-fc
 	fi
 fi
@@ -1116,7 +1123,7 @@ if [ -n "$BLIND" -o -n "$BRLTTY" ]; then
 		[ -n "$BRLTYPE" ] && CMD="$CMD -b $BRLTYPE"
 		[ -n "$BRLDEV" ] && CMD="$CMD -d $BRLDEV"
 		[ -n "$BRLTEXT" ] && CMD="$CMD -t $BRLTEXT"
-		echo " ${BLUE}Starting braille-display manager: ${GREEN}${CMD}${BLUE}.${NORMAL}"
+		printf " ${BLUE}Starting braille-display manager: ${GREEN}${CMD}${BLUE}.${NORMAL}\n"
 		( exec $CMD & )
 		sleep 2
 	fi
@@ -1127,19 +1134,19 @@ fi
 ###############################################################################
 if [ -n "$INTERACTIVE" ]; then
 	# Interactive configuration
-	echo "${BLUE}Entering interactive configuration second stage.${NORMAL}"
+	printf "${BLUE}Entering interactive configuration second stage.${NORMAL}\n"
 
-	echo -n "${CYAN}Do you want to (re)configure your soundcard?${NORMAL} [Y/n] "
+	printf "${CYAN}Do you want to (re)configure your soundcard?${NORMAL} [Y/n] "
 	read a
 	[ "$a" != "n" ] && sndconfig && ( exec aumix -m 0 >/dev/null 2>&1 & )
 
 	if [ -n "$MOUSE_FULLNAME" -o -n "$MOUSE_DEVICE" ]; then
-		echo -n " ${GREEN}Your mouse has been autodetected as: ${MAGENTA}"
+		printf " ${GREEN}Your mouse has been autodetected as: ${MAGENTA}"
 		ls -l /dev/mouse | awk '{print $9 " " $10 " " $11}'
-		echo -n "${NORMAL}"
+		printf "${NORMAL}"
 	fi
 
-	echo -n "${CYAN}Do you want to (re)configure your mouse?${NORMAL} [Y/n] "
+	printf "${CYAN}Do you want to (re)configure your mouse?${NORMAL} [Y/n] "
 	read a
 	[ -f "$HWSETUP_MOUSE" ] && . "$HWSETUP_MOUSE"
 	[ "$a" != "n" ] && mouseconfig
@@ -1159,10 +1166,10 @@ fi
 # INTERACTIVE III
 ###############################################################################
 if [ -n "$INTERACTIVE" ]; then
-	echo -n "${CYAN}Do you want to (re)configure your graphics (X11) subsystem?${NORMAL} [Y/n] "
+	printf "${CYAN}Do you want to (re)configure your graphics (X11) subsystem?${NORMAL} [Y/n] "
 	read a
 	[ "$a" != "n" ] && xf86cfg -textmode -xf86config "$X_CONF" >/dev/console 2>&1 </dev/console
-	echo " ${GREEN}Interactive configuration finished. Everything else should be fine for now.${NORMAL}"
+	printf " ${GREEN}Interactive configuration finished. Everything else should be fine for now.${NORMAL}\n"
 fi
 
 if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
@@ -1232,8 +1239,8 @@ if checkbootparam "nodma"; then
 			if egrep -q 'using_dma[ \t]+1' /proc/ide/$d/settings 2>/dev/null; then
 				MODEL="$(cat /proc/ide/$d/model 2>/dev/null)"
 				test -z "$MODEL" && MODEL="[GENERIC IDE DEVICE]"
-				echo "${BLUE}Disabling DMA acceleration for: ${MAGENTA}$d 	${YELLOW}[${MODEL}]${NORMAL}"
-				echo "using_dma:0" >/proc/ide/$d/settings
+				printf "${BLUE}Disabling DMA acceleration for: ${MAGENTA}$d 	${YELLOW}[${MODEL}]${NORMAL}\n"
+				printf "using_dma:0\n" >/proc/ide/$d/settings
 			fi
 		fi
 	done
@@ -1244,15 +1251,15 @@ fi
 ###############################################################################
 # Start creating /etc/fstab with HD partitions and USB SCSI devices now
 if checkbootparam "nofstab"; then
-	echo " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}"
+	printf " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}\n"
 else
-	echo -n "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}..."
+	printf "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}..."
 	[ -d /${FLL_MOUNTPOINT} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r >/dev/null 2>&1
 	if [ -e /var/run/rebuildfstab.pid ]; then
 		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
 		sleep 8
 	fi
-	echo "${BLUE}Done.${NORMAL}"
+	printf "${BLUE}Done.${NORMAL}\n"
 fi
 
 if [ -n "$partitions" ]; then
@@ -1267,9 +1274,9 @@ if [ -n "$partitions" ]; then
 		case "$f" in
 			swap)
 				if [ -n "$NOSWAP" ]; then
-					echo "${BLUE}Ignoring swap partition ${MAGENTA}$p${BLUE} as requested.${NORMAL}"
+					printf "${BLUE}Ignoring swap partition ${MAGENTA}$p${BLUE} as requested.${NORMAL}\n"
 				else
-					echo "${BLUE}Using swap partition ${MAGENTA}$p${BLUE}.${NORMAL}"
+					printf "${BLUE}Using swap partition ${MAGENTA}$p${BLUE}.${NORMAL}\n"
 					swapon $p 2>/dev/null
 				fi
 				continue
@@ -1283,10 +1290,10 @@ if [ -n "$partitions" ]; then
 					if [ -f $d/${FLL_DISTRO_NAME}.swp ]; then
 						mount -o remount,rw $d
 						if swapon $d/${FLL_DISTRO_NAME}.swp 2>/dev/null; then
-							echo "${BLUE}Using ${FLL_DISTRO_NAME} swapfile ${MAGENTA}$d/${FLL_DISTRO_NAME}.swp${BLUE}.${NORMAL}"
+							printf "${BLUE}Using ${FLL_DISTRO_NAME} swapfile ${MAGENTA}$d/${FLL_DISTRO_NAME}.swp${BLUE}.${NORMAL}\n"
 							mount -o remount,ro $d 2>/dev/null
 							fnew="$d/${FLL_DISTRO_NAME}.swp none            swap    sw              0       0"
-							stringinfile "$fnew" "/etc/fstab" || echo "$fnew" >> /etc/fstab
+							stringinfile "$fnew" "/etc/fstab" || printf "$fnew\n" >> /etc/fstab
 						else
 							umount $d
 						fi
@@ -1323,7 +1330,7 @@ fi
 # Fat-Client-Version: DHCP Broadcast for IP address
 ###############################################################################
 if checkbootparam "nodhcp"; then
-	echo " ${BLUE}Skipping DHCP broadcast/network detection as requested on boot commandline.${NORMAL}"
+	printf " ${BLUE}Skipping DHCP broadcast/network detection as requested on boot commandline.${NORMAL}\n"
 else
 	NETDEVICES=$(perl -le 'print for map {s/.*\///; grep( !/^(lo|br|sit)\d*/,$_);} </sys/class/net/*>')
 	if [ -n "$NETDEVICES" ]; then
@@ -1345,9 +1352,8 @@ else
 				# link beat detected ?
 				if [ "$?" = "2" ]; then
 					CONNETDEVS="$CONNETDEVS $DEVICE"
-					echo ""				>> /etc/network/interfaces
-					echo "allow-hotplug $DEVICE"	>> /etc/network/interfaces
-					echo "iface $DEVICE inet dhcp"	>> /etc/network/interfaces
+					printf "\nallow-hotplug $DEVICE\n"	>> /etc/network/interfaces
+					printf "iface $DEVICE inet dhcp\n"	>> /etc/network/interfaces
 				else
 					ifconfig "$DEVICE" down
 				fi
@@ -1355,8 +1361,8 @@ else
 		done
 		
 		if [ -n "$CONNETDEVS" ]; then
-			echo -n " ${GREEN}Starting ${YELLOW}DHCP${GREEN} broadcast on ethernet devices:${NORMAL}"
-			echo "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}"
+			printf " ${GREEN}Starting ${YELLOW}DHCP${GREEN} broadcast on ethernet devices:${NORMAL}"
+			printf "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}\n"
 		fi
 
 		start_service ifupdown >/dev/null
@@ -1373,7 +1379,7 @@ PSERV=
 if [ -d /proc/acpi ]; then
 	# ACPI
 	if checkbootparam "noacpi"; then
-		echo " ${BLUE}Skipping ACPI bios detection as requested on boot commandline.${NORMAL}"
+		printf " ${BLUE}Skipping ACPI bios detection as requested on boot commandline.${NORMAL}\n"
 	else
 		fuser -k /proc/acpi/event >/dev/null 2>&1
 		PBIOS=ACPI
@@ -1382,7 +1388,7 @@ if [ -d /proc/acpi ]; then
 else
 	# APM
 	if checkbootparam "noapm"; then
-		echo " ${BLUE}Skipping APM bios detection as requested on boot commandline.${NORMAL}"
+		printf " ${BLUE}Skipping APM bios detection as requested on boot commandline.${NORMAL}\n"
 	else
 		PBIOS=APM
 		PSERV=apmd
@@ -1390,11 +1396,11 @@ else
 fi
 
 if [ -n "$PBIOS" ] && [ -x /etc/init.d/"$PSERV" ]; then
-	echo -n " ${GREEN}${PBIOS} bios found, activating power management:${NORMAL}"
+	printf " ${GREEN}${PBIOS} bios found, activating power management:${NORMAL}"
 	if start_service "$PSERV" >/dev/null; then
-		echo " ${MAGENTA}${PSERV}${GREEN}.${NORMAL}"
+		printf " ${MAGENTA}${PSERV}${GREEN}.${NORMAL}\n"
 	else
-		echo " ${RED}Failed!${NORMAL}"
+		printf " ${RED}Failed!${NORMAL}\n"
 	fi
 fi
 
@@ -1403,14 +1409,14 @@ fi
 ###############################################################################
 if [ -x /etc/init.d/dbus ]; then
 	if checkbootparam "nodbus"; then
-		echo " ${BLUE}Not starting D-Bus/HAL as requested on boot commandline.${NORMAL}"
+		printf " ${BLUE}Not starting D-Bus/HAL as requested on boot commandline.${NORMAL}\n"
 	else
-		echo -n " ${GREEN}Enabling D-Bus and Hardware Abstraction Layer:${NORMAL}"
+		printf " ${GREEN}Enabling D-Bus and Hardware Abstraction Layer:${NORMAL}"
 		if start_service dbus >/dev/null; then
-			echo " ${MAGENTA}dbus${GREEN}.${NORMAL}"
+			printf " ${MAGENTA}dbus${GREEN}.${NORMAL}\n"
 			start_service /etc/init.d/avahi-daemon >/dev/null
 		else
-			echo " ${RED}Failed!${NORMAL}"
+			printf " ${RED}Failed!${NORMAL}\n"
 		fi
 	fi
 fi
@@ -1427,7 +1433,7 @@ fi
 # cpufreq detection
 ###############################################################################
 if checkbootparam "nocpufreq"; then
-	echo " ${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}"
+	printf " ${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}\n"
 else
 	CPUFREQ=
 	CPUSERV=
@@ -1456,7 +1462,7 @@ else
 
 	# start power management service
 	if [ -n "$CPUFREQ" ]; then
-		echo -n " ${GREEN}Activating ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
+		printf " ${GREEN}Activating ${YELLOW}${CPUFREQ}${GREEN} CPUfreq management:${NORMAL}"
 		
 		# hack to disable suspend, it currently does not mix with live-mode
 		# kpowersave exposes this problem to unsuspecting users
@@ -1475,12 +1481,12 @@ else
 		elif start_service powernowd >/dev/null; then
 			CPUSERV=powernowd
 		else
-			echo " ${RED}Failed!${NORMAL}"
+			printf " ${RED}Failed!${NORMAL}\n"
 		fi
 
 		# announce the service
 		if [ -n "$CPUSERV" ]; then
-			echo " ${MAGENTA}${CPUSERV}${GREEN}.${NORMAL}"
+			printf " ${MAGENTA}${CPUSERV}${GREEN}.${NORMAL}\n"
 		fi
 	fi
 fi
@@ -1490,11 +1496,11 @@ fi
 ###############################################################################
 if [ -x /etc/init.d/bluetooth ]; then
 	if checkbootparam "nobluetooth"; then
-		echo " ${BLUE}Skipping bluetooth detection as requested on boot commandline.${NORMAL}"
+		printf " ${BLUE}Skipping bluetooth detection as requested on boot commandline.${NORMAL}\n"
 	else
 		BLUETOOTH="$(hwinfo --bluetooth | awk '/Hardware Class:/{ print $NF; exit }' 2>/dev/null)"
 		if [ "$BLUETOOTH" = bluetooth ] && start_service bluetooth >/dev/null 2>&1; then
-			echo " ${GREEN}Starting services for ${YELLOW}bluetooth${GREEN} support.${NORMAL}"
+			printf " ${GREEN}Starting services for ${YELLOW}bluetooth${GREEN} support.${NORMAL}\n"
 		fi
 	fi
 fi
@@ -1532,7 +1538,7 @@ start_service hotkey-setup >/dev/null 2>&1
 if [ -n "$IS_LAPTOP" ]; then
 	# acpi-support
 	if pidof acpid >/dev/null && start_service acpi-support >/dev/null 2>&1; then
-		echo " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}"
+		printf " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}\n"
 	fi
 	# always start kpowersave
 	if grep -q ^KDE_SERVICES_LAPTOP /etc/default/kde-services-sidux 2>/dev/null; then
@@ -1540,7 +1546,7 @@ if [ -n "$IS_LAPTOP" ]; then
 		sed -i 's/^KDE_SERVICES_LAPTOP=.*/KDE_SERVICES_LAPTOP="true"/' \
 			/etc/default/kde-services-sidux
 	else
-		echo "KDE_SERVICES_LAPTOP=\"true\"" >> /etc/default/kde-services-sidux
+		printf "KDE_SERVICES_LAPTOP=\"true\"\n" >> /etc/default/kde-services-sidux
 	fi
 fi
 
@@ -1553,20 +1559,20 @@ fi
 # depending on ramdisk space constraints
 FLL_LIVE_USER_HOME="$(getent passwd $FLL_LIVE_USER | cut -d\: -f 6)"
 
-echo -n "${BLUE}Populate ${YELLOW}${FLL_LIVE_USER_HOME}${BLUE} with user configurations...${NORMAL}"
+printf "${BLUE}Populate ${YELLOW}${FLL_LIVE_USER_HOME}${BLUE} with user configurations...${NORMAL}"
 
 rsync -Ha --ignore-existing /etc/skel/ "${FLL_LIVE_USER_HOME}/" 2>/dev/null
 rsync -Ha --ignore-existing /usr/share/user-profile/profile/ "${FLL_LIVE_USER_HOME}/" 2>/dev/null
 
 # add aliases for sudo and su
-grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || echo "alias su=\"sudo su\""   >> "${FLL_LIVE_USER_HOME}/.bashrc"
-grep alias\ sux "/home/$FLL_LIVE_USER/.bashrc"  > /dev/null || echo "alias sux=\"sudo sux\"" >> "${FLL_LIVE_USER_HOME}/.bashrc"
+grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || printf "alias su=\"sudo su\"\n"   >> "${FLL_LIVE_USER_HOME}/.bashrc"
+grep alias\ sux "/home/$FLL_LIVE_USER/.bashrc"  > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
 
 # configure kdesu to use sudo for the live user
 if [ -x /usr/bin/kde-config ] && [ ! -r /home/$FLL_LIVE_USER/.kde/share/config/kdesurc ] ; then
 	mkdir -p "/home/${FLL_LIVE_USER}/.kde/share/config/"
-	echo "[super-user-command]"	 > "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
-	echo "super-user-command=sudo"	>> "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
+	printf "[super-user-command]\n"		 > "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
+	printf "super-user-command=sudo\n"	>> "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
 fi
 
 # Share Mozilla plugins with Firefox
@@ -1680,12 +1686,12 @@ fi
 # fix permissions
 chown -R "$FLL_LIVE_USER":"$FLL_LIVE_USER" "${FLL_LIVE_USER_HOME}"
 
-echo "${BLUE}Done.${NORMAL}"
+printf "${BLUE}Done.${NORMAL}\n"
 
 ###############################################################################
 # set up X.org
 ###############################################################################
-echo "${BLUE}Set up X sockets...${NORMAL}"
+printf "${BLUE}Set up X sockets...${NORMAL}\n"
 
 start_service x11-common S
 
@@ -1705,7 +1711,7 @@ fi
 # re-enable printk's and signals
 ###############################################################################
 
-echo "6" > /proc/sys/kernel/printk
+printf "6\n" > /proc/sys/kernel/printk
 
 trap 2 3 11
 
