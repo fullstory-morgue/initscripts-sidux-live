@@ -104,6 +104,7 @@ stringinstring()
 # Reread boot command line; echo last parameter's argument or return false.
 getbootparam()
 {
+	#XXX: fix bashisms
 	stringinstring " $1=" "$CMDLINE" || return 1
 	result="${CMDLINE##*$1=}"
 	result="${result%%[ 	]*}"
