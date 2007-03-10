@@ -1,8 +1,9 @@
-initscripts-sidux-live (0.5.3) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.3) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * fix kxkbrc localization.
+  * fix iceweasel profile handling.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 Mar 2007 01:08:20 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 Mar 2007 16:45:10 +0100
 
 initscripts-sidux-live (0.5.2) unstable; urgency=low
 

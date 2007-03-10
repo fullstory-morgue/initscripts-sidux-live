@@ -1178,9 +1178,8 @@ fi
 
 RUNLEVEL="$(runlevel)"
 
-# Apply Language Settings for xorg and KDE
-sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf >/dev/null 2>&1
-sed -i "s|^LayoutList.*$|LayoutList=${KDEKEYBOARDS}|" /etc/skel/.kde/share/config/kxkbrc >/dev/null 2>&1
+# Apply Language Settings for xorg
+sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf
 
 ###############################################################################
 # partition detection and autoconfiguration
@@ -1570,17 +1569,13 @@ if [ -x /usr/bin/kde-config ] && [ ! -r /home/$FLL_LIVE_USER/.kde/share/config/k
 	echo "super-user-command=sudo"	>> "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
 fi
 
-# Share Mozilla plugins with Firefox (and mv profile)
+# Share Mozilla plugins with Firefox
 if [ -x /usr/bin/iceweasel ]; then
-	MOZPROFILE=$(awk '/Profile/{if (/Profile0/){inprof=1}else{inprof=0}}/Path/{if(inprof){print;}}' ${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini | sed 's/^Path\=//' )
+	MOZPROFILE=$(awk '/Profile/{if (/Profile0/){inprof=1}else{inprof=0}}/Path/{if(inprof){print;}}' ${FLL_LIVE_USER_HOME}/.mozilla/firefox/profiles.ini | sed 's/^Path\=//' )
 	NEWMOZPROFILE=$(mawk 'BEGIN{print int(10000000 * rand())}')".default"
-
-	mv "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/${MOZPROFILE}" "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/${NEWMOZPROFILE}" && \
-		sed 's/Path='$MOZPROFILE'/Path='$NEWMOZPROFILE'/' "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini" > "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini.new" && \
-		mv -f "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini.new" "${FLL_LIVE_USER_HOME}/.mozilla/iceweasel/profiles.ini"
 	
-	# who knows how it will be called tomorrow...
-	ln -fs iceweasel "${FLL_LIVE_USER_HOME}/.mozilla/firefox"
+	mv -f "${FLL_LIVE_USER_HOME}/.mozilla/firefox/${MOZPROFILE}" "${FLL_LIVE_USER_HOME}/.mozilla/firefox/${NEWMOZPROFILE}" && \
+		sed -i 's/Path='$MOZPROFILE'/Path='$NEWMOZPROFILE'/' "${FLL_LIVE_USER_HOME}/.mozilla/firefox/profiles.ini"
 fi
 
 if [ -n "$LANGUAGE" ]; then
@@ -1641,21 +1636,21 @@ fi
 [ -d "${FLL_LIVE_USER_HOME}/.kde/share/config" ] || mkdir -p "${FLL_LIVE_USER_HOME}/.kde/share/config"
 
 if [ -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
+	# Apply Language Settings for KDE
 	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals"
-	
 	sed -i	-e 's/^Charset=.*$/Charset='"$CHARSET"'/' \
 		-e 's/^Country=.*$/Country='"$COUNTRY"'/' \
 		-e 's/^Language=.*$/Language='"$LANGUAGE"'/' \
 			"${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals"
-
-	sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
-	touch -r /etc/skel/.kde/share/config/kdeglobals "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" 2>/dev/null
-
+	
 	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
-	sed -i 's/^LayoutList=.*$/LayoutList='"$FLL_KDEKEYBOARDS"'/' "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
-	touch -r /etc/skel/.kde/share/config/kxkbrc "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc" 2>/dev/null
+	sed -i "s|^LayoutList.*$|LayoutList=${KDEKEYBOARDS}|" "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
 
-	# Check for custom splashscreen in /cdrom/KNOPPIX
+	# set KDE wallpaper
+	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals"
+	sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
+
+	# Check for custom splashscreen in /cdrom/${FLL_IMAGE_DIR}/
 	if [ -d "/cdrom/${FLL_IMAGE_DIR}/ksplash" ]; then
 		[ -d "${FLL_LIVE_USER_HOME}/.kde/share/apps" ] || mkdir -p "${FLL_LIVE_USER_HOME}/.kde/share/apps"
 		ln -s "/cdrom/${FLL_IMAGE_DIR}/ksplash" "${FLL_LIVE_USER_HOME}/.kde/share/apps/"
