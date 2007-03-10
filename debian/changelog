@@ -1,8 +1,8 @@
-initscripts-sidux-live (0.5.2) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.2) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * silence is golden.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 Mar 2007 00:43:29 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 Mar 2007 01:06:30 +0100
 
 initscripts-sidux-live (0.5.1) unstable; urgency=low
 
