@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.5) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 Mar 2007 23:02:25 +0100
+
 initscripts-sidux-live (0.5.4) unstable; urgency=low
 
   * initial round of sh- compatibility fixes, getbootparam() broken.
