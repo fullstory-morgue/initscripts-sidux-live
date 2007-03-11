@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
 export PATH
@@ -56,9 +56,9 @@ mysleep()
 {
 	for i in $(seq 1 40); do
 		sleep "0.075s"
-		echo -n "$1.${NORMAL}"
+		printf "$1.${NORMAL}"
 	done
-	echo ""
+	printf "\n"
 }
 
 # Disable kernel messages
@@ -71,21 +71,21 @@ fi
 
 # poweroff pcmcia devices
 if lsmod | grep -q pcmcia_core >/dev/null 2>&1; then
-	echo -n "${BLUE}Shutting down PCMCIA devices...${NORMAL}"
+	printf "${BLUE}Shutting down PCMCIA devices...${NORMAL}"
 	pccardctl eject >/dev/null 2>&1
 	sleep 2
-	echo ""
+	printf "\n"
 fi
 
 # Now kill them all
 killall5 -15
 sleep 1
-echo -n "${BLUE}Sent all processes the TERM signal...${NORMAL}"
+printf "${BLUE}Sent all processes the TERM signal...${NORMAL}"
 mysleep "$BLUE"
 
 killall5 -9
 sleep 1
-echo -n "${RED}Sent all processes the KILL signal...${NORMAL}"
+printf "${RED}Sent all processes the KILL signal...${NORMAL}"
 mysleep "$RED"
 
 # Unmount network filesystems first before shutting down network
@@ -105,8 +105,18 @@ NOPROMPT=""
 read CMDLINE <<EOT
 $(cat /proc/cmdline 2>/dev/null)
 EOT
-case "$CMDLINE" in *noeject*)  NOEJECT="yes";  ;; esac
-case "$CMDLINE" in *noprompt*) NOPROMPT="yes"; ;; esac
+
+case "$CMDLINE" in
+	*noeject*)
+		NOEJECT="yes"
+		;;
+esac
+
+case "$CMDLINE" in
+	*noprompt*)
+		NOPROMPT="yes"
+		;;
+esac
 
 CDROM="$(awk '/ \/cdrom /{print $1;exit 0;}' /proc/mounts)"
 

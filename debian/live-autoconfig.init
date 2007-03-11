@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/dash
 # Basic system configuration and hardware setup
 # (C) Klaus Knopper <knopper@knopper.net> 2004
 # (C) 2003-2006 Joerg Schirottke <master@kanotix.com>
@@ -104,11 +104,9 @@ stringinstring()
 # Reread boot command line; echo last parameter's argument or return false.
 getbootparam()
 {
-	#XXX: fix bashisms
 	stringinstring " $1=" "$CMDLINE" || return 1
-	result="${CMDLINE##*$1=}"
-	result="${result%%[ 	]*}"
-	echo "$result"
+	echo "$(echo $CMDLINE | sed -e s/.*$1=\\\(.*\\\)/\\1/ -e s/[[:space:]].*//)"
+
 	return 0
 }
 
@@ -148,7 +146,7 @@ splash_progress()
 start_service mountkernfs.sh
 
 # Read in boot parameters
-[ -z "$CMDLINE" ] && CMDLINE=" $(< /proc/cmdline)"
+[ -z "$CMDLINE" ] && CMDLINE=" $(cat /proc/cmdline)"
 
 ###############################################################################
 # CD Checker
@@ -196,6 +194,7 @@ start_service hostname.sh
 # Allow language specification via commandline. The default language
 # will be overridden via "lang=de" boot commandline
 LANGUAGE="$(getbootparam lang 2>/dev/null)"
+#printf "\n\nLANGUAGE=$LANGUAGE\n\n"
 [ -n "$LANGUAGE" ] || LANGUAGE="en"
 
 # The default language/keyboard to use. This CANNOT be autoprobed.
