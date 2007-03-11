@@ -1139,125 +1139,21 @@ fi
 sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf
 
 ###############################################################################
-# partition detection and autoconfiguration
+# partition detection and autoconfiguration of /etc/fstab and /media/*
 ###############################################################################
-# Add cdrom devices to /etc/fstab
-for c in $(ls -d /dev/cdrom* 2>/dev/null); do
-	m=${c#/dev}
-	[ "$m" = "/cdrom" ] && m="/cdrom0"
-	[ -d /media$m ] || mkdir -p /media$m 
-	#stringinfile "$c" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "$c" "/media$m" "udf,iso9660" "user,noauto" "0" "0" >> /etc/fstab
-	stringinfile "/dev/$(readlink $c)" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "/dev/$(readlink $c)" "/media$m" "udf,iso9660" "user,noauto" "0" "0" >> /etc/fstab
-done
-
-# Add floppy devices to /etc/fstab
-for f in $(ls -d /sys/block/fd* 2>/dev/null); do
-	[ -d /media/floppy${f#/sys/block/fd} ] || mkdir -p /media/floppy${f#/sys/block/fd} 
-	stringinfile "$f" "/etc/fstab" || printf "%-15s %-15s %-7s %-15s %-7s %s\n" "/dev${f#/sys/block}" "/media/floppy${f#/sys/block/fd}" "auto" "rw,user,noauto" "0" "0" >> /etc/fstab
-done
-
-NOSWAP=""
-checkbootparam "noswap" && NOSWAP="yes"
-
-# Collect partitions from /proc/partitions
-partitions=""
-while read major minor blocks partition relax; do
-	partition="${partition##*/}"
-	[ -z "$partition" -o ! -e "/dev/$partition" ] && continue
-	case "$partition" in
-		hd?)
-			# IDE Harddisk, entire disk
-			;;
-		sd?)
-			# SCSI Harddisk, entire disk
-			;;
-		[hs]d*)
-			# IDE or SCSI disk partition
-			partitions="$partitions /dev/$partition"
-			;;
-	esac
-done <<EOT
-$(awk 'BEGIN{old="__start"}{if($0==old){exit}else{old=$0;if($4&&$4!="name"){print $0}}}' /proc/partitions)
-EOT
-
-###############################################################################
-# create fstab and populate /media
-###############################################################################
-# Start creating /etc/fstab with HD partitions and USB SCSI devices now
 if checkbootparam "nofstab"; then
 	printf " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}\n"
 else
 	printf "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}..."
-	[ -d /${FLL_MOUNTPOINT} ] && rebuildfstab -r -u ${FLL_LIVE_USER} -g $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>/dev/null || rebuildfstab -r >/dev/null 2>&1
-	if [ -e /var/run/rebuildfstab.pid ]; then
-		# Another instance of rebuildfstab, probably from hotplug, is still running, so just wait.
-		sleep 8
-	fi
+	/usr/sbin/rebuildfstab-uuid --write-fstab --make-mountpoints --user ${FLL_LIVE_USER} \
+		--group $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>&1
 	printf "${BLUE}Done.${NORMAL}\n"
-fi
 
-if [ -n "$partitions" ]; then
-	while read p m f relax; do
-		case "$p" in
-			*fd0*|*proc*|*pts*|*sys*|*cdrom*|\#*)
-			continue
-			;;
-		esac
-		options="users,exec"
-		fnew=""
-		case "$f" in
-			swap)
-				if [ -n "$NOSWAP" ]; then
-					printf "${BLUE}Ignoring swap partition ${MAGENTA}$p${BLUE} as requested.${NORMAL}\n"
-				else
-					printf "${BLUE}Using swap partition ${MAGENTA}$p${BLUE}.${NORMAL}\n"
-					swapon $p 2>/dev/null
-				fi
-				continue
-			;;
-		esac
-		# Create mountdir if not already present
-		d="/media/${p##*/}" ; [ -d "$d" ] || mkdir -p "$d"
-		case "$f" in
-			vfat|msdos)
-				if [ -z "$NOSWAP" ] && mount -o uid=${FLL_LIVE_USER},gid=$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4),ro -t $f $p $d 2>/dev/null; then
-					if [ -f $d/${FLL_DISTRO_NAME}.swp ]; then
-						mount -o remount,rw $d
-						if swapon $d/${FLL_DISTRO_NAME}.swp 2>/dev/null; then
-							printf "${BLUE}Using ${FLL_DISTRO_NAME} swapfile ${MAGENTA}$d/${FLL_DISTRO_NAME}.swp${BLUE}.${NORMAL}\n"
-							mount -o remount,ro $d 2>/dev/null
-							fnew="$d/${FLL_DISTRO_NAME}.swp none            swap    sw              0       0"
-							stringinfile "$fnew" "/etc/fstab" || printf "$fnew\n" >> /etc/fstab
-						else
-							umount $d
-						fi
-					else
-						umount $d
-					fi
-				fi
-				;;
-		esac
-	done <<EOT
-$(cat /etc/fstab)
-EOT
-fi
-
-###############################################################################
-# interactively create swapfiles on DOS partitions (if necessary and possible)
-###############################################################################
-FREEMEM="$(awk 'BEGIN{m=0};/MemFree|Cached|SwapFree/{m+=$2};END{print m}' /proc/meminfo)"
-
-if [ "$FREEMEM" -lt 80000 -a -x /usr/bin/kdeinit -a -x /usr/sbin/mkdosswapfile ]; then
-	case "$LANG" in
-		de*)
-			LOWMEM="Ihr Rechner verfügt nur über ${FREEMEM}kB freien RAM-Speicher. Dies ist für das Arbeiten mit Linux zwar generell ausreichend, aber leider nicht genug, um größere Anwendungen wie KDE oder Office-Pakete zu starten. Sie können im nächsten Schritt versuchen, eine sog. Auslagerungsdatei auf einer DOS-Partition (sofern vorhanden) einzurichten."
-			;;
-		*)
-			LOWMEM="There are only ${FREEMEM}kB of RAM available in your computer. While this is usually sufficient for working under Linux, it is unfortunately not enough for starting bigger applications like KDE, or office suites. You can try to create a so-called swapfile on an existing DOS-Partition (if available) in the next step."
-			;;
-	esac
-		dialog --msgbox "$LOWMEM" 12 65 </dev/console >/dev/console 2>&1 
-		/usr/sbin/mkdosswapfile </dev/console >/dev/console 2>&1 
+	if checkbootparam "noswap"; then
+		printf "${BLUE}Ignoring swap partitions as requested.${NORMAL}\n"
+	else
+		swapon -ae
+	fi
 fi
 
 ###############################################################################
