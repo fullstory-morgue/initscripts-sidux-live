@@ -194,7 +194,6 @@ start_service hostname.sh
 # Allow language specification via commandline. The default language
 # will be overridden via "lang=de" boot commandline
 LANGUAGE="$(getbootparam lang 2>/dev/null)"
-#printf "\n\nLANGUAGE=$LANGUAGE\n\n"
 [ -n "$LANGUAGE" ] || LANGUAGE="en"
 
 # The default language/keyboard to use. This CANNOT be autoprobed.
