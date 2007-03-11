@@ -1,8 +1,15 @@
 initscripts-sidux-live (0.5.6) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 11 Mar 2007 02:31:23 +0100
+  [ Kel Modderman ]
+  * Purge interactive setup handling.
+  * Purge setkeycodes calls.
+  * Purge ipw3945 detection.
+  * Purge hacking of /etc/default/kde-services-sidux due to laptop detection.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 12 Mar 2007 08:24:55 +1000
 
 initscripts-sidux-live (0.5.5) unstable; urgency=low
 

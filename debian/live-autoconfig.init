@@ -1037,12 +1037,14 @@ VOL="$(getbootparam vol 2>/dev/null)"
 [ "$VOL" -ge 0 ] && [ "$VOL" -le 100 ] && VOL=50
 
 # Fast ALSA detection
-if [ "$SOUND_DRIVER" = snd-* ]; then
-	printf "alias snd-card-0 $SOUND_DRIVER\n"  > /etc/modprobe.d/sound
-	printf "options $SOUND_DRIVER index=0\n"  >> /etc/modprobe.d/sound
-	#set_mixers
-	aumix -m 0 -v $VOL -w $VOL -c $VOL >/dev/null 2>&1 # set pcm & master & cd to $VOL, micro to 0
-fi
+case "$SOUND_DRIVER" in
+	snd-*)
+		printf "alias snd-card-0 $SOUND_DRIVER\n"  > /etc/modprobe.d/sound
+		printf "options $SOUND_DRIVER index=0\n"  >> /etc/modprobe.d/sound
+		#set_mixers
+		aumix -m 0 -v $VOL -w $VOL -c $VOL >/dev/null 2>&1
+		;;
+esac
 
 ###############################################################################
 # misc. hardware detections/workarounds
@@ -1052,11 +1054,6 @@ if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
 	/usr/sbin/dwl520e1_fw_load >/dev/null 2>&1
 	printf "install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1\n" > \
 		/etc/modprobe.d/dwl520e1
-fi
-
-# ipw3945 detection
-if [ -e /sys/bus/pci/drivers/ipw3945/*/cmd ]; then
-	start_service ipw3945d >/dev/null
 fi
 
 # soft modem detection
@@ -1129,29 +1126,6 @@ if [ -n "$BLIND" -o -n "$BRLTTY" ]; then
 fi
 
 ###############################################################################
-# INTERACTIVE II
-###############################################################################
-if [ -n "$INTERACTIVE" ]; then
-	# Interactive configuration
-	printf "${BLUE}Entering interactive configuration second stage.${NORMAL}\n"
-
-	printf "${CYAN}Do you want to (re)configure your soundcard?${NORMAL} [Y/n] "
-	read a
-	[ "$a" != "n" ] && sndconfig && ( exec aumix -m 0 >/dev/null 2>&1 & )
-
-	if [ -n "$MOUSE_FULLNAME" -o -n "$MOUSE_DEVICE" ]; then
-		printf " ${GREEN}Your mouse has been autodetected as: ${MAGENTA}"
-		ls -l /dev/mouse | awk '{print $9 " " $10 " " $11}'
-		printf "${NORMAL}"
-	fi
-
-	printf "${CYAN}Do you want to (re)configure your mouse?${NORMAL} [Y/n] "
-	read a
-	[ -f "$HWSETUP_MOUSE" ] && . "$HWSETUP_MOUSE"
-	[ "$a" != "n" ] && mouseconfig
-fi
-
-###############################################################################
 # automatic X Setup
 ###############################################################################
 if ! checkbootparam "nomkxf86config"; then
@@ -1160,29 +1134,6 @@ fi
 
 # Read in changes
 [ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
-
-###############################################################################
-# INTERACTIVE III
-###############################################################################
-if [ -n "$INTERACTIVE" ]; then
-	printf "${CYAN}Do you want to (re)configure your graphics (X11) subsystem?${NORMAL} [Y/n] "
-	read a
-	[ "$a" != "n" ] && xf86cfg -textmode -xf86config "$X_CONF" >/dev/console 2>&1 </dev/console
-	printf " ${GREEN}Interactive configuration finished. Everything else should be fine for now.${NORMAL}\n"
-fi
-
-if [ -n "$USE_ALSA" -a -x /etc/init.d/alsa-autoconfig ]; then
-	[ -n "$SOUND_DRIVER" ] && rmmod -r "$SOUND_DRIVER" >/dev/null 2>&1
-	# Export ALSA_CARD cariable to init script
-	case "$ALSA_CARD" in
-		auto*)
-		ALSA_CARD=""
-		;;
-	esac
-	ALSA_CARD="$ALSA_CARD" /etc/init.d/alsa-autoconfig
-fi
-
-RUNLEVEL="$(runlevel)"
 
 # Apply Language Settings for xorg
 sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf
@@ -1507,28 +1458,6 @@ fi
 ###############################################################################
 # keyboard keycodes
 ###############################################################################
-# XXX: are these needed? does hotkey-setup take care of them?
-# XXX: have a try wiithout it --slh
-
-# MS MM keyboard add-on
-#setkeycodes e001 126 >/dev/null 2>&1
-#setkeycodes e059 127 >/dev/null 2>&1
-
-# fn keys
-#setkeycodes e03b 59 >/dev/null 2>&1
-#setkeycodes e008 60 >/dev/null 2>&1
-#setkeycodes e007 61 >/dev/null 2>&1
-#setkeycodes e03e 62 >/dev/null 2>&1
-#setkeycodes e03f 63 >/dev/null 2>&1
-#setkeycodes e040 64 >/dev/null 2>&1
-#setkeycodes e041 65 >/dev/null 2>&1
-#setkeycodes e042 66 >/dev/null 2>&1
-#setkeycodes e043 67 >/dev/null 2>&1
-#setkeycodes e023 68 >/dev/null 2>&1
-#setkeycodes e057 87 >/dev/null 2>&1
-#setkeycodes e058 88 >/dev/null 2>&1
-
-# enable hotkeys
 start_service hotkey-setup >/dev/null 2>&1
 
 ###############################################################################
@@ -1538,14 +1467,6 @@ if [ -n "$IS_LAPTOP" ]; then
 	# acpi-support
 	if pidof acpid >/dev/null && start_service acpi-support >/dev/null 2>&1; then
 		printf " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}\n"
-	fi
-	# always start kpowersave
-	if grep -q ^KDE_SERVICES_LAPTOP /etc/default/kde-services-sidux 2>/dev/null; then
-		# kde-services-sidux should start anything useful for a laptop
-		sed -i 's/^KDE_SERVICES_LAPTOP=.*/KDE_SERVICES_LAPTOP="true"/' \
-			/etc/default/kde-services-sidux
-	else
-		printf "KDE_SERVICES_LAPTOP=\"true\"\n" >> /etc/default/kde-services-sidux
 	fi
 fi
 
