@@ -1180,22 +1180,6 @@ done <<EOT
 $(awk 'BEGIN{old="__start"}{if($0==old){exit}else{old=$0;if($4&&$4!="name"){print $0}}}' /proc/partitions)
 EOT
 
-# Disable DMA for all IDE drives now if not enabled (and if not already done by linuxrc).
-# This is already done by linuxrc now.
-# However, for a harddisk-installed version, we are doing it again here.
-if checkbootparam "nodma"; then
-	for d in $(cd /proc/ide 2>/dev/null && echo hd[a-z]); do
-		if test -d /proc/ide/$d; then
-			if egrep -q 'using_dma[ \t]+1' /proc/ide/$d/settings 2>/dev/null; then
-				MODEL="$(cat /proc/ide/$d/model 2>/dev/null)"
-				test -z "$MODEL" && MODEL="[GENERIC IDE DEVICE]"
-				printf "${BLUE}Disabling DMA acceleration for: ${MAGENTA}$d 	${YELLOW}[${MODEL}]${NORMAL}\n"
-				printf "using_dma:0\n" >/proc/ide/$d/settings
-			fi
-		fi
-	done
-fi
-
 ###############################################################################
 # create fstab and populate /media
 ###############################################################################

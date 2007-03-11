@@ -8,8 +8,9 @@ initscripts-sidux-live (0.5.6) UNRELEASED; urgency=low
   * Purge setkeycodes calls.
   * Purge ipw3945 detection.
   * Purge hacking of /etc/default/kde-services-sidux due to laptop detection.
+  * nodma is handled in linuxrc, we don't need to do it again.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 12 Mar 2007 08:24:55 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 12 Mar 2007 08:29:17 +1000
 
 initscripts-sidux-live (0.5.5) unstable; urgency=low
 
