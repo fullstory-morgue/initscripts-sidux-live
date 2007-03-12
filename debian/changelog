@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.5.10) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.10) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Purge support for brltty.
   * Fix bashism, use cat not <.
 
