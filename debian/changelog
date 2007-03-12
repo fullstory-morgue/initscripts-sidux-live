@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.9) unstable; urgency=low
+
+  * Use /bin/sh for live-reboot, dash stalls eject.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 12 Mar 2007 21:15:42 +1000
+
 initscripts-sidux-live (0.5.8) unstable; urgency=low
 
   * Fix setting of volume.
