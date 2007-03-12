@@ -1117,7 +1117,12 @@ else
 	if checkbootparam "noswap"; then
 		printf "${BLUE}Ignoring swap partitions as requested.${NORMAL}\n"
 	else
-		swapon -ae
+		swapon -a -e
+	fi
+
+	if checkbootparam "mountall"; then
+		printf "${BLUE}Mounting all local partitions as requested.${NORMAL}\n"
+		mount -a -F
 	fi
 fi
 
@@ -1135,7 +1140,7 @@ else
 			[ -d /sys/class/net/${DEVICE}/wireless ] && continue
 			if [ -f /sys/class/net/${DEVICE}/addr_len ]; then
 				# unwanted: > 6 byte mac length (eg, placeholder interface, eth1394)
-				[ "$(< /sys/class/net/${DEVICE}/addr_len)" -gt 6 ] && continue
+				[ "$(cat /sys/class/net/${DEVICE}/addr_len)" -gt 6 ] && continue
 			fi
 			
 			if ifconfig "$DEVICE" up; then
