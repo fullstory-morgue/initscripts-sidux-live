@@ -1110,19 +1110,16 @@ if checkbootparam "nofstab"; then
 	printf " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}\n"
 else
 	printf "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}..."
+	
 	/usr/sbin/rebuildfstab --write-fstab --make-mountpoints --user "$FLL_LIVE_USER" \
-		--group $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>&1
+		--group "$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4)"
+	
 	printf "${BLUE}Done.${NORMAL}\n"
 
 	if checkbootparam "noswap"; then
 		printf "${BLUE}Ignoring swap partitions as requested.${NORMAL}\n"
 	else
 		swapon -a -e
-	fi
-
-	if checkbootparam "mountall"; then
-		printf "${BLUE}Mounting all local partitions as requested.${NORMAL}\n"
-		mount -a -F
 	fi
 fi
 
