@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.8) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 12 Mar 2007 10:21:47 +0100
+
 initscripts-sidux-live (0.5.7) unstable; urgency=low
 
   * Only sed hack xorg.conf if it exists.
