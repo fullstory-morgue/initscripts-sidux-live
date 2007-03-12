@@ -1135,8 +1135,10 @@ fi
 # Read in changes
 [ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
 
-# Apply Language Settings for xorg
-sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf
+if [ -f /etc/X11/xorg.conf ]; then
+	# Apply Language Settings for xorg
+	sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf
+fi
 
 ###############################################################################
 # partition detection and autoconfiguration of /etc/fstab and /media/*
@@ -1145,7 +1147,7 @@ if checkbootparam "nofstab"; then
 	printf " ${BLUE}Skipping /etc/fstab creation as requested on boot commandline.${NORMAL}\n"
 else
 	printf "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}..."
-	/usr/sbin/rebuildfstab --write-fstab --make-mountpoints --user ${FLL_LIVE_USER} \
+	/usr/sbin/rebuildfstab --write-fstab --make-mountpoints --user "$FLL_LIVE_USER" \
 		--group $(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4) >/dev/null 2>&1
 	printf "${BLUE}Done.${NORMAL}\n"
 
