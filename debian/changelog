@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.5.6) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.6) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Purge interactive setup handling.
   * Purge setkeycodes calls.
   * Purge ipw3945 detection.
