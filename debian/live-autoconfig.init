@@ -1033,12 +1033,13 @@ fi
 
 # Get max. sound volume
 VOL="$(getbootparam vol 2>/dev/null)"
-[ -z "$VOL" ] && VOL=50
-[ "$VOL" -ge 0 ] && [ "$VOL" -le 100 ] && VOL=50
+if [ -z "$VOL" ] || [ "$VOL" -lt 0 ] || [ "$VOL" -gt 100 ]; then
+	VOL=50
+fi
 
 # Fast ALSA detection
 case "$SOUND_DRIVER" in
-	snd-*)
+	snd*)
 		printf "alias snd-card-0 $SOUND_DRIVER\n"  > /etc/modprobe.d/sound
 		printf "options $SOUND_DRIVER index=0\n"  >> /etc/modprobe.d/sound
 		#set_mixers
