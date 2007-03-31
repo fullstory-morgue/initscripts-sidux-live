@@ -1221,7 +1221,7 @@ fi
 ###############################################################################
 # laptop?
 ###############################################################################
-IS_LAPTOP=
+unset IS_LAPTOP
 if laptop-detect 2>/dev/null; then
 	IS_LAPTOP=true
 fi
@@ -1232,8 +1232,7 @@ fi
 if checkbootparam "nocpufreq"; then
 	printf " ${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}\n"
 else
-	CPUFREQ=
-	CPUSERV=
+	unset CPUFREQ CPUSERV
 
 	# cpufreq detection from ubuntu powernowd, exports `CPUFREQ' on successful detection
 	if [ -f /usr/share/initscripts-sidux-live/cpufreq-detect ]; then
@@ -1249,8 +1248,8 @@ else
 			fi
 		fi
 		
-		# if this is a laptop, fallback to acpi-cpufreq 
-		if [ -z "$CPUFREQ" ] && [ -n "$IS_LAPTOP" ]; then
+		# always try acpi-cpufreq 
+		if [ -z "$CPUFREQ" ]; then
 			if modprobe acpi-cpufreq 2>/dev/null; then
 				CPUFREQ=acpi-cpufreq
 			fi
