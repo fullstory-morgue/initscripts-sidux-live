@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.13) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 31 Mar 2007 13:31:11 +0200
+
 initscripts-sidux-live (0.5.12) unstable; urgency=low
 
   * Always try acpi-cpufreq, this module is taking on support for the ever
