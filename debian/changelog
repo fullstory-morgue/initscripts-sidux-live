@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.5.12) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.12) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Always try acpi-cpufreq, this module is taking on support for the ever
     popular speedstep-centrino supported CPU's in the future.
 
