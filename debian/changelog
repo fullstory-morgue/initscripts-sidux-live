@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.12) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 31 Mar 2007 03:58:37 +0200
+
 initscripts-sidux-live (0.5.11) unstable; urgency=low
 
   * Rebuild fstab quietly.
