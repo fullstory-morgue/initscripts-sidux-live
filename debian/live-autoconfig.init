@@ -1473,6 +1473,16 @@ if [ -x /usr/bin/kdm ]; then
 	update-rc.d kdm start 99 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi
 
+if [ -x /usr/bin/gdm ]; then
+	cp --remove-destination "${FLL_MOUNTPOINT}/etc/gdm/gdm.conf" /etc/gdm/gdm.conf
+	sed -i	-e "/^AutomaticLogin\=.*/d" \
+		-e "/^AutomaticLoginEnable\=.*/d" \
+		-e "s/^\(\[daemon\]$\)/\1\nAutomaticLogin\=${FLL_LIVE_USER}\nAutomaticLoginEnable\=true/" \
+			/etc/gdm/gdm.conf
+	
+	update-rc.d gdm start 21 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
+fi
+
 ###############################################################################
 # re-enable printk's and signals
 ###############################################################################

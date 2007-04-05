@@ -1,8 +1,9 @@
 initscripts-sidux-live (0.5.13) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
+  * add auto-login for gdm.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 31 Mar 2007 13:31:11 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 05 Apr 2007 21:24:20 +0200
 
 initscripts-sidux-live (0.5.12) unstable; urgency=low
 
