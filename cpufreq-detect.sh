@@ -22,9 +22,9 @@ case "$VENDOR_ID" in
 	
 	GenuineIntel*)
 		# If the CPU has the est flag, it supports enhanced speedstep and should
-		# use the speedstep-centrino driver
+		# use the acpi-cpufreq driver (speedstep-centrino is deprecated)
 		if grep -q est $CPUINFO; then
-			CPUFREQ=speedstep-centrino;
+			CPUFREQ=acpi-cpufreq;
 		elif [ $CPU_FAMILY = 15 ]; then
 			# Right. Check if it's a P4 without est.
 			# Could be speedstep-ich.

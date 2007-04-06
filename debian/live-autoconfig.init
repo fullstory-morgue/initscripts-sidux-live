@@ -1248,7 +1248,7 @@ else
 			fi
 		fi
 		
-		# always try acpi-cpufreq 
+		# always try acpi-cpufreq as fallback
 		if [ -z "$CPUFREQ" ]; then
 			if modprobe acpi-cpufreq 2>/dev/null; then
 				CPUFREQ=acpi-cpufreq
@@ -1268,7 +1268,7 @@ else
 
 		# preseed powersaved with the correct cpufreq module name (avoid re-detection)
 		if [ -w /etc/powersave/cpufreq ]; then
-			sed -i 's/^\(CPUFREQD_MODULE\)=.*$/\1="'"$CPUFREQ"'"/' /etc/powersave/cpufreq
+			sed -i 's/^\(CPUFREQD_MODULE\)=.*$/\1="'$CPUFREQ'"/' /etc/powersave/cpufreq
 		fi
 
 		# start power management, powersaved is given preference
@@ -1457,9 +1457,9 @@ printf "${BLUE}Done.${NORMAL}\n"
 ###############################################################################
 # set up X.org
 ###############################################################################
-printf "${BLUE}Set up X sockets...${NORMAL}\n"
-
-start_service x11-common S
+if start_service x11-common S; then
+	printf "${BLUE}Set up X sockets...${NORMAL}\n"
+fi
 
 if [ -x /usr/bin/kdm ]; then
 	cp --remove-destination "${FLL_MOUNTPOINT}/etc/kde3/kdm/kdmrc" /etc/kde3/kdm/kdmrc

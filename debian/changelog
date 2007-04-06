@@ -1,8 +1,13 @@
 initscripts-sidux-live (0.5.14) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 05 Apr 2007 21:49:25 +0200
+  [ Kel Modderman ]
+  * Use acpi-cpufreq for centrino/core2 supported cpu's.
+  * Only print info about starting X sockets when X exists on live system.
+
+ -- Kel Modderman <kel@otaku42.de>  Sat, 07 Apr 2007 01:16:15 +1000
 
 initscripts-sidux-live (0.5.13) unstable; urgency=low
 
