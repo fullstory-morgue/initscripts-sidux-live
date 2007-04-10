@@ -1473,7 +1473,7 @@ if [ -x /usr/bin/kdm ]; then
 	update-rc.d kdm start 99 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi
 
-if [ -x /usr/bin/gdm ]; then
+if [ -x /usr/sbin/gdm ]; then
 	cp --remove-destination "${FLL_MOUNTPOINT}/etc/gdm/gdm.conf" /etc/gdm/gdm.conf
 	sed -i	-e "/^AutomaticLogin\=.*/d" \
 		-e "/^AutomaticLoginEnable\=.*/d" \
