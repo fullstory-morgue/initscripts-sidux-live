@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.16) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 10 Apr 2007 12:19:09 +0200
+
 initscripts-sidux-live (0.5.15) unstable; urgency=low
 
   * live-autoconfig.init, [ -x /usr/sbin/gdm ] instead of if [ -x
