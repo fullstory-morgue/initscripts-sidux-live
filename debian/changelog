@@ -1,8 +1,14 @@
 initscripts-sidux-live (0.5.16) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 10 Apr 2007 12:19:09 +0200
+  [ Joaquim Boura ]
+  * testcd could stil had issues if a file was corrupt. Now relaying on the
+    created logfile content to determine if the check was successful. 
+    Thanks locsmif. 
+
+ -- Joaquim Boura <x-un-i@sidux.com>  Thu, 12 Apr 2007 21:15:49 +0200
 
 initscripts-sidux-live (0.5.15) unstable; urgency=low
 
