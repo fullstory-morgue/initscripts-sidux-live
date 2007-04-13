@@ -1,10 +1,6 @@
-initscripts-sidux-live (0.5.16) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.16) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Joaquim Boura ]
-  * testcd could stil had issues if a file was corrupt. Now relaying on the
+  * testcd could still have issues if a file was corrupt. Now relaying on the
     created logfile content to determine if the check was successful. 
     Thanks locsmif. 
 
