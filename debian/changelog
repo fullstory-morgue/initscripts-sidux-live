@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.17) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 14 Apr 2007 01:32:30 +0200
+
 initscripts-sidux-live (0.5.16) unstable; urgency=low
 
   * testcd could still have issues if a file was corrupt. Now relaying on the
