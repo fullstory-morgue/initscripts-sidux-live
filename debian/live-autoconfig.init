@@ -26,9 +26,6 @@ X_CONF="/etc/X11/xorg.conf"
 
 [ -z "$FLL_MOUNTPOINT" ] && FLL_MOUNTPOINT="/$FLL_IMAGE_DIR"
 
-# make sure live-user is owner of their /home
-chown "$FLL_LIVE_USER":"$FLL_LIVE_USER" /home/"$FLL_LIVE_USER"
-
 case "$1" in
 	start)
 		;;
@@ -843,37 +840,6 @@ printf "0\n" > /proc/sys/kernel/printk
 # start udev
 start_service udev S
 
-###############################################################################
-# usbcore workaround
-###############################################################################
-# check if usbcore is not already loaded and allow some grace time
-if ! stringinfile "usbcore" /proc/modules; then
-	USBCORE_TIMEOUT="$(getbootparam usbwait 2>/dev/null)"
-	[ -z "$USBCORE_TIMEOUT" ] && USBCORE_TIMEOUT=5
-	USBCORE_TIMEOUT=$((USBCORE_TIMEOUT))
-	[ $USBCORE_TIMEOUT -lt 0 -o $USBCORE_TIMEOUT -gt 60 ] && USBCORE_TIMEOUT=5
-
-	printf "${BLUE}Waiting for ${YELLOW}usbcore${BLUE}. ${NORMAL}"
-	
-	for x in $(seq ${USBCORE_TIMEOUT}); do
-		stringinfile "usbcore" /proc/modules && break
-		printf "${BLUE}$((${USBCORE_TIMEOUT}-${x})) s${NORMAL}"
-		for y in $(seq 10); do
-			stringinfile "usbcore" /proc/modules && break
-			sleep 0.1
-		done
-		for z in $(seq $((${#x}+2))); do
-			printf "\b \b"
-		done
-	done
-
-	if stringinfile "usbcore" /proc/modules; then
-		printf "${GREEN}Done.${NORMAL}\n"
-	else
-		printf "${RED}Timeout reached.${NORMAL}\n"
-	fi
-fi
-
 # mount special filesystems under /dev
 start_service mountdevsubfs.sh
 
@@ -1327,6 +1293,11 @@ fi
 FLL_LIVE_USER_HOME="$(getent passwd $FLL_LIVE_USER | cut -d\: -f 6)"
 
 printf "${BLUE}Populate ${YELLOW}${FLL_LIVE_USER_HOME}${BLUE} with user configurations...${NORMAL}"
+
+mkdir -p "${FLL_LIVE_USER_HOME}"
+
+# make sure live-user is owner of their /home
+chown "${FLL_LIVE_USER}:${FLL_LIVE_USER}" "${FLL_LIVE_USER_HOME}"
 
 rsync -Ha --ignore-existing /etc/skel/ "${FLL_LIVE_USER_HOME}/" 2>/dev/null
 rsync -Ha --ignore-existing /usr/share/user-profile/profile/ "${FLL_LIVE_USER_HOME}/" 2>/dev/null
