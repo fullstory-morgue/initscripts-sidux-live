@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.18) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 23 Apr 2007 19:43:51 +0200
+
 initscripts-sidux-live (0.5.17) unstable; urgency=low
 
   * chown live users $HOME later inscript, when it is actually made.
