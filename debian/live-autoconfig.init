@@ -1196,7 +1196,7 @@ fi
 ###############################################################################
 # cpufreq detection
 ###############################################################################
-if checkbootparam "nocpufreq"; then
+if checkbootparam "nocpufreq" || checkbootparam "noacpi"; then
 	printf " ${BLUE}Skipping CPUfreq detection as requested on boot commandline.${NORMAL}\n"
 else
 	unset CPUFREQ CPUSERV
@@ -1215,8 +1215,8 @@ else
 			fi
 		fi
 		
-		# always try acpi-cpufreq as fallback
-		if [ -z "$CPUFREQ" ]; then
+		# always try acpi-cpufreq as fallback when acpi support is present
+		if [ -z "$CPUFREQ" ] && [ -d /proc/acpi ]; then
 			if modprobe acpi-cpufreq 2>/dev/null; then
 				CPUFREQ=acpi-cpufreq
 			fi
