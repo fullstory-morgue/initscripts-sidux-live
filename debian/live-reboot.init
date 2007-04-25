@@ -138,16 +138,20 @@ echo "${BLUE}Unmounting file systems.${NORMAL}"
 cd /
 
 # Umount everything but root
-umount -n -arvf
+umount -adrvf
 if [ "$?" != "0" ] ; then
 	# Free loopback devices if necessary, so we can unmount the host media
 	for i in /dev/loop*; do losetup -d "$i" 2>/dev/null; done
 	# And retry
-	umount -n -arf
+	umount -adrvf
 fi
 
 # Remove remaining unused modules
 rmmod -a
+
+if [ -f /proc/mounts ]; then
+	cat /proc/mounts
+fi
 
 echo "$message" > /dev/console
 

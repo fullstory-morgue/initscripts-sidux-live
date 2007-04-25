@@ -1,14 +1,14 @@
 initscripts-sidux-live (0.5.18) unstable; urgency=low
 
-  * Use -n option of umount to avoid writing to /etc/mtab in live-reboot.
   * Remove aggressive shell redirects for now, we can replace them again once
     script is basically working once again.
   * Makes no sense to start cpufreq stuff when "noacpi" was asked for on
     cmdline.
   * Don't fallback to trying acpi-cpufreq when no basic acpi support is
     present.
+  * cat /proc/mounts after attempting umount during this debug stage.
 
- -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 22:42:24 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 00:18:14 +1000
 
 initscripts-sidux-live (0.5.17) unstable; urgency=low
 
