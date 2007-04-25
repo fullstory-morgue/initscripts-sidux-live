@@ -131,23 +131,23 @@ LD_LINUX=ld-linux.so.2
 [ -x "/etc/live-hack/$LD_LINUX" ] || cp -p "/lib/$LD_LINUX" /etc/live-hack/
 
 # Turn off swap, then unmount file systems.
-swapoff -a >/dev/null 2>&1
+swapoff -a
 
 echo "${BLUE}Unmounting file systems.${NORMAL}"
 
 cd /
 
 # Umount everything but root
-umount -arvf 2>/dev/null
+umount -n -arvf
 if [ "$?" != "0" ] ; then
 	# Free loopback devices if necessary, so we can unmount the host media
 	for i in /dev/loop*; do losetup -d "$i" 2>/dev/null; done
 	# And retry
-	umount -arf 2>/dev/null
+	umount -n -arf
 fi
 
 # Remove remaining unused modules
-rmmod -a >/dev/null 2>&1
+rmmod -a
 
 echo "$message" > /dev/console
 
