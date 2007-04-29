@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.20) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.20) unstable; urgency=low
 
   * Muffle printk's while ejecting cdrom (libata noise).
 
