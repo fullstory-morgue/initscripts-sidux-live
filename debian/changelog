@@ -1,8 +1,14 @@
-initscripts-sidux-live (0.5.19) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.19) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Re-write live-reboot.
+    - adapt /etc/init.d/umountfs, parse /proc/mounts and selectively tear down
+      unionfs and live media related mounts.
+    - use existing initscripts (sendsigs, networking, umountnfs.sh) via
+      stop_services() function where possible.
+    - adapt copy_exec() from initramfs-tools to cache required binaries for
+      poweroff + eject magic.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 26 Apr 2007 02:08:14 +0200
+ -- Kel Modderman <kel@otaku42.de>  Sun, 29 Apr 2007 21:30:42 +1000
 
 initscripts-sidux-live (0.5.18) unstable; urgency=low
 
