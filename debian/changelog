@@ -1,8 +1,8 @@
 initscripts-sidux-live (0.5.20) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Muffle printk's while ejecting cdrom (libata noise).
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 29 Apr 2007 14:01:57 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 30 Apr 2007 07:49:53 +1000
 
 initscripts-sidux-live (0.5.19) unstable; urgency=low
 

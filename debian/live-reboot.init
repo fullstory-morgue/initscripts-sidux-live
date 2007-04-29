@@ -336,12 +336,19 @@ pop_live_cd()
 	if [ -z "${LIVE_CDROM}" ] || [ "${NOEJECT}" ]; then
 		return 0
 	fi
+
+	#
+	# disable kernel messages while ejecting cdrom (libata noise)
+	#
+	echo "0" > /proc/sys/kernel/printk
 	
 	for cdrom in ${LIVE_CDROM}; do
 		if [ -b ${cdrom} ]; then
 			${BINDIR}eject -m -p ${cdrom}
 		fi
 	done
+
+	echo "6" > /proc/sys/kernel/printk
 
 	if [ -z "${NOPROMPT}" ]; then
 		echo "${CYAN}Please remove CD, close cdrom drive and hit return.${NORMAL}"
