@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.5.22) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 01 May 2007 03:13:28 +0200
+
 initscripts-sidux-live (0.5.21) unstable; urgency=low
 
   * don't write configuration variable to /etc/sysconfig/* which aren't parsed
