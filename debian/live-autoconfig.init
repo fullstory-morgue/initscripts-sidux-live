@@ -892,7 +892,7 @@ if ! checkbootparam "nohwsetup"; then
 	rm -f "$HWSETUP_MAIN" 2>/dev/null
 fi
 
-# Also read desired desktop, if any
+# FIXME: Also read desired desktop, if any (not implemented right now)
 DESKTOP="$(getbootparam desktop 2>/dev/null)"
 # Allow only supported windowmanagers
 case "$DESKTOP" in
@@ -903,17 +903,8 @@ case "$DESKTOP" in
 		;;
 esac
 
-# Desired desktop
-printf "DESKTOP=\"$DESKTOP\"\n" > "$HWSETUP_DESKTOP"
-
-# override dpi setting
+# FIXME: override dpi setting (not implemented right now)
 CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
-
-# Write DPI setting if specified
-[ "$CUSTOM_DPI" ] && printf "CUSTOM_DPI=\"$CUSTOM_DPI\"\n" >> "$HWSETUP_MAIN"
-
-# disable 915resolution hack
-checkbootparam "no915res" && printf "NO915RES=\"yes\"\n" >> "$HWSETUP_MAIN"
 
 # Second: Search & configure supported hardware
 # Check for options relevant to hwsetup
