@@ -82,9 +82,27 @@ do_umount() {
 	do
 		case "$MTPT" in
 			#
-			# live hack: /lib/init/rw gets stacked on top of /FLL_UNIONFS_MOUNTPOINT
+			# live hack
 			#
-			/|/proc|/dev|/.dev|/dev/pts|/dev/shm|/dev/.static/dev|/proc/*|/sys|*/lib/init/rw)
+			/mnt/fll/*)
+				case "$FSTYPE" in
+					iso9660)
+						if [ "$MTPT" = /mnt/fll/fromiso ]; then
+							LIVE_MTPTS="$LIVE_MTPTS $MTPT"
+						else
+							LIVE_CDROM="$DEV"
+						fi
+						;;
+					*)
+						LIVE_MTPTS="$LIVE_MTPTS $MTPT"
+						;;
+				esac
+				continue
+				;;
+			#
+			# live hack
+			#
+			/|/proc|/dev|/.dev|/dev/pts|/dev/shm|/dev/.static/dev|/proc/*|/sys|/lib/init/rw)
 				continue
 				;;
 			/var/run)
@@ -109,21 +127,7 @@ do_umount() {
 				UNION_MTPTS="$UNION_MTPTS $MTPT"
 				;;
 			squashfs)
-				LIVE_MTPTS="$LIVE_MTPTS $MTPT"
-				;;
-			iso9660)
-				case "$MTPT" in
-					/mnt/*)
-						#
-						# fll-live-initramfs puts all live media mounts here
-						# the worst we can do is eject unrelated cdrom media . . .
-						#
-						LIVE_CDROM="$LIVE_CDROM $DEV"
-						;;
-					 *)
-					 	REG_MTPTS="$REG_MTPTS $MTPT"
-						;;
-				esac
+				SQUSH_MTPTS="$SQUSH_MTPTS $MTPT"
 				;;
 			#
 			# live hack
@@ -205,6 +209,21 @@ do_umount() {
 		else
 			log_daemon_msg "Will now unmount union filesystems"
 			${BINDIR}umount -l -n -f -v -d $UNION_MTPTS
+			log_end_msg $?
+		fi
+	fi
+
+	if [ "$SQSH_MTPTS" ]
+	then
+		SQSH_MTPTS="$(pioodl $SQSH_MTPTS)"
+		if [ "$VERBOSE" = no ]
+		then
+			log_action_begin_msg "Unmounting squashfs filesystems"
+			${BINDIR}umount -l -n -f -d $SQSH_MTPTS
+			log_action_end_msg $?
+		else
+			log_daemon_msg "Will now unmount squashfs filesystems"
+			${BINDIR}umount -l -n -f -v -d $SQSH_MTPTS
 			log_end_msg $?
 		fi
 	fi
@@ -342,11 +361,9 @@ pop_live_cd()
 	#
 	echo "0" > /proc/sys/kernel/printk
 	
-	for cdrom in ${LIVE_CDROM}; do
-		if [ -b ${cdrom} ]; then
-			${BINDIR}eject -m -p ${cdrom}
-		fi
-	done
+	if [ -b "${LIVE_CDROM}" ]; then
+		${BINDIR}eject -m -p ${LIVE_CDROM}
+	fi
 
 	echo "6" > /proc/sys/kernel/printk
 
