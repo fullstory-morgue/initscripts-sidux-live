@@ -903,7 +903,6 @@ case "$DESKTOP" in
 		;;
 esac
 
-# FIXME: override dpi setting (not implemented right now)
 CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 
 # Second: Search & configure supported hardware
@@ -1432,7 +1431,9 @@ if [ -x /usr/bin/kdm ]; then
 		-e "s/^\#\(AutoLoginDelay\=\).*/\10/" \
 		-e "s/^\#\(AutoLoginUser\=\).*/\1${FLL_LIVE_USER}/" \
 			/etc/kde3/kdm/kdmrc
-	
+	[ -n "$CUSTOM_DPI" ] &&  sed -e "s/\(ServerArgsLocal\=\-nolisten tcp\).*$/\1 \-dpi ${CUSTOM_DPI}/" \
+			/etc/kde3/kdm/kdmrc
+
 	update-rc.d kdm start 99 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi
 
@@ -1442,6 +1443,9 @@ if [ -x /usr/sbin/gdm ]; then
 		-e "/^AutomaticLoginEnable\=.*/d" \
 		-e "s/^\(\[daemon\]$\)/\1\nAutomaticLogin\=${FLL_LIVE_USER}\nAutomaticLoginEnable\=true/" \
 			/etc/gdm/gdm.conf
+
+	[ -n "$CUSTOM_DPI" ] && sed -i -e "s/\(command\=\/usr\/bin\/X \-dpi \).*\( -audit.*$\)/\1${CUSTOM_DPI}\2/" \
+		/usr/share/gdm/defaults.conf
 	
 	update-rc.d gdm start 21 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi
