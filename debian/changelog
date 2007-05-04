@@ -1,8 +1,9 @@
 initscripts-sidux-live (0.5.24) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Adjust for changed (again) live fll mounts, that will now stay out of the
+    way in /fll/*.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 04 May 2007 18:07:19 +0200
+ -- Kel Modderman <kel@otaku42.de>  Sat, 05 May 2007 09:28:16 +1000
 
 initscripts-sidux-live (0.5.23) unstable; urgency=low
 

@@ -84,10 +84,10 @@ do_umount() {
 			#
 			# live hack
 			#
-			/mnt/fll/*)
+			/fll/*)
 				case "$FSTYPE" in
 					iso9660)
-						if [ "$MTPT" = /mnt/fll/fromiso ]; then
+						if [ "$MTPT" = /fll/fromiso ]; then
 							LIVE_MTPTS="$LIVE_MTPTS $MTPT"
 						else
 							LIVE_CDROM="$DEV"
