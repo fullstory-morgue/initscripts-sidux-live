@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.5.23) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.23) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Joaquim Boura ]
   * implemented the dpi cheatcode
 
  -- Joaquim Boura <x-un-i@sidux.com>  Fri, 04 May 2007 17:22:05 +0200
