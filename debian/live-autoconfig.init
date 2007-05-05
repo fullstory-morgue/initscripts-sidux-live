@@ -834,9 +834,6 @@ mount -o remount,rw / 2>/dev/null
 ###############################################################################
 printf " ${GREEN}Enabling ${YELLOW}udev${GREEN} device and hotplug management daemon.${NORMAL}\n"
 
-# No kernel messages while probing modules
-printf "0\n" > /proc/sys/kernel/printk
-
 # start udev
 start_service udev S
 
