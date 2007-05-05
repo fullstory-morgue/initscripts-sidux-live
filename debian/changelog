@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.24) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.24) unstable; urgency=low
 
   * Adjust for changed (again) live fll mounts, that will now stay out of the
     way in /fll/*.
