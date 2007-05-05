@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.25) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.25) unstable; urgency=low
 
   [ Kel Modderman ]
   * fll-live-initramfs supresses printk's early. No need to do it here again.
