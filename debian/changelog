@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.5.25) UNRELEASED; urgency=low
 
+  [ Kel Modderman ]
   * fll-live-initramfs supresses printk's early. No need to do it here again.
 
- -- Kel Modderman <kel@otaku42.de>  Sat, 05 May 2007 10:48:03 +1000
+  [ Joaquim Boura ]
+  * "-i" for sed was missing
+
+ -- Joaquim Boura <x-un-i@sidux.com>  Sat, 05 May 2007 12:23:00 +0200
 
 initscripts-sidux-live (0.5.24) unstable; urgency=low
 
