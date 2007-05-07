@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.27) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.27) unstable; urgency=low
 
   * Split large case constructs that compute locale settings into a sourceable
     shell script fragment to live beside cpufreq-detect.
