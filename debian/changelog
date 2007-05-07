@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.28) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.28) unstable; urgency=low
 
   * IS_LAPTOP variable not being used (or likely at this point), removed.
   * No need for two loops to locate index.html file, one is enough. Don't test
