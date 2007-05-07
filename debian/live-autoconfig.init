@@ -1417,6 +1417,7 @@ fi
 if [ -x /usr/bin/kdm ]; then
 	# source live kde defaults
 	if [ -r /etc/default/kde-services-sidux ]; then
+		# XXX: whatever provides this should have a distro agnostic name
 		. /etc/default/kde-services-sidux
 	fi
 
