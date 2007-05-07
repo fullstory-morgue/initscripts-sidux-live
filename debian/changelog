@@ -1,8 +1,15 @@
 initscripts-sidux-live (0.5.27) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Split large case constructs that compute locale settings into a sourceable
+    shell script fragment to live beside cpufreq-detect.
+  * Strip extension from two sourceable scripts, add debian/install to have
+    them installed.
+  * Fix typo in grep for ^FLL_KDEKEYBOARDS in /etc/default/distro, was looking
+    for KDEKEYBOARDS previously.
+  * Don't announce start of udev, udev initscript does good enough job of that
+    already.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 07 May 2007 12:19:22 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 07 May 2007 20:52:13 +1000
 
 initscripts-sidux-live (0.5.26) unstable; urgency=low
 

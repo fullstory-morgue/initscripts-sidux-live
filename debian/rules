@@ -10,9 +10,6 @@ install/initscripts-sidux-live::
 			--update-rcd-params="start 90 0 ."
 	dh_installinit	--name=live-reboot --no-start \
 			--update-rcd-params="start 90 6 ."
-	# cpufreq-detect.sh
-	install -D -m 0755 cpufreq-detect.sh \
-		debian/initscripts-sidux-live/usr/share/initscripts-sidux-live/cpufreq-detect
 
 clean::
 	rm -f debian/live-halt.init
