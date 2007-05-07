@@ -309,18 +309,12 @@ esac
 
 CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 
-# Second: Search & configure supported hardware
-# Check for options relevant to hwsetup
-NOSERIAL=""
-checkbootparam noserial >/dev/null 2>&1 && NOSERIAL="yes"
-[ -n "$NOSERIAL" ] && HWSETUP_NOSERIAL="-m"
-# load serial module
-modprobe 8250 >/dev/null 2>&1
-
 # load psmouse module
 modprobe psmouse >/dev/null 2>&1
+
+# Second: Search & configure supported hardware
 printf "${WHITE}"
-if hwsetup $HWSETUP_NOSERIAL >/dev/null; then
+if hwsetup >/dev/null; then
 	printf "${NORMAL}"
 else
 	printf " ${RED}Please check.${NORMAL}\n"
@@ -331,38 +325,6 @@ modprobe pcspkr >/dev/null 2>&1
 
 # activate input driver for char event devices
 modprobe evdev >/dev/null 2>&1
-
-# Handle special options for ALSA sound drivers
-rm -f /etc/modprobe.d/alsa-special
-SYS=$(cut -f2 -d: /sys/devices/pci*/{,*/}*/modalias 2>/dev/null)
-ALSA_SPECIAL=""
-for sysid in $SYS; do
-	# ALSA_SPECIAL is [kernel module with _ not -] [needed options]
-	case "$sysid" in
-		v000010DEd0000026Csv00001043sd000081CBbc*)
-			# ASUS M2NPV-VM
-			ALSA_SPECIAL="snd_hda_intel position_fix=1 model=3stack"
-			break
-			;;
-		v00008086d000027D8sv00001854sd0000005Fbc*)
-			# LG Electronics P1-J302E1
-			ALSA_SPECIAL="snd_hda_intel model=lg"
-			break
-			;;
-		v00008086d0000284Bsv00008086sd0000284Bbc*)
-			# MSI MS-7235
-			ALSA_SPECIAL="snd_hda_intel position_fix=1"
-			break
-			;;
-	esac
-done
-if [ -n "$ALSA_SPECIAL" ]; then
-	printf "options $ALSA_SPECIAL\n" > /etc/modprobe.d/alsa-special
-	if [ -d "/sys/module/${ALSA_SPECIAL%% *}" ]; then
-		rmmod "${ALSA_SPECIAL%% *}"
-		modprobe "$ALSA_SPECIAL"
-	fi
-fi
 
 # Read in what hwsetup has found
 [ -f "$HWSETUP_MAIN" ] && . "$HWSETUP_MAIN"
@@ -398,52 +360,20 @@ if [ -z "$VOL" ] || [ "$VOL" -lt 0 ] || [ "$VOL" -gt 100 ]; then
 	VOL=50
 fi
 
-# Fast ALSA detection
+# set volume
 case "$SOUND_DRIVER" in
 	snd*)
-		printf "alias snd-card-0 $SOUND_DRIVER\n"  > /etc/modprobe.d/sound
-		printf "options $SOUND_DRIVER index=0\n"  >> /etc/modprobe.d/sound
 		#set_mixers
 		aumix -m 0 -v $VOL -w $VOL -c $VOL >/dev/null 2>&1
 		;;
 esac
 
 ###############################################################################
-# misc. hardware detections/workarounds
-###############################################################################
-# dwl520e1 detection
-if lspci -nv|grep 1260:3873 -A1|grep -q 1186:3700; then
-	/usr/sbin/dwl520e1_fw_load >/dev/null 2>&1
-	printf "install hostap_pci /sbin/modprobe --ignore-install hostap_pci && /usr/sbin/dwl520e1_fw_load >/dev/null 2>&1\n" > \
-		/etc/modprobe.d/dwl520e1
-fi
-
-# soft modem detection
-if ! checkbootparam "nomodem"; then
-	if lspci | grep Intel | grep -q "AC'97 Modem Controller"; then
-		start_service sl-modem-daemon >/dev/null
-	fi
-fi
-
-# Start FC detection on vt10
-NOFC=""
-if [ -x /usr/sbin/detect-fc ]; then
-	checkbootparam "nofc" && NOFC="yes"
-	[ -e /etc/drdsl/modules.inc ] && NOFC="yes"
-	if [ -z "$NOFC" ]; then
-		printf " ${GREEN}Starting ${YELLOW}FC${GREEN} detection on ${YELLOW}vt10${GREEN}.${NORMAL}\n"
-		open -c 10 /usr/sbin/detect-fc
-	fi
-fi
-
-###############################################################################
 # load required modules
 ###############################################################################
-# Load fuse module
+# Load fuse support
 if [ -x /etc/init.d/fuse-utils ]; then
 	start_service fuse-utils >/dev/null
-else
-	modprobe fuse >/dev/null 2>&1
 fi
 
 # load capability LSM (needed for hal)

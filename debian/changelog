@@ -8,8 +8,18 @@ initscripts-sidux-live (0.5.27) UNRELEASED; urgency=low
     for KDEKEYBOARDS previously.
   * Don't announce start of udev, udev initscript does good enough job of that
     already.
+  * "noserial" cheatcode is worthless, remove support for it.
+  * Remove special handling of alsa options for specific chipsets, they have
+    not been maintained for many many kernel revisions and cannot be vouched
+    to be correct.
+  * Remove "Fast ALSA detection", no idea what that does.
+  * Remove support for handling dwl520e1_fw_load, sl-modem-daemon and
+    detect-fc; they are all non-free and moreover, slamr and AVM modules which
+    take advantage of the latter two scripts are not compatible with current
+    kernel versions.
+  * Don't fallback to modprobing fuse when fuse-utils is not present.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 07 May 2007 20:52:13 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 07 May 2007 21:19:48 +1000
 
 initscripts-sidux-live (0.5.26) unstable; urgency=low
 
