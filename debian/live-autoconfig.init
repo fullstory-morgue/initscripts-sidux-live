@@ -1294,7 +1294,7 @@ grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || printf "alias su=
 grep alias\ sux "/home/${FLL_LIVE_USER}/.bashrc"  > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
 
 # configure kdesu to use sudo for the live user
-if [ -x /usr/bin/kde-config ] && [ ! -r /home/$FLL_LIVE_USER/.kde/share/config/kdesurc ] ; then
+if [ -x /usr/bin/kde-config ] && [ ! -r /home/${FLL_LIVE_USER}/.kde/share/config/kdesurc ] ; then
 	mkdir -p "/home/${FLL_LIVE_USER}/.kde/share/config/"
 	printf "[super-user-command]\n"		 > "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
 	printf "super-user-command=sudo\n"	>> "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
@@ -1309,10 +1309,10 @@ if [ -x /usr/bin/iceweasel ]; then
 		sed -i 's/Path='$MOZPROFILE'/Path='$NEWMOZPROFILE'/' "${FLL_LIVE_USER_HOME}/.mozilla/firefox/profiles.ini"
 fi
 
-if [ -n "$LANGUAGE" ]; then
+if [ -n "${LANGUAGE}" ]; then
 	# Set mozilla's preferred language
 	for f in `ls -1 ${FLL_LIVE_USER_HOME}/.mozilla/*/*/prefs.js 2>/dev/null`; do
-		echo 'user_pref("intl.accept_languages", "'"$LANGUAGE"', en");' >>"$f"
+		echo 'user_pref("intl.accept_languages", "'"${LANGUAGE}"', en");' >>"$f"
 		
 		case "$LANG" in
 			de*|at*|ch*)
@@ -1323,43 +1323,43 @@ if [ -n "$LANGUAGE" ]; then
 	done
 
 	for f in `ls -1 ${FLL_LIVE_USER_HOME}/.mozilla/*/*/chrome/chrome.rdf.${LANGUAGE} 2>/dev/null`; do
-		\mv -f "$f" "${f%%.${LANGUAGE}}"
+		mv -f "$f" "${f%%.${LANGUAGE}}"
 	done
 fi
 
 if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 	# Only regenerate the config and Desktop files if missing
-	mkdir -p	"${FLL_LIVE_USER_HOME}/.kde/share" \
-			"${FLL_LIVE_USER_HOME}/Desktop"
-	
+	mkdir -p "${FLL_LIVE_USER_HOME}/.kde/share" "${FLL_LIVE_USER_HOME}/Desktop"
+	# remove sorticons.desktop
 	rm -f "${FLL_LIVE_USER_HOME}/.kde/Autostart/sorticons.desktop"
 fi
 
-# Check for /index.html (_en), or KNOPPIX/index.html (_en) on this CD
-if [ -e /cdrom/index.html ]; then
-	INDEXFILE="/cdrom/index.html"
-else
-	for i in index ${FLL_IMAGE_DIR}/index; do
-		INDEXFILEDE="/cdrom/${i}.html"
-		INDEXFILEEN="/cdrom/${i}_en.html"
-		[ -e "$INDEXFILEEN" ] && INDEXFILE="$INDEXFILEEN" && [ "$LANGUAGE" != "de" ] && break
-		[ -e "$INDEXFILEDE" ] && INDEXFILE="$INDEXFILEDE" && [ "$LANGUAGE"  = "de" ] && break
+# scan for index.html in fll specific live mountpoint directories
+for mntpnt in /fll/*; do
+	[ -d "${mntpnt}" ] || continue
+	for idx in index.html; do
+		if [ -e "${mntpnt}/${idx}" ]; then
+			INDEXFILE="${mntpnt}/${idx}"
+			break 2
+		fi
 	done
-fi
+done
 
-if [ -e "$INDEXFILE" ]; then
-	cat >> "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" <<EOF
+if [ -e "${INDEXFILE}" ]; then
+	cat > "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
+<<EOF
 [Desktop Entry]
-Name=$FLL_CDROM_INDEX
-# Exec=kfmclient openProfile webbrowsing $INDEXFILE
-Exec=konqueror --geometry 950x700+35+20 file:$INDEXFILE
+Name=${FLL_CDROM_INDEX}
+# Exec=kfmclient openProfile webbrowsing ${INDEXFILE}
+Exec=konqueror --geometry 950x700+35+20 file:${INDEXFILE}
 Type=Application
-Icon=$FLL_CDROM_INDEX_ICON
+Icon=${FLL_CDROM_INDEX_ICON}
 Terminal=0
 EOF
 	if ! checkbootparam "nointro"; then
-		mkdir -p $FLL_LIVE_USER_HOME/.kde/Autostart
-		ln "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" "${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"
+		mkdir -p "${FLL_LIVE_USER_HOME}/.kde/Autostart"
+		ln "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
+			"${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"
 	fi
 fi
 
@@ -1380,12 +1380,6 @@ if [ -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 	# set KDE wallpaper
 	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals"
 	sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
-
-	# Check for custom splashscreen in /cdrom/${FLL_IMAGE_DIR}/
-	if [ -d "/cdrom/${FLL_IMAGE_DIR}/ksplash" ]; then
-		[ -d "${FLL_LIVE_USER_HOME}/.kde/share/apps" ] || mkdir -p "${FLL_LIVE_USER_HOME}/.kde/share/apps"
-		ln -s "/cdrom/${FLL_IMAGE_DIR}/ksplash" "${FLL_LIVE_USER_HOME}/.kde/share/apps/"
-	fi
 fi
 
 if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" ]; then
@@ -1409,7 +1403,7 @@ EOF
 fi
 
 # fix permissions
-chown -R "$FLL_LIVE_USER":"$FLL_LIVE_USER" "${FLL_LIVE_USER_HOME}"
+chown -R "${FLL_LIVE_USER}:${FLL_LIVE_USER}" "${FLL_LIVE_USER_HOME}"
 
 printf "${BLUE}Done.${NORMAL}\n"
 
@@ -1421,34 +1415,36 @@ if start_service x11-common S; then
 fi
 
 if [ -x /usr/bin/kdm ]; then
-	cp --remove-destination "${FLL_MOUNTPOINT}/etc/kde3/kdm/kdmrc" /etc/kde3/kdm/kdmrc
-
-	KDM_OVERRIDE_DIR="/etc/default/kdm.d/"
+	# XXX: KDM_THEME variable needs to find itself in a proper config file
 	KDM_THEME="/usr/share/apps/kdm/themes/sidux"
-	if ( -d "$KDM_THEME" ); then
-		printf "USEBACKGROUND=true\nWALLPAPER=\"${FLL_WALLPAPER}\"\n" \
-				> ${KDM_OVERRIDE_DIR}/sidux-wallpaper
+	if [ -d "${KDM_THEME}" ]; then
 		printf "USETHEME=true\nTHEME=\"${KDM_THEME}\"\n" \
-				> ${KDM_OVERRIDE_DIR}/sidux-theme
-		printf "AUTOLOGINUSER=${FLL_LIVE_USER}\nAUTOLOGINAGAIN=true\nAUTOLOGINDELAY=10\n" \
-				> ${KDM_OVERRIDE_DIR}/sidux-autologin
+			> /etc/default/kdm.d/kdmtheme
 	fi
+	
+	printf "USEBACKGROUND=true\nWALLPAPER=\"${FLL_WALLPAPER}\"\n" \
+			> /etc/default/kdm.d/wallpaper
+	printf "AUTOLOGINUSER=${FLL_LIVE_USER}\nAUTOLOGINAGAIN=true\nAUTOLOGINDELAY=0\n" \
+			> /etc/default/kdm.d/autologin
 
-	[ -n "$CUSTOM_DPI" ] &&  sed -i -e "s/\(ServerArgsLocal\=\-nolisten tcp\).*$/\1 \-dpi ${CUSTOM_DPI}/" \
+	if [ -n "${CUSTOM_DPI}" ]; then
+		sed -i -e "s/\(ServerArgsLocal\=\-nolisten tcp\).*$/\1 \-dpi ${CUSTOM_DPI}/" \
 			/etc/kde3/kdm/kdmrc
+	fi
 
 	update-rc.d kdm start 99 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi
 
 if [ -x /usr/sbin/gdm ]; then
-	cp --remove-destination "${FLL_MOUNTPOINT}/etc/gdm/gdm.conf" /etc/gdm/gdm.conf
 	sed -i	-e "/^AutomaticLogin\=.*/d" \
 		-e "/^AutomaticLoginEnable\=.*/d" \
 		-e "s/^\(\[daemon\]$\)/\1\nAutomaticLogin\=${FLL_LIVE_USER}\nAutomaticLoginEnable\=true/" \
 			/etc/gdm/gdm.conf
 
-	[ -n "$CUSTOM_DPI" ] && sed -i -e "s/\(command\=\/usr\/bin\/X \-dpi \).*\( -audit.*$\)/\1${CUSTOM_DPI}\2/" \
-		/usr/share/gdm/defaults.conf
+	if [ -n "${CUSTOM_DPI}" ]; then
+		sed -i -e "s/\(command\=\/usr\/bin\/X \-dpi \).*\( -audit.*$\)/\1${CUSTOM_DPI}\2/" \
+			/usr/share/gdm/defaults.conf
+	fi
 	
 	update-rc.d gdm start 21 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi

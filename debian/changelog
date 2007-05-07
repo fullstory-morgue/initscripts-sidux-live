@@ -1,12 +1,19 @@
 initscripts-sidux-live (0.5.26) UNRELEASED; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
   [ Bernard Gray ]
-  * update kdm overrides 
+  * update kdm overrides
 
- -- Bernard Gray <bernard.gray@gmail.com>  Mon, 07 May 2007 17:24:31 +1000
+  [ Kel Modderman ]
+  * Use curly brackets around variables more consistently.
+  * Fix typo, \ was in fromt of mv in mozilla language handling part.
+  * Update manual icon generation for new fll live mountpout location.
+  * Remove custom ksplash hack that cannot work again with new fll boot.
+  * No longer need to cp --remove-destination from FLL_MOUNTPOINT to working
+    root anymore.
+  * kdm autologin and autologin user seperated from theme handline when
+    setting up kdm overrides.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 07 May 2007 18:19:40 +1000
 
 initscripts-sidux-live (0.5.25) unstable; urgency=low
 
