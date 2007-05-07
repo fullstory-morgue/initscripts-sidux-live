@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.5.26) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 05 May 2007 12:56:55 +0200
+  [ Bernard Gray ]
+  * update kdm overrides 
+
+ -- Bernard Gray <bernard.gray@gmail.com>  Mon, 07 May 2007 17:24:31 +1000
 
 initscripts-sidux-live (0.5.25) unstable; urgency=low
 

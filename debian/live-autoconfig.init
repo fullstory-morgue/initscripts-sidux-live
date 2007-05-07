@@ -1422,12 +1422,18 @@ fi
 
 if [ -x /usr/bin/kdm ]; then
 	cp --remove-destination "${FLL_MOUNTPOINT}/etc/kde3/kdm/kdmrc" /etc/kde3/kdm/kdmrc
-	sed -i	-e "s/^\#\(AutoReLogin=\).*/\1true/" \
-		-e "s/^\#\(AutoLoginEnable\=\).*/\1true/" \
-		-e "s/^\#\(AutoLoginAgain\=\).*/\1true/" \
-		-e "s/^\#\(AutoLoginDelay\=\).*/\10/" \
-		-e "s/^\#\(AutoLoginUser\=\).*/\1${FLL_LIVE_USER}/" \
-			/etc/kde3/kdm/kdmrc
+
+	KDM_OVERRIDE_DIR="/etc/default/kdm.d/"
+	KDM_THEME="/usr/share/apps/kdm/themes/sidux"
+	if ( -d "$KDM_THEME" ); then
+		printf "USEBACKGROUND=true\nWALLPAPER=\"${FLL_WALLPAPER}\"\n" \
+				> ${KDM_OVERRIDE_DIR}/sidux-wallpaper
+		printf "USETHEME=true\nTHEME=\"${KDM_THEME}\"\n" \
+				> ${KDM_OVERRIDE_DIR}/sidux-theme
+		printf "AUTOLOGINUSER=${FLL_LIVE_USER}\nAUTOLOGINAGAIN=true\nAUTOLOGINDELAY=10\n" \
+				> ${KDM_OVERRIDE_DIR}/sidux-autologin
+	fi
+
 	[ -n "$CUSTOM_DPI" ] &&  sed -i -e "s/\(ServerArgsLocal\=\-nolisten tcp\).*$/\1 \-dpi ${CUSTOM_DPI}/" \
 			/etc/kde3/kdm/kdmrc
 
