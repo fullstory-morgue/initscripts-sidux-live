@@ -510,14 +510,6 @@ if [ -x /etc/init.d/dbus ]; then
 fi
 
 ###############################################################################
-# laptop?
-###############################################################################
-unset IS_LAPTOP
-if laptop-detect 2>/dev/null; then
-	IS_LAPTOP=true
-fi
-
-###############################################################################
 # cpufreq detection
 ###############################################################################
 if checkbootparam "nocpufreq" || checkbootparam "noacpi"; then
@@ -600,7 +592,7 @@ start_service hotkey-setup >/dev/null 2>&1
 ###############################################################################
 # do laptop specific stuff
 ###############################################################################
-if [ -n "$IS_LAPTOP" ]; then
+if laptop-detect 2>/dev/null; then
 	# acpi-support
 	if pidof acpid >/dev/null && start_service acpi-support >/dev/null 2>&1; then
 		printf " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}\n"
