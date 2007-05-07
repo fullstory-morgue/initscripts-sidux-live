@@ -663,18 +663,16 @@ if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 	rm -f "${FLL_LIVE_USER_HOME}/.kde/Autostart/sorticons.desktop"
 fi
 
+unset INDEXFILE
 # scan for index.html in fll specific live mountpoint directories
 for mntpnt in /fll/*; do
-	[ -d "${mntpnt}" ] || continue
-	for idx in index.html; do
-		if [ -e "${mntpnt}/${idx}" ]; then
-			INDEXFILE="${mntpnt}/${idx}"
-			break 2
-		fi
-	done
+	if [ -d "${mntpnt}" ] && [ -e "${mntpnt}/index.html" ]; then
+		INDEXFILE="${mntpnt}/index.html"
+		break
+	fi
 done
 
-if [ -e "${INDEXFILE}" ]; then
+if [ "${INDEXFILE}" ]; then
 	cat > "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
 <<EOF
 [Desktop Entry]
