@@ -12,8 +12,10 @@ initscripts-sidux-live (0.5.26) UNRELEASED; urgency=low
     root anymore.
   * kdm autologin and autologin user seperated from theme handline when
     setting up kdm overrides.
+  * Source live kde defaults when preparing kdm, it provides KDE_KDM_THEME
+    variable. (currently via kde-services-sidux)
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 07 May 2007 18:19:40 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 07 May 2007 19:19:32 +1000
 
 initscripts-sidux-live (0.5.25) unstable; urgency=low
 

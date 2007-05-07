@@ -1415,19 +1415,22 @@ if start_service x11-common S; then
 fi
 
 if [ -x /usr/bin/kdm ]; then
-	# XXX: KDM_THEME variable needs to find itself in a proper config file
-	KDM_THEME="/usr/share/apps/kdm/themes/sidux"
-	if [ -d "${KDM_THEME}" ]; then
-		printf "USETHEME=true\nTHEME=\"${KDM_THEME}\"\n" \
+	# source live kde defaults
+	if [ -r /etc/default/kde-services-sidux ]; then
+		. /etc/default/kde-services-sidux
+	fi
+
+	if [ -d "${KDE_KDM_THEME}" ]; then
+		printf "USETHEME=true\nTHEME=${KDE_KDM_THEME}\n" \
 			> /etc/default/kdm.d/kdmtheme
 	fi
 	
-	printf "USEBACKGROUND=true\nWALLPAPER=\"${FLL_WALLPAPER}\"\n" \
+	printf "USEBACKGROUND=true\nWALLPAPER=${FLL_WALLPAPER}\n" \
 			> /etc/default/kdm.d/wallpaper
 	printf "AUTOLOGINUSER=${FLL_LIVE_USER}\nAUTOLOGINAGAIN=true\nAUTOLOGINDELAY=0\n" \
 			> /etc/default/kdm.d/autologin
 
-	if [ -n "${CUSTOM_DPI}" ]; then
+	if [ "${CUSTOM_DPI}" ]; then
 		sed -i -e "s/\(ServerArgsLocal\=\-nolisten tcp\).*$/\1 \-dpi ${CUSTOM_DPI}/" \
 			/etc/kde3/kdm/kdmrc
 	fi
@@ -1441,7 +1444,7 @@ if [ -x /usr/sbin/gdm ]; then
 		-e "s/^\(\[daemon\]$\)/\1\nAutomaticLogin\=${FLL_LIVE_USER}\nAutomaticLoginEnable\=true/" \
 			/etc/gdm/gdm.conf
 
-	if [ -n "${CUSTOM_DPI}" ]; then
+	if [ "${CUSTOM_DPI}" ]; then
 		sed -i -e "s/\(command\=\/usr\/bin\/X \-dpi \).*\( -audit.*$\)/\1${CUSTOM_DPI}\2/" \
 			/usr/share/gdm/defaults.conf
 	fi
