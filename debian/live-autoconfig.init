@@ -663,11 +663,17 @@ if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 	rm -f "${FLL_LIVE_USER_HOME}/.kde/Autostart/sorticons.desktop"
 fi
 
-unset INDEXFILE
+unset INDEXFILE INDEXICON
 # scan for index.html in fll specific live mountpoint directories
 for mntpnt in /fll/*; do
 	if [ -d "${mntpnt}" ] && [ -e "${mntpnt}/index.html" ]; then
 		INDEXFILE="${mntpnt}/index.html"
+		for ext in gif ico png; do
+			if [ -e "${mntpnt}/${FLL_CDROM_INDEX_ICON}.${ext}" ]; then
+				INDEXICON="${mntpnt}/${FLL_CDROM_INDEX_ICON}.${ext}"
+				break
+			fi
+		done
 		break
 	fi
 done
@@ -680,7 +686,7 @@ Name=${FLL_CDROM_INDEX}
 # Exec=kfmclient openProfile webbrowsing ${INDEXFILE}
 Exec=konqueror --geometry 950x700+35+20 file:${INDEXFILE}
 Type=Application
-Icon=${FLL_CDROM_INDEX_ICON}
+Icon=${INDEXICON}
 Terminal=0
 EOF
 	if ! checkbootparam "nointro"; then
