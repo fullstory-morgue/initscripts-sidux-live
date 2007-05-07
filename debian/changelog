@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.26) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.26) unstable; urgency=low
 
   [ Bernard Gray ]
   * update kdm overrides
