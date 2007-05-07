@@ -1291,7 +1291,7 @@ rsync -Ha --ignore-existing /usr/share/user-profile/profile/ "${FLL_LIVE_USER_HO
 
 # add aliases for sudo and su
 grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || printf "alias su=\"sudo su\"\n"   >> "${FLL_LIVE_USER_HOME}/.bashrc"
-grep alias\ sux "/home/$FLL_LIVE_USER/.bashrc"  > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
+grep alias\ sux "/home/${FLL_LIVE_USER}/.bashrc"  > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
 
 # configure kdesu to use sudo for the live user
 if [ -x /usr/bin/kde-config ] && [ ! -r /home/$FLL_LIVE_USER/.kde/share/config/kdesurc ] ; then
