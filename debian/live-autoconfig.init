@@ -259,9 +259,9 @@ start_service udev-mtab S
 #  Set clock (Local time is more often used than GMT, so it is default)
 ###############################################################################
 if checkbootparam utc >/dev/null 2>&1 || checkbootparam gmt >/dev/null 2>&1; then
-	[ -w /etc/default/rcS ] && sed -i 's/^UTC=.*/UTC=yes/' /etc/default/rcS
 	TZ="UTC"
 else
+	# dirty hack
 	[ -w /etc/default/rcS ] && sed -i 's/^UTC=.*/UTC=no/' /etc/default/rcS
 fi
 
