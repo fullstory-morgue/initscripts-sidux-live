@@ -167,12 +167,6 @@ if checkbootparam "testcd" || checkbootparam "testdvd"; then
 fi
 
 ###############################################################################
-# Check if we are in interactive startup mode
-###############################################################################
-INTERACTIVE=""
-stringinstring "BOOT_IMAGE=expert" "$CMDLINE" && INTERACTIVE="yes"
-
-###############################################################################
 # set hostname
 ###############################################################################
 HOSTNAME="$(getbootparam 'hostname' 2>/dev/null)"
