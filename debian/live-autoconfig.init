@@ -301,8 +301,6 @@ case "$DESKTOP" in
 		;;
 esac
 
-CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
-
 # load psmouse module
 modprobe psmouse >/dev/null 2>&1
 
@@ -740,6 +738,9 @@ printf "${BLUE}Done.${NORMAL}\n"
 if start_service x11-common S; then
 	printf "${BLUE}Set up X sockets...${NORMAL}\n"
 fi
+
+# custom dpi handling
+CUSTOM_DPI="$(getbootparam dpi 2>/dev/null)"
 
 if [ -x /usr/bin/kdm ]; then
 	# source live kde defaults
