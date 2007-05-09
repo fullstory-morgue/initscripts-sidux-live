@@ -1,11 +1,15 @@
 initscripts-sidux-live (0.5.29) UNRELEASED; urgency=low
 
+  [ Kel Modderman ]
   * Remove unused INTERACTIVE variable.
   * UTC=yes is default, no need for sed hack.
   * Do dpi cheatcode handling at dm configure time, its no longer tied to
     hwsetup and its nasty configfiles.
 
- -- Kel Modderman <kel@otaku42.de>  Tue, 08 May 2007 23:10:17 +1000
+  [ Joaquim Boura ]
+  * rebuildfstab options were changed
+
+ -- Joaquim Boura <x-un-i@sidux.com>  Wed, 09 May 2007 22:00:39 +0200
 
 initscripts-sidux-live (0.5.28) unstable; urgency=low
 

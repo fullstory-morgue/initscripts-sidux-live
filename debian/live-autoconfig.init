@@ -394,8 +394,7 @@ if checkbootparam "nofstab"; then
 else
 	printf "${BLUE}Scanning for Harddisk partitions and creating ${YELLOW}/etc/fstab${BLUE}..."
 	
-	/usr/sbin/rebuildfstab --quiet --write-fstab --make-mountpoints --user "$FLL_LIVE_USER" \
-		--group "$(getent passwd "$FLL_LIVE_USER" | cut -d\: -f 4)"
+	/usr/sbin/rebuildfstab --quiet --write-fstab --make-mountpoints 
 	
 	printf "${BLUE}Done.${NORMAL}\n"
 
