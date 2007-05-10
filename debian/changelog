@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.29) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.29) unstable; urgency=low
 
   [ Kel Modderman ]
   * Remove unused INTERACTIVE variable.
@@ -9,7 +9,10 @@ initscripts-sidux-live (0.5.29) UNRELEASED; urgency=low
   [ Joaquim Boura ]
   * rebuildfstab options were changed
 
- -- Joaquim Boura <x-un-i@sidux.com>  Wed, 09 May 2007 22:00:39 +0200
+  [ Stefan Lippers-Hollmann ]
+  * add versioned dependency on rebuildfstab.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 10 May 2007 03:30:39 +0200
 
 initscripts-sidux-live (0.5.28) unstable; urgency=low
 
