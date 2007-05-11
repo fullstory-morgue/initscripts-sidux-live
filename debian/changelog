@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.5.30) UNRELEASED; urgency=low
+initscripts-sidux-live (0.5.30) unstable; urgency=low
 
   * Drop acpi-support support.
 
