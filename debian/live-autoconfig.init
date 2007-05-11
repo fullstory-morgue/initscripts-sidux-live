@@ -581,19 +581,8 @@ fi
 start_service hotkey-setup >/dev/null 2>&1
 
 ###############################################################################
-# do laptop specific stuff
-###############################################################################
-if laptop-detect 2>/dev/null; then
-	# acpi-support
-	if pidof acpid >/dev/null && start_service acpi-support >/dev/null 2>&1; then
-		printf " ${GREEN}Starting ${YELLOW}acpi-support${GREEN} subsystem.${NORMAL}\n"
-	fi
-fi
-
-###############################################################################
 # configure $HOME
 ###############################################################################
-
 # Copy profiles if not already present
 # modified to pull entire /etc/skel and /usr/share/user-profile/profile folder contents,
 # depending on ramdisk space constraints
