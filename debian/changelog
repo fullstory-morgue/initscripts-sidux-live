@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.6.2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 May 2007 18:28:06 +0200
+
 initscripts-sidux-live (0.6.1) unstable; urgency=low
 
   * include a warning for window manager overrides in actually reachable code
