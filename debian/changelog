@@ -1,13 +1,13 @@
-initscripts-sidux-live (0.6.2) UNRELEASED; urgency=low
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+initscripts-sidux-live (0.6.2) unstable; urgency=low
 
   [ Andreas Weber ]
   * checkbootparam desktop added to make sure function will just called if
-    bootcheat is requested. 
+    bootcheat is requested.
 
- -- Andreas Weber <andreas@it-weber.com>  Sat, 12 May 2007 22:30:24 +0200
+  [ Stefan Lippers-Hollmann ]
+  * indent latest change.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 13 May 2007 00:41:16 +0200
 
 initscripts-sidux-live (0.6.1) unstable; urgency=low
 

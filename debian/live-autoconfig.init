@@ -592,49 +592,49 @@ grep alias\ sux "/home/${FLL_LIVE_USER}/.bashrc"  > /dev/null || printf "alias s
 
 # set default window manager
 if checkbootparam desktop 2>/dev/null
-DESKTOP="$(getbootparam desktop 2>/dev/null)"
-case "$DESKTOP" in 
-		kde)
-			WM="/usr/bin/kwin"
-			;;
-		gnome)
-			WM="/usr/bin/metacity"
-			;;
-		fluxbox|flux)
-			WM="/usr/bin/fluxbox"
-			;;
-		xfce|xfce4)
-			WM="/usr/bin/xfwm4"
-			;;
-esac
-
-for i in "$WM" "/usr/bin/kwin" "/usr/bin/metacity" "/usr/bin/xfwm4" "/usr/bin/fluxbox"; do
-	if [ -x "$i" ]; then
-		case "$i" in 
-			"/usr/bin/kwin")
-				XSESSION="kde"
+	DESKTOP="$(getbootparam desktop 2>/dev/null)"
+	case "$DESKTOP" in 
+			kde)
+				WM="/usr/bin/kwin"
 				;;
-			"/usr/bin/metacity")
-				XSESSION="gnome"
+			gnome)
+				WM="/usr/bin/metacity"
 				;;
-			"/usr/bin/fluxbox")
-				XSESSION="fluxbox"
+			fluxbox|flux)
+				WM="/usr/bin/fluxbox"
 				;;
-			"/usr/bin/xfwm4")
-				XSESSION="xfce4"
+			xfce|xfce4)
+				WM="/usr/bin/xfwm4"
 				;;
-		esac
-
-		WM="$i"
-		printf "\n ${BLUE}Set window manager to ${YELLOW}${DESKTOP}${BLUE} as requested on boot commandline.${NORMAL}\n"
-		update-alternatives --set x-window-manager "$WM" >/dev/null
-		printf "[Desktop]\nSession=$XSESSION\n" > "${FLL_LIVE_USER_HOME}/.dmrc"
-
-		break
-	else
-		[ "$WM" = "$i" ] && printf "\n ${RED}window manager $DESKTOP is not available.${NORMAL}\n"
-	fi
-done
+	esac
+	
+	for i in "$WM" "/usr/bin/kwin" "/usr/bin/metacity" "/usr/bin/xfwm4" "/usr/bin/fluxbox"; do
+		if [ -x "$i" ]; then
+			case "$i" in 
+				"/usr/bin/kwin")
+					XSESSION="kde"
+					;;
+				"/usr/bin/metacity")
+					XSESSION="gnome"
+					;;
+				"/usr/bin/fluxbox")
+					XSESSION="fluxbox"
+					;;
+				"/usr/bin/xfwm4")
+					XSESSION="xfce4"
+					;;
+			esac
+	
+			WM="$i"
+			printf "\n ${BLUE}Set window manager to ${YELLOW}${DESKTOP}${BLUE} as requested on boot commandline.${NORMAL}\n"
+			update-alternatives --set x-window-manager "$WM" >/dev/null
+			printf "[Desktop]\nSession=$XSESSION\n" > "${FLL_LIVE_USER_HOME}/.dmrc"
+	
+			break
+		else
+			[ "$WM" = "$i" ] && printf "\n ${RED}window manager $DESKTOP is not available.${NORMAL}\n"
+		fi
+	done
 fi
 
 # configure kdesu to use sudo for the live user
