@@ -591,6 +591,7 @@ grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || printf "alias su=
 grep alias\ sux "/home/${FLL_LIVE_USER}/.bashrc"  > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
 
 # set default window manager
+if checkbootparam desktop 2>/dev/null
 DESKTOP="$(getbootparam desktop 2>/dev/null)"
 case "$DESKTOP" in 
 		kde)
@@ -634,6 +635,7 @@ for i in "$WM" "/usr/bin/kwin" "/usr/bin/metacity" "/usr/bin/xfwm4" "/usr/bin/fl
 		[ "$WM" = "$i" ] && printf "\n ${RED}window manager $DESKTOP is not available.${NORMAL}\n"
 	fi
 done
+fi
 
 # configure kdesu to use sudo for the live user
 if [ -x /usr/bin/kde-config ] && [ ! -r /home/${FLL_LIVE_USER}/.kde/share/config/kdesurc ] ; then
