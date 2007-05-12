@@ -387,6 +387,42 @@ if [ -f /etc/X11/xorg.conf ]; then
 fi
 
 ###############################################################################
+## change default Wm if cmdline contains desktop=
+###############################################################################
+if checkbootparam "desktop"; then
+	DESKTOP="$(getbootparam desktop 2>/dev/null)"
+
+	case "$DESKTOP" in 
+			kde)
+				WM="/usr/bin/kwin"
+				;;
+			gnome)
+				WM="/usr/bin/metacity"
+				;;
+			fluxbox|flux)
+				WM="/usr/bin/fluxbox"
+				;;
+			xfce|xfce4)
+				WM="/usr/bin/xfwm4"
+				;;
+			*)
+				# Outstanding WM's:
+				# enlightenment|larswm|windowmaker|wmaker|icewm|twm|nx|rdp|kiosk)
+				WM="/usr/bin/kwin"
+				;;
+	esac
+
+	if [ ! -f "$WM" ]; then
+		printf " ${RED}Window Manager $DESKTOP is not available.${NORMAL}\n"
+		[ -f "/usr/bin/fluxbox" ] && WM="/usr/bin/fluxbox"
+		[ -f "/usr/bin/kwin" ] && WM="/usr/bin/kwin"
+	else
+		printf " ${BLUE}Set Window Manager to $DESKTOP as requested on boot commandline.${NORMAL}\n"
+		update-alternatives --set x-window-manager $WM 2>/dev/null
+	fi
+fi
+
+###############################################################################
 # partition detection and autoconfiguration of /etc/fstab and /media/*
 ###############################################################################
 if checkbootparam "nofstab"; then
