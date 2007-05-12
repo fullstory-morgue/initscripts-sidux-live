@@ -622,10 +622,6 @@ for i in "$WM" "/usr/bin/kwin" "/usr/bin/metacity" "/usr/bin/xfwm4" "/usr/bin/fl
 			"/usr/bin/xfwm4")
 				XSESSION="xfce4"
 				;;
-			*)
-				printf " ${RED}window manager $DESKTOP is not available.${NORMAL}\n"
-				continue
-				;;
 		esac
 
 		WM="$i"
@@ -634,6 +630,8 @@ for i in "$WM" "/usr/bin/kwin" "/usr/bin/metacity" "/usr/bin/xfwm4" "/usr/bin/fl
 		printf "[Desktop]\nSession=$XSESSION\n" > "${FLL_LIVE_USER_HOME}/.dmrc"
 
 		break
+	else
+		[ "$WM" = "$i" ] && printf "\n ${RED}window manager $DESKTOP is not available.${NORMAL}\n"
 	fi
 done
 
