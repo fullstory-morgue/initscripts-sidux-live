@@ -69,7 +69,6 @@ WHITE="[1;37m"
 # get rid of these as soon as possible
 HWSETUP_MAIN="/etc/sysconfig/knoppix"
 HWSETUP_MOUSE="/etc/sysconfig/mouse"
-HWSETUP_DESKTOP="/etc/sysconfig/desktop"
 
 ###############################################################################
 # utility Functions
@@ -290,17 +289,6 @@ if ! checkbootparam "nohwsetup"; then
 	rm -f "$HWSETUP_MAIN" 2>/dev/null
 fi
 
-# FIXME: Also read desired desktop, if any (not implemented right now)
-DESKTOP="$(getbootparam desktop 2>/dev/null)"
-# Allow only supported windowmanagers
-case "$DESKTOP" in
-	gnome|enlightenment|kde|larswm|xfce|xfce4|windowmaker|wmaker|icewm|fluxbox|twm|nx|rdp|kiosk)
-		;;
-	*)
-		DESKTOP="kde"
-		;;
-esac
-
 # load psmouse module
 modprobe psmouse >/dev/null 2>&1
 
@@ -384,42 +372,6 @@ fi
 if [ -f /etc/X11/xorg.conf ]; then
 	# Apply Language Settings for xorg
 	sed -i "s|\"XkbLayout\".*$|\"XkbLayout\"\t\"${XKBLAYOUT}\"|" /etc/X11/xorg.conf
-fi
-
-###############################################################################
-## change default Wm if cmdline contains desktop=
-###############################################################################
-if checkbootparam "desktop"; then
-	DESKTOP="$(getbootparam desktop 2>/dev/null)"
-
-	case "$DESKTOP" in 
-			kde)
-				WM="/usr/bin/kwin"
-				;;
-			gnome)
-				WM="/usr/bin/metacity"
-				;;
-			fluxbox|flux)
-				WM="/usr/bin/fluxbox"
-				;;
-			xfce|xfce4)
-				WM="/usr/bin/xfwm4"
-				;;
-			*)
-				# Outstanding WM's:
-				# enlightenment|larswm|windowmaker|wmaker|icewm|twm|nx|rdp|kiosk)
-				WM="/usr/bin/kwin"
-				;;
-	esac
-
-	if [ ! -f "$WM" ]; then
-		printf " ${RED}Window Manager $DESKTOP is not available.${NORMAL}\n"
-		[ -f "/usr/bin/fluxbox" ] && WM="/usr/bin/fluxbox"
-		[ -f "/usr/bin/kwin" ] && WM="/usr/bin/kwin"
-	else
-		printf " ${BLUE}Set Window Manager to $DESKTOP as requested on boot commandline.${NORMAL}\n"
-		update-alternatives --set x-window-manager $WM 2>/dev/null
-	fi
 fi
 
 ###############################################################################
@@ -637,6 +589,53 @@ rsync -Ha --ignore-existing /usr/share/user-profile/profile/ "${FLL_LIVE_USER_HO
 # add aliases for sudo and su
 grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || printf "alias su=\"sudo su\"\n"   >> "${FLL_LIVE_USER_HOME}/.bashrc"
 grep alias\ sux "/home/${FLL_LIVE_USER}/.bashrc"  > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
+
+# set default window manager
+DESKTOP="$(getbootparam desktop 2>/dev/null)"
+case "$DESKTOP" in 
+		kde)
+			WM="/usr/bin/kwin"
+			;;
+		gnome)
+			WM="/usr/bin/metacity"
+			;;
+		fluxbox|flux)
+			WM="/usr/bin/fluxbox"
+			;;
+		xfce|xfce4)
+			WM="/usr/bin/xfwm4"
+			;;
+esac
+
+for i in "$WM" "/usr/bin/kwin" "/usr/bin/metacity" "/usr/bin/xfwm4" "/usr/bin/fluxbox"; do
+	if [ -x "$i" ]; then
+		case "$i" in 
+			"/usr/bin/kwin")
+				XSESSION="kde"
+				;;
+			"/usr/bin/metacity")
+				XSESSION="gnome"
+				;;
+			"/usr/bin/fluxbox")
+				XSESSION="fluxbox"
+				;;
+			"/usr/bin/xfwm4")
+				XSESSION="xfce4"
+				;;
+			*)
+				printf " ${RED}window manager $DESKTOP is not available.${NORMAL}\n"
+				continue
+				;;
+		esac
+
+		WM="$i"
+		printf "\n ${BLUE}Set window manager to ${YELLOW}${DESKTOP}${BLUE} as requested on boot commandline.${NORMAL}\n"
+		update-alternatives --set x-window-manager "$WM" >/dev/null
+		printf "[Desktop]\nSession=$XSESSION\n" > "${FLL_LIVE_USER_HOME}/.dmrc"
+
+		break
+	fi
+done
 
 # configure kdesu to use sudo for the live user
 if [ -x /usr/bin/kde-config ] && [ ! -r /home/${FLL_LIVE_USER}/.kde/share/config/kdesurc ] ; then

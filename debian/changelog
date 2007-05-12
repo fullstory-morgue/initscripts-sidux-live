@@ -1,12 +1,12 @@
-initscripts-sidux-live (0.5.31) UNRELEASED; urgency=low
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+initscripts-sidux-live (0.5.31) unstable; urgency=low
 
   [ Andreas Weber ]
-  * desktop bootcheat added. 
+  * desktop bootcheat added.
 
- -- Andreas Weber <andreas@it-weber.com>  Sat, 12 May 2007 15:02:12 +0200
+  [ Stefan Lippers-Hollmann ]
+  * rework desktop bootcheat, actually hook it up to kdm/ gdm.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 May 2007 18:16:24 +0200
 
 initscripts-sidux-live (0.5.30) unstable; urgency=low
 
