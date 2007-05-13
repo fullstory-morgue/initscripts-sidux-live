@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.6.4) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.4) unstable; urgency=low
 
   * One printf to setup kdesurc.
   * Echo pop_live_cd message to /dev/console in live-reboot.
