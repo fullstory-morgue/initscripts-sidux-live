@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.6.5) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 13 May 2007 19:42:19 +0200
+
 initscripts-sidux-live (0.6.4) unstable; urgency=low
 
   * One printf to setup kdesurc.
