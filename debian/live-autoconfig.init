@@ -640,8 +640,7 @@ fi
 # configure kdesu to use sudo for the live user
 if [ -x /usr/bin/kde-config ] && [ ! -r /home/${FLL_LIVE_USER}/.kde/share/config/kdesurc ] ; then
 	mkdir -p "/home/${FLL_LIVE_USER}/.kde/share/config/"
-	printf "[super-user-command]\n"		 > "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
-	printf "super-user-command=sudo\n"	>> "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
+	printf "[super-user-command]\nsuper-user-command=sudo\n" > "/home/${FLL_LIVE_USER}/.kde/share/config/kdesurc"
 fi
 
 # Share Mozilla plugins with Firefox
