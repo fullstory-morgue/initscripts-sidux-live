@@ -1,8 +1,9 @@
 initscripts-sidux-live (0.6.5) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Add newlines to printf's redirected to hostname and timezone manual
+    fixups.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 13 May 2007 19:42:19 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 14 May 2007 11:35:03 +1000
 
 initscripts-sidux-live (0.6.4) unstable; urgency=low
 

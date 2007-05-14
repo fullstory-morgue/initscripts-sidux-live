@@ -170,8 +170,8 @@ fi
 ###############################################################################
 HOSTNAME="$(getbootparam 'hostname' 2>/dev/null)"
 if [ "${HOSTNAME}" ]; then
-	printf "${HOSTNAME}" > /etc/hostname
-	printf "${HOSTNAME}" > /etc/mailname
+	printf "${HOSTNAME}\n" > /etc/hostname
+	printf "${HOSTNAME}\n" > /etc/mailname
 	# update /etc/hosts
 	sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"${HOSTNAME}"'/' /etc/hosts
 fi
@@ -276,7 +276,7 @@ fi
 if [ -f "/usr/share/zoneinfo/${TZ}" ]; then
 	# /etc/localtime is excluded at build time
 	cp "/usr/share/zoneinfo/${TZ}" /etc/localtime
-	printf "${TZ}" > /etc/timezone
+	printf "${TZ}\n" > /etc/timezone
 fi
 
 start_service hwclock.sh >/dev/null
