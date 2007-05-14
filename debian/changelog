@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.6.5) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.5) unstable; urgency=low
 
   * Add newlines to printf's redirected to hostname and timezone manual
     fixups.
