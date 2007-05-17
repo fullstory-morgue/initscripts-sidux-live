@@ -5,8 +5,9 @@ initscripts-sidux-live (0.6.6) UNRELEASED; urgency=low
 
   [ Joaquim Boura ]
   * the boot device is no longer mounted over /cdron
+  * Make the search for the boot device savier
 
- -- Joaquim Boura <x-un-i@sidux.com>  Thu, 17 May 2007 11:53:57 +0200
+ -- Joaquim Boura <x-un-i@sidux.com>  Thu, 17 May 2007 14:39:58 +0200
 
 initscripts-sidux-live (0.6.5) unstable; urgency=low
 
