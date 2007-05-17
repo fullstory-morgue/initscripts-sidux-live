@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.6.6) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.6) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Joaquim Boura ]
   * the boot device is no longer mounted over /cdron
   * Make the search for the boot device savier
 
