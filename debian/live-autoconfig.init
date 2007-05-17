@@ -151,7 +151,8 @@ if checkbootparam "testcd" || checkbootparam "testdvd"; then
 	printf " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}\n"
 	printf " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}\n"
 	printf "${RED}"
-	( cd /cdrom/ ; rm -f /tmp/md5sum.log ; LANG=C md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
+	bootdev=$(echo /fll/*)
+	( cd $bootdev ; rm -f /tmp/md5sum.log ; LANG=C md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
 
 	if grep -q FAILED /tmp/md5sum.log; then
 		printf "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***\n"
