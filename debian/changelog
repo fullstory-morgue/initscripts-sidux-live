@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.6.8) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 May 2007 12:25:26 +0200
+  [ Horst Tritremmel ]
+  * other background color for gdm
+
+ -- Horst Tritremmel <hjt@sidux.com>  Fri, 18 May 2007 15:44:34 +0200
 
 initscripts-sidux-live (0.6.7) unstable; urgency=low
 
