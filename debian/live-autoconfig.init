@@ -779,7 +779,7 @@ if [ -x /usr/sbin/gdm ]; then
 			/usr/share/gdm/defaults.conf
 	fi
 	if [ -f "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" ]; then
-        	sed -ie "s|^\(Exec=\)konqueror.*( file:${INDEXFILE})|\1epihany\2|" \
+        	sed -ie "s|^\(Exec=\)konqueror.*( file:${INDEXFILE})|\1epiphany\2|" \
 			"${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop"
 	fi
 	
