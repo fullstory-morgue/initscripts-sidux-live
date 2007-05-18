@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.6.9) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 May 2007 16:33:42 +0200
+  [ Andreas Weber ]
+  * epiphany hack removed. Replaced by toolkit-browser (sidux-scripts)
+
+ -- Andreas Weber <andreas@it-weber.com>  Fri, 18 May 2007 22:15:27 +0200
 
 initscripts-sidux-live (0.6.8) unstable; urgency=low
 
@@ -20,6 +24,7 @@ initscripts-sidux-live (0.6.7) unstable; urgency=low
 
   [ Horst Tritremmel ]
   * epiphany instead of epihany 
+
 
  -- Horst Tritremmel <hjt@sidux.com>  Fri, 18 May 2007 10:26:11 +0200
 
