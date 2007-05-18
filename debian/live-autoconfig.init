@@ -145,42 +145,6 @@ start_service mountkernfs.sh
 [ -z "$CMDLINE" ] && CMDLINE=" $(cat /proc/cmdline)"
 
 ###############################################################################
-# CD Checker
-###############################################################################
-if checkbootparam "testcd" || checkbootparam "testdvd"; then
-	printf " ${BLUE}Checking CD data integrity as requested by '${CYAN}testcd${BLUE}' boot option.${NORMAL}\n"
-	printf " ${BLUE}Reading files and checking against ${FLL_IMAGE_DIR}/md5sums, this may take a while...${NORMAL}\n"
-	printf "${RED}"
-
-	# find the boot device
-	for mntpnt in /fll/*; do
-		if [ -d "${mntpnt}" ] && [ -d "${mntpnt}/${FLL_IMAGE_DIR}" ] && [ -s "${mntpnt}/${FLL_IMAGE_DIR}/md5sums" ]; then
-			bootdev=${mntpnt}
-			break
-		fi
-	done
-
-	if [ "$bootdev" ]; then
-		( cd $bootdev ; rm -f /tmp/md5sum.log ; LANG=C md5sum -c ${FLL_IMAGE_DIR}/md5sums 2>&1 | tee /tmp/md5sum.log )
-
-		if grep -q FAILED /tmp/md5sum.log; then
-			printf "${RED} *** CHECKSUM FAILED FOR THESE FILES:                          ***\n"
-			egrep -v '(^md5sum:|OK$)' /tmp/md5sum.log
-			printf "${RED} *** DATA ON YOUR CD MEDIUM IS POSSIBLY INCOMPLETE OR DAMAGED, ***${NORMAL}\n"
-			printf "${RED} *** OR YOUR COMPUTER HAS BAD RAM.                             ***${NORMAL}\n"
-			printf "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
-			read a
-		else
-			printf " ${GREEN}Everything looks OK${NORMAL}\n"
-		fi
-	else
-		printf "${RED} *** FILE WITH THE MD5 SUMS NOT FOUND, ***${NORMAL}\n"
-		printf "${CYAN}Hit return to contine, or press the reset button to quit.${NORMAL} "
-		read a
-	fi
-fi
-
-###############################################################################
 # set hostname
 ###############################################################################
 HOSTNAME="$(getbootparam 'hostname' 2>/dev/null)"
