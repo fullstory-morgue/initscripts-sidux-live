@@ -778,6 +778,10 @@ if [ -x /usr/sbin/gdm ]; then
 		sed -i -e "s/\(command\=\/usr\/bin\/X \-dpi \).*\( -audit.*$\)/\1${CUSTOM_DPI}\2/" \
 			/usr/share/gdm/defaults.conf
 	fi
+	if [ -f "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" ]; then
+        	sed -ie "s|^\(Exec=\)konqueror.*( file:${INDEXFILE})|\1epihany\2|" \
+			"${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop"
+	fi
 	
 	update-rc.d gdm start 21 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi
