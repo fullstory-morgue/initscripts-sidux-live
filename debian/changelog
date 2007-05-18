@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.6.8) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.8) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Horst Tritremmel ]
   * other background color for gdm
 
  -- Horst Tritremmel <hjt@sidux.com>  Fri, 18 May 2007 15:44:34 +0200
