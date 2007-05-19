@@ -616,13 +616,6 @@ if checkbootparam desktop 2>/dev/null; then
 	done
 fi
 
-if [ "$WM" = "/usr/bin/metacity" ]; then
-	if [ -f "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" ]; then
-		sed -ie "s|^\(Exec=\)konqueror.*\( file:${INDEXFILE}\)|\1epiphany\2|" \
-		"${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop"
-	fi	
-fi
-
 # configure kdesu to use sudo for the live user
 if [ -x /usr/bin/kde-config ] && [ ! -r /home/${FLL_LIVE_USER}/.kde/share/config/kdesurc ] ; then
 	mkdir -p "/home/${FLL_LIVE_USER}/.kde/share/config/"
@@ -694,6 +687,13 @@ EOF
 		ln "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
 			"${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"
 	fi
+fi
+
+if [ "$WM" = "/usr/bin/metacity" ]; then
+	if [ -f "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" ]; then
+		sed -ie "s|^\(Exec=\)konqueror.*\( file:${INDEXFILE}\)|\1epiphany\2|" \
+		"${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop"
+	fi	
 fi
 
 # Setup language/keyboard
