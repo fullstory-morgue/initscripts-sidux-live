@@ -691,7 +691,7 @@ fi
 
 if [ "$WM" = "/usr/bin/metacity" ]; then
 	if [ -f "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" ]; then
-		sed -ie "s|^\(Exec=\)konqueror.*\( file:${INDEXFILE}\)|\1epiphany\2|" \
+		sed -i -e "s|^\(Exec=\)konqueror.*\( file:${INDEXFILE}\)|\1epiphany\2|" \
 		"${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop"
 	fi	
 fi
