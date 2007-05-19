@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.6.10) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.10) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Andreas Weber ]
   * epiphany hack moved after creating the Desktop Link
 
  -- Andreas Weber <andreas@it-weber.com>  Sat, 19 May 2007 12:41:26 +0200
