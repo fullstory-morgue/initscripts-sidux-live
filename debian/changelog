@@ -3,8 +3,9 @@ initscripts-sidux-live (0.6.12) UNRELEASED; urgency=low
   * First round of persistency based cleanups.
     - don't create a duplicate /e/n/i entry for previous configured device
     - check for existing showindex.desktop before attempting to create it
+  * Start gdm at sequence 30.
 
- -- Kel Modderman <kel@otaku42.de>  Sun, 20 May 2007 21:55:07 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sun, 20 May 2007 22:05:26 +1000
 
 initscripts-sidux-live (0.6.11) unstable; urgency=low
 

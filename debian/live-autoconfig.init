@@ -789,7 +789,7 @@ if [ -x /usr/sbin/gdm ]; then
 			/usr/share/gdm/defaults.conf
 	fi
 	
-	update-rc.d gdm start 21 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
+	update-rc.d gdm start 30 5 . stop 01 0 1 2 3 4 6 . >/dev/null 2>&1
 fi
 
 ###############################################################################
