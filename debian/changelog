@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.6.12) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.12) unstable; urgency=low
 
   * First round of persistency based cleanups.
     - don't create a duplicate /e/n/i entry for previous configured device
