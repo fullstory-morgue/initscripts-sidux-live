@@ -398,8 +398,10 @@ else
 				# link beat detected ?
 				if [ "$?" = "2" ]; then
 					CONNETDEVS="$CONNETDEVS $DEVICE"
-					printf "\nallow-hotplug $DEVICE\n"	>> /etc/network/interfaces
-					printf "iface $DEVICE inet dhcp\n"	>> /etc/network/interfaces
+					if ! grep -w "$DEVICE" /etc/network/interfaces; then
+						printf "\nallow-hotplug $DEVICE\n"	>> /etc/network/interfaces
+						printf "iface $DEVICE inet dhcp\n"	>> /etc/network/interfaces
+					fi
 				else
 					ifconfig "$DEVICE" down
 				fi
@@ -682,7 +684,7 @@ Type=Application
 Icon=${INDEXICON}
 Terminal=0
 EOF
-	if ! checkbootparam "nointro"; then
+	if ! checkbootparam "nointro" && ! -e "${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"; then
 		mkdir -p "${FLL_LIVE_USER_HOME}/.kde/Autostart"
 		ln "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
 			"${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"
