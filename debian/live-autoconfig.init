@@ -713,7 +713,7 @@ if [ -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 	sed -i "s|^LayoutList.*$|LayoutList=${KDEKEYBOARDS}|" "${FLL_LIVE_USER_HOME}/.kde/share/config/kxkbrc"
 
 	# set KDE wallpaper
-	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals"
+	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
 	sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
 fi
 

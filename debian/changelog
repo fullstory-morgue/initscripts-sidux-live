@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.6.13) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 20 May 2007 15:19:10 +0200
+  [ Bernard Gray ]
+  * touch the correct file for kde wallpaper definition 
+
+ -- Bernard Gray <bernard.gray@gmail.com>  Mon, 21 May 2007 15:12:27 +1000
 
 initscripts-sidux-live (0.6.12) unstable; urgency=low
 
