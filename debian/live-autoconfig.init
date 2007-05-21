@@ -684,7 +684,7 @@ Type=Application
 Icon=${INDEXICON}
 Terminal=0
 EOF
-	if ! checkbootparam "nointro" && ! -e "${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"; then
+	if ! checkbootparam "nointro" && [ ! -e "${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop" ]; then
 		mkdir -p "${FLL_LIVE_USER_HOME}/.kde/Autostart"
 		ln "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
 			"${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"
