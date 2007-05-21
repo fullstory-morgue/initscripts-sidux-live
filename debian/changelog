@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.6.14) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 21 May 2007 11:21:46 +0200
+  [ Joaquim Boura ]
+  * create the autostart file for gnome lovers
+
+ -- Joaquim Boura <x-un-i@sidux.com>  Mon, 21 May 2007 23:21:23 +0200
 
 initscripts-sidux-live (0.6.13) unstable; urgency=low
 

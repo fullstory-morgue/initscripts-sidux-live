@@ -688,14 +688,21 @@ EOF
 		mkdir -p "${FLL_LIVE_USER_HOME}/.kde/Autostart"
 		ln "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
 			"${FLL_LIVE_USER_HOME}/.kde/Autostart/showindex.desktop"
-	fi
-fi
 
-if [ "$WM" = "/usr/bin/metacity" ]; then
-	if [ -f "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" ]; then
-		sed -i -e "s|^\(Exec=\)konqueror.*\( file:${INDEXFILE}\)|\1epiphany\2|" \
-		"${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop"
-	fi	
+		# create the autostart file for gnome lovers
+		mkdir -p "${FLL_LIVE_USER_HOME}/.config/autostart"
+		cat > "${FLL_LIVE_USER_HOME}/.config/autostart/${FLL_DISTRO_NAME}-manual.desktop" \
+<<EOF
+[Desktop Entry]
+Name=${FLL_DISTRO_NAME}-manual
+Encoding=UTF-8
+Version=1.0
+Name[de_DE]=${FLL_DISTRO_NAME}-manual
+Exec=epiphany file:${INDEXFILE}
+X-GNOME-Autostart-enabled=true
+EOF
+
+	fi
 fi
 
 # Setup language/keyboard
