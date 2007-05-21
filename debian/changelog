@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.6.13) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.13) unstable; urgency=low
 
   [ Bernard Gray ]
   * touch the correct file for kde wallpaper definition
