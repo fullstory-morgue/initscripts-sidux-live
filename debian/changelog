@@ -1,8 +1,8 @@
-initscripts-sidux-live (0.6.17) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.17) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * make bash a little more comfy.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 23 May 2007 16:05:53 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 23 May 2007 18:42:17 +0200
 
 initscripts-sidux-live (0.6.16) unstable; urgency=low
 
