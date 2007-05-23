@@ -413,11 +413,12 @@ else
 			printf "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}\n"
 		fi
 
-		start_service ifupdown >/dev/null
-		# networking also starts the lo (loopback) interface, background it
-		( start_service networking  >/dev/null 2>&1 ) &
 	fi
 fi
+
+start_service ifupdown >/dev/null
+# networking also starts the lo (loopback) interface, background it
+( start_service networking  >/dev/null 2>&1 ) &
 
 ###############################################################################
 # power management
