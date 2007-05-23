@@ -558,7 +558,7 @@ cp -f	/usr/share/base-files/dot.profile	/root/.profile
 cp -f	/etc/skel/.bash_logout \
 	/etc/skel/.bash_profile \
 	/etc/skel/.bashrc \
-		/root/.bashrc
+		/root/
 
 if ! grep -q bash_completion /root/.bashrc; then
 	cat >> /root/.bashrc << EOF
