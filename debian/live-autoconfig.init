@@ -551,6 +551,22 @@ fi
 start_service hotkey-setup >/dev/null 2>&1
 
 ###############################################################################
+# configure /root/
+###############################################################################
+# Populate /root/.profile and /root/.bashrc
+cp -f /usr/share/base-files/dot.profile	/root/.profile
+cp -f /usr/share/base-files/dot.bashrc	/root/.bashrc
+
+if ! grep -q bash_completion /root/.bashrc; then
+	cat >> /root/.bashrc << EOF
+# enable bash completion in interactive shells
+if [ -f /etc/bash_completion ]; then
+	. /etc/bash_completion
+fi
+EOF
+fi
+
+###############################################################################
 # configure $HOME
 ###############################################################################
 # Copy profiles if not already present
@@ -570,7 +586,7 @@ rsync -Ha --ignore-existing /usr/share/user-profile/profile/ "${FLL_LIVE_USER_HO
 
 # add aliases for sudo and su
 grep alias\ su  "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || printf "alias su=\"sudo su\"\n"   >> "${FLL_LIVE_USER_HOME}/.bashrc"
-grep alias\ sux "/home/${FLL_LIVE_USER}/.bashrc"  > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
+grep alias\ sux "${FLL_LIVE_USER_HOME}/.bashrc" > /dev/null || printf "alias sux=\"sudo sux\"\n" >> "${FLL_LIVE_USER_HOME}/.bashrc"
 
 # set default window manager
 if checkbootparam desktop 2>/dev/null; then
