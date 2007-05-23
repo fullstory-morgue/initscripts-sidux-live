@@ -691,26 +691,11 @@ for mntpnt in /fll/*; do
 done
 
 if [ "${INDEXFILE}" ]; then
-	WM=$(readlink /etc/alternatives/x-window-manager)
-	case $WM in
-		"/usr/bin/kwin")
-			TOOLKITBROWSER="konqueror --geometry 950x700+35+20"
-			;;
-		"/usr/bin/metacity")
-			TOOLKITBROWSER="epiphany"
-			;;
-		"/usr/bin/fluxbox")
-			TOOLKITBROWSER="epiphany"
-			;;
-		"/usr/bin/xfwm4")
-			TOOLKITBROWSER="epiphany"
-			;;
-	esac
 	cat > "${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop" \
 <<EOF
 [Desktop Entry]
 Name=${FLL_CDROM_INDEX}
-Exec=$TOOLKITBROWSER file:${INDEXFILE}
+Exec=konqueror --geometry 950x700+35+20 file:${INDEXFILE}
 Type=Application
 Icon=${INDEXICON}
 Terminal=0

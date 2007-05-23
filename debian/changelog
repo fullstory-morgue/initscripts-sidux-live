@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.6.16) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 23 May 2007 10:44:09 +0200
+  [ Andreas Weber ]
+  * Browser function removed because of Problems with kde 
+
+ -- Andreas Weber <webera@WFRKWEBERALIN>  Wed, 23 May 2007 16:02:35 +0200
 
 initscripts-sidux-live (0.6.15) unstable; urgency=low
 
