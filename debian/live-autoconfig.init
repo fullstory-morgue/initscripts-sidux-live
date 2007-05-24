@@ -764,6 +764,7 @@ Wallpaper=${FLL_WALLPAPER}
 WallpaperMode=Scaled
 EOF
 	fi
+fi
 
 if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" ]; then
 	# see kstartupconfig source for usage
