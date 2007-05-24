@@ -1,12 +1,15 @@
 initscripts-sidux-live (0.6.21) UNRELEASED; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
   [ Andreas Weber ]
-  * Gnome Hacks added for epiphany and Look and Feel. 
+  * Gnome Hacks added for epiphany and Look and Feel.
 
- -- Andreas Weber <webera@WFRKWEBERALIN>  Thu, 24 May 2007 15:24:53 +0200
+  [ Kel Modderman ]
+  * Use update-rc.d to queue startup of services that start in runlevel 2-5
+    rather than relying on script to take care of sequence. It does mean
+    however we must keep a keen eye on sequnce number changes of these
+    services.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 24 May 2007 23:55:32 +1000
 
 initscripts-sidux-live (0.6.20) unstable; urgency=low
 
