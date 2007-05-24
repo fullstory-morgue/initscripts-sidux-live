@@ -1,3 +1,9 @@
+initscripts-sidux-live (0.6.24) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 24 May 2007 23:10:24 +0200
+
 initscripts-sidux-live (0.6.23) unstable; urgency=low
 
   * centralize output to /etc/hwsetup.
