@@ -849,6 +849,38 @@ if [ -x /usr/sbin/gdm ]; then
 fi
 
 ###############################################################################
+# Special Gnome Stuff
+###############################################################################
+for WM in $(readlink /etc/alternatives/x-window-manager)
+do
+if [ "$WM"  = "/usr/bin/metacity" ]; then
+	printf "Configure Gnome Desktop Settings...\n"
+
+	if [ -f ${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop ]; then
+		sed -i -e 's|Exec=konqueror\(.*\)file:\(.*\)|Exec=epiphany \2|' \
+			${FLL_LIVE_USER_HOME}/Desktop/${FLL_DISTRO_NAME}.desktop
+	fi
+
+	BASEDIR=".gconf/apps/nautilus"
+
+	[ ! -d "${FLL_LIVE_USER_HOME}/$BASEDIR/preferences" ] && mkdir -p ${FLL_LIVE_USER_HOME}/$BASEDIR/preferences
+
+	if [ ! -f "${FLL_LIVE_USER_HOME}/$BASEDIR/preferences" ]; then
+		cat >> ${FLL_LIVE_USER_HOME}/$BASEDIR/preferences/%gconf.xml << EOF
+<?xml version="1.0"?>
+<gconf>
+        <entry name="always_use_browser" mtime="1179983929" type="bool" value="true">
+        </entry>
+</gconf>
+EOF
+	else
+		sed -i -e 's|always_use_browser\(.*\)value=\(.*\)|always_use_browser\1value="true"|' \
+			${FLL_LIVE_USER_HOME}/$BASEDIR/preferences/%gconf.xml
+	fi
+fi
+done
+
+###############################################################################
 # re-enable printk's and signals
 ###############################################################################
 
