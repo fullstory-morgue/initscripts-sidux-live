@@ -7,7 +7,11 @@ initscripts-sidux-live (0.6.20) UNRELEASED; urgency=low
   * handle missing kdesktoprc case for wallpaper setting
   * fix if and grep syntax for dash
 
- -- Bernard Gray <bernard.gray@gmail.com>  Thu, 24 May 2007 17:05:56 +1000
+  [ Kel Modderman ]
+  * Bugfix: better start new hal initscript, dbus no longer start it, it is a
+    standalone SysV init script as of 0.5.9-3.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 24 May 2007 21:06:02 +1000
 
 initscripts-sidux-live (0.6.19) unstable; urgency=low
 

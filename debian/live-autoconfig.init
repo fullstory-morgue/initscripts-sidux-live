@@ -463,6 +463,7 @@ if [ -x /etc/init.d/dbus ]; then
 		printf " ${GREEN}Enabling D-Bus and Hardware Abstraction Layer:${NORMAL}"
 		if start_service dbus >/dev/null; then
 			printf " ${MAGENTA}dbus${GREEN}.${NORMAL}\n"
+			start_service /etc/init.d/hal >/dev/null
 			start_service /etc/init.d/avahi-daemon >/dev/null
 		else
 			printf " ${RED}Failed!${NORMAL}\n"
