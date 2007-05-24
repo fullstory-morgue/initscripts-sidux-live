@@ -1,7 +1,7 @@
-initscripts-sidux-live (0.6.22) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.22) unstable; urgency=low
 
   * Print some info about cpufreq module detection.
-  * Print ethernet devices that get dhcp treatment in yellow, not magneta.
+  * Print ethernet devices that get dhcp treatment in yellow, not magenta.
 
  -- Kel Modderman <kel@otaku42.de>  Fri, 25 May 2007 00:49:19 +1000
 
