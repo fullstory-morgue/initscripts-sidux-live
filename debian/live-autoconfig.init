@@ -410,7 +410,7 @@ else
 		
 		if [ -n "$CONNETDEVS" ]; then
 			printf " ${GREEN}Starting ${YELLOW}DHCP${GREEN} broadcast on ethernet devices:${NORMAL}"
-			printf "${MAGENTA}${CONNETDEVS}${GREEN}.${NORMAL}\n"
+			printf "${YELLOW}${CONNETDEVS}${GREEN}.${NORMAL}\n"
 		fi
 
 	fi
@@ -497,6 +497,8 @@ else
 
 	# start power management service
 	if [ -n "$CPUFREQ" ]; then
+		printf " ${GREEN}Detected support for CPUfreq power management with ${YELLOW}${CPUFREQ}${GREEN} module.\n"
+
 		# hack to disable suspend, it currently does not mix with live-mode
 		# kpowersave exposes this problem to unsuspecting users
 		if [ -w /etc/powersave/sleep ]; then
