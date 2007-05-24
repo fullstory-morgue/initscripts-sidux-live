@@ -4,9 +4,11 @@ initscripts-sidux-live (0.6.19) UNRELEASED; urgency=low
   * NOT RELEASED YET
 
   [ Bernard Gray ]
-  * add hook for custom boot script execution 
+  * add hook for custom boot script execution
+  * modify hook to use run-scripts to preserve order of execution
+  * create hook dir
 
- -- Bernard Gray <bernard.gray@gmail.com>  Thu, 24 May 2007 11:31:31 +1000
+ -- Bernard Gray <bernard.gray@gmail.com>  Thu, 24 May 2007 12:16:57 +1000
 
 initscripts-sidux-live (0.6.18) unstable; urgency=low
 
