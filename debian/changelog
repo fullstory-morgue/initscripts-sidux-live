@@ -1,4 +1,4 @@
-initscripts-sidux-live (0.6.21) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.21) unstable; urgency=low
 
   [ Andreas Weber ]
   * Gnome Hacks added for epiphany and Look and Feel.
