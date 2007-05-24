@@ -740,7 +740,7 @@ if [ -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 
 	# set KDE wallpaper
 	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
-	if [ $(grep Wallpaper= "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc") ]; then
+	if grep -q Wallpaper= "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"; then
 		sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
 	else
 		cat >> "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc" << EOF
