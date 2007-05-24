@@ -1,8 +1,12 @@
 initscripts-sidux-live (0.6.20) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 24 May 2007 04:25:43 +0200
+  [ Bernard Gray ]
+  * handle missing kdesktoprc case for wallpaper setting
+
+ -- Bernard Gray <bernard.gray@gmail.com>  Thu, 24 May 2007 16:48:57 +1000
 
 initscripts-sidux-live (0.6.19) unstable; urgency=low
 

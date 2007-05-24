@@ -740,8 +740,29 @@ if [ -r "${FLL_LIVE_USER_HOME}/.kde/share/config/kdeglobals" ]; then
 
 	# set KDE wallpaper
 	touch "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
-	sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
-fi
+	if [ $(grep Wallpaper= "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc") ]; then
+		sed -i 's|Wallpaper=.*$|Wallpaper='"$FLL_WALLPAPER"'|g' "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc"
+	else
+		cat >> "${FLL_LIVE_USER_HOME}/.kde/share/config/kdesktoprc" << EOF
+[Desktop0]
+BackgroundMode=Flat
+BlendBalance=100
+BlendMode=NoBlending
+ChangeInterval=60
+Color1=0,0,0
+Color2=255,255,255
+CurrentWallpaperName=
+LastChange=0
+MinOptimizationDepth=1
+MultiWallpaperMode=NoMulti
+Pattern=
+Program=
+ReverseBlending=false
+UseSHM=false
+Wallpaper=${FLL_WALLPAPER}
+WallpaperMode=Scaled
+EOF
+	fi
 
 if [ ! -r "${FLL_LIVE_USER_HOME}/.kde/share/config/startupconfigkeys" ]; then
 	# see kstartupconfig source for usage
