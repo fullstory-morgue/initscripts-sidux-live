@@ -1,9 +1,5 @@
-initscripts-sidux-live (0.6.19) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.19) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Bernard Gray ]
   * add hook for custom boot script execution
   * modify hook to use run-scripts to preserve order of execution
   * create hook dir
