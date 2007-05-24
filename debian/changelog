@@ -1,7 +1,4 @@
-initscripts-sidux-live (0.6.20) UNRELEASED; urgency=low
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+initscripts-sidux-live (0.6.20) unstable; urgency=low
 
   [ Bernard Gray ]
   * handle missing kdesktoprc case for wallpaper setting
