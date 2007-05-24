@@ -769,6 +769,11 @@ chown -R "${FLL_LIVE_USER}:${FLL_LIVE_USER}" "${FLL_LIVE_USER_HOME}"
 printf "${BLUE}Done.${NORMAL}\n"
 
 ###############################################################################
+# hook for custom boot scripts
+###############################################################################
+find /usr/share/initscripts-sidux-live/hooks/ -type f -perm /u+x -exec {} \;
+
+###############################################################################
 # set up X.org
 ###############################################################################
 if start_service x11-common S; then
