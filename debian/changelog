@@ -1,8 +1,9 @@
-initscripts-sidux-live (0.6.23) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.23) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * centralize output to /etc/hwsetup.
+  * nuke /etc/sysconfig/ usage.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 24 May 2007 17:01:52 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 24 May 2007 22:19:27 +0200
 
 initscripts-sidux-live (0.6.22) unstable; urgency=low
 
