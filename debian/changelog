@@ -1,8 +1,12 @@
-initscripts-sidux-live (0.6.24) UNRELEASED; urgency=low
+initscripts-sidux-live (0.6.24) ORPHANED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 24 May 2007 23:10:24 +0200
+  [ Kel Modderman ]
+  * Orphan package. fll-live-initscripts is feature complete.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 03 Jun 2007 10:50:54 +1000
 
 initscripts-sidux-live (0.6.23) unstable; urgency=low
 
